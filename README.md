@@ -4,7 +4,7 @@ Noema is an open-source, self-hosted knowledge platform for multiple humans and 
 
 ## Status
 
-The architecture baseline is being established. This repository currently defines the initial public framing, system concepts, and development plan for Noema.
+The architecture baseline has been established. This repository now defines the initial public framing, system concepts, and development plan for Noema, and is moving into the next stage of work.
 
 ## Key principles
 
