@@ -47,6 +47,7 @@ See `CONTRIBUTING.md` for baseline-first contribution guidance.
 - [Original system design](docs/noema-original-system-design.md)
 - [Development plan](docs/noema-development-plan.md)
 - [Workflow baseline adoption](docs/noema-workflow-baseline.md)
+- [Core knowledge object conventions](docs/noema-core-object-conventions.md)
 - [Contributing guide](CONTRIBUTING.md)
 
 ## Inspiration
