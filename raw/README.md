@@ -12,3 +12,8 @@ Conventions:
 - Preserve original content whenever possible.
 - Keep source provenance metadata near the object (frontmatter or sidecar).
 - Do not treat this directory as the canonical structured knowledge layer.
+
+Minimum metadata expectation:
+- `id`, `class: raw`, `created_at`, `created_by`, `workspace`, `status`
+
+See `docs/noema-core-object-conventions.md` for baseline cross-class conventions.

@@ -11,3 +11,8 @@ Conventions:
 - Include proposer identity (human or agent).
 - Include target object references and rationale.
 - Keep proposal state explicit (e.g., draft, under-review, accepted, rejected).
+
+Minimum metadata expectation:
+- `id`, `class: proposals`, `created_at`, `created_by`, `workspace`, `status`
+
+See `docs/noema-core-object-conventions.md` for baseline cross-class conventions.
