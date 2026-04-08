@@ -4,7 +4,7 @@ Noema is an open-source, self-hosted knowledge platform for multiple humans and 
 
 ## Status
 
-The architecture baseline has been established. This repository now defines the initial public framing, system concepts, and development plan for Noema, and is moving into the next stage of work.
+The architecture baseline has been established. This repository now defines the initial public framing, system concepts, and development plan for Noema. The project workflow now adopts those baseline documents explicitly and identifies Phase 1 (repository skeleton) as the next implementation slice.
 
 ## Key principles
 
@@ -30,6 +30,7 @@ The architecture baseline has been established. This repository now defines the 
 
 - [Original system design](docs/noema-original-system-design.md)
 - [Development plan](docs/noema-development-plan.md)
+- [Workflow baseline adoption](docs/noema-workflow-baseline.md)
 
 ## Inspiration
 

@@ -2,6 +2,12 @@
 
 This plan outlines a practical early sequence for building Noema without overcommitting to implementation details too early. The goal is to establish a coherent public baseline, then grow toward a usable self-hosted multi-human and multi-agent platform.
 
+## Active workflow note
+
+The accepted architecture baseline is now actively adopted for implementation workflow through `docs/noema-workflow-baseline.md`.
+
+Current execution focus: **Phase 1: Repository skeleton**.
+
 ## Phase 0: Architecture baseline
 
 **Objective**
