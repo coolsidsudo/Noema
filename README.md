@@ -26,11 +26,28 @@ The architecture baseline has been established. This repository now defines the 
 - **Machine clients** can query and contribute through bounded APIs and MCP-style interfaces.
 - **Access policy** separates who may see content from who may modify or approve it.
 
+
+## Repository skeleton
+
+Phase 1 introduces a minimal, architecture-aligned structure:
+
+- `raw/` — source-facing inputs
+- `structured/` — curated canonical knowledge artifacts
+- `proposals/` — reviewable candidate changes
+- `logs/` — append-oriented operational records
+- `schemas/` — future schema and validation conventions
+- `packages/` — future services and libraries
+- `deploy/` — deployment assets and templates
+- `examples/` — sample/reference layouts
+
+See `CONTRIBUTING.md` for baseline-first contribution guidance.
+
 ## Documents
 
 - [Original system design](docs/noema-original-system-design.md)
 - [Development plan](docs/noema-development-plan.md)
 - [Workflow baseline adoption](docs/noema-workflow-baseline.md)
+- [Contributing guide](CONTRIBUTING.md)
 
 ## Inspiration
 
