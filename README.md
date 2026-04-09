@@ -50,6 +50,7 @@ See `CONTRIBUTING.md` for baseline-first contribution guidance.
 - [Core knowledge object conventions](docs/noema-core-object-conventions.md)
 - [Baseline relationship and traceability conventions](docs/noema-relationship-traceability-conventions.md)
 - [Baseline object metadata profile (v0)](docs/noema-object-metadata-profile-v0.md)
+- [Baseline index/catalog approach](docs/noema-index-catalog-baseline.md)
 - [Contributing guide](CONTRIBUTING.md)
 
 ## Inspiration
