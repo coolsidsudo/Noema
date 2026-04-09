@@ -157,6 +157,10 @@ This creates a minimal traceability chain:
 
 `raw evidence -> structured knowledge -> proposed changes -> logged decisions/events`
 
+For explicit baseline semantics, link primitives, and deferred complexity boundaries, see:
+
+- `docs/noema-relationship-traceability-conventions.md`
+
 ## Repository mapping
 
 The top-level repository directories map directly to these classes:
