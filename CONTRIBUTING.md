@@ -14,9 +14,9 @@ Treat these as the architecture and execution baseline.
 
 ## Phase alignment
 
-Current active slice: **Phase 2 — Core knowledge model follow-on definition work**.
+Current active slice: **Phase 3 — Human client baseline**.
 
-Contributions in this phase should prioritize metadata, relationship, and indexing conventions while preserving baseline architecture and accepted object-class conventions.
+Contributions in this phase should prioritize an Obsidian-compatible human workspace view, baseline human browse/review paths, and workflow guidance for owner/reviewer/reader usage while preserving baseline architecture and accepted Phase 2 semantics.
 
 ## Drift checks for pull requests
 

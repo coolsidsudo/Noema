@@ -6,9 +6,9 @@ This plan outlines a practical early sequence for building Noema without overcom
 
 The accepted architecture baseline is now actively adopted for implementation workflow through `docs/noema-workflow-baseline.md`.
 
-Accepted completed slices: **Phase 0 (architecture baseline), Phase 1 (repository skeleton), and the initial Phase 2 core knowledge object convention layer**.
+Accepted completed slices: **Phase 0 (architecture baseline), Phase 1 (repository skeleton), and the full Phase 2 definition package (core object conventions, metadata profile, relationship/traceability conventions, and index/catalog baseline)**.
 
-Current execution focus: **Phase 2 follow-on definition work (metadata, relationship, and index conventions)**.
+Current execution focus: **Phase 3 human client baseline**.
 
 ## Phase 0: Architecture baseline
 
