@@ -48,6 +48,7 @@ See `CONTRIBUTING.md` for baseline-first contribution guidance.
 - [Development plan](docs/noema-development-plan.md)
 - [Workflow baseline adoption](docs/noema-workflow-baseline.md)
 - [Core knowledge object conventions](docs/noema-core-object-conventions.md)
+- [Baseline relationship and traceability conventions](docs/noema-relationship-traceability-conventions.md)
 - [Baseline object metadata profile (v0)](docs/noema-object-metadata-profile-v0.md)
 - [Contributing guide](CONTRIBUTING.md)
 

@@ -80,6 +80,10 @@ Refine the initial Phase 2 convention layer with clearer metadata, relationship,
 3. Define baseline index/catalog expectations for navigation and traceability.
 4. Keep this work documentation-first and traceable to baseline docs.
 
+Relationship and traceability convention output for this slice:
+
+- `docs/noema-relationship-traceability-conventions.md`
+
 ### Slice done criteria
 
 This slice is complete when:
