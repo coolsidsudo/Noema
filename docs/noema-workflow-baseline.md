@@ -52,12 +52,10 @@ Do not introduce implementation shortcuts that collapse independent axes. In par
 
 Implementation should progress in development-plan order unless a documented dependency requires otherwise:
 
-- Phase 1: repository skeleton
-- Phase 2: core knowledge model
-- Phase 3: human client baseline
-- Phase 4: agent interface baseline
-- Phase 5: maintainer workflow baseline
-- Phase 6: multi-user/auth/deployment baseline
+- Completed and accepted: Phase 1 repository skeleton
+- Completed and accepted: initial Phase 2 core knowledge object convention layer
+- Current active slice: Phase 2 follow-on definition work (metadata, relationship, and indexing conventions)
+- Next queued slices: Phase 3 human client baseline, Phase 4 agent interface baseline, Phase 5 maintainer workflow baseline, Phase 6 multi-user/auth/deployment baseline
 
 ### Rule 4: Make each PR traceable to baseline
 
@@ -69,36 +67,27 @@ Each implementation PR should include:
 
 ## Next implementation slice (immediate)
 
-The next implementation slice should be **Phase 1: Repository skeleton**.
+The next implementation slice remains in **Phase 2: Core knowledge model follow-on definition work**.
 
 ### Slice objective
 
-Create a concrete repository structure and conventions that encode the baseline knowledge model without prematurely implementing full services.
+Refine the initial Phase 2 convention layer with clearer metadata, relationship, and indexing definitions while preserving the accepted baseline model.
 
 ### Slice deliverables
 
-1. Add top-level directories for the four object classes:
-   - raw
-   - structured
-   - proposals
-   - logs
-2. Add documentation for object conventions and minimal metadata expectations.
-3. Add a minimal sample workspace layout demonstrating separation of:
-   - domain
-   - profile
-   - workspace/project
-   - visibility
-   - authority
-4. Add contributor guidance explaining how future slices should preserve the architecture baseline.
+1. Clarify required and optional metadata expectations for core object classes.
+2. Define tighter relationship/link conventions between raw, structured, proposals, and logs.
+3. Define baseline index/catalog expectations for navigation and traceability.
+4. Keep this work documentation-first and traceable to baseline docs.
 
 ### Slice done criteria
 
 This slice is complete when:
 
-- A new contributor can see where each object class belongs.
-- The repository structure reflects the architecture baseline vocabulary.
-- The sample layout demonstrates axis separation without introducing extra architecture.
-- No implementation detail contradicts the accepted baseline docs.
+- Core object conventions include clearer metadata and relationship definitions for consistent use.
+- Baseline index/catalog expectations are documented for implementation follow-through.
+- The Phase 2 convention layer stays aligned with architecture and workflow baselines.
+- The next-slice pointer after this work clearly targets Phase 3 (human client baseline).
 
 ## Definition of done for baseline adoption
 

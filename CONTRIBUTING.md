@@ -14,9 +14,9 @@ Treat these as the architecture and execution baseline.
 
 ## Phase alignment
 
-Current active slice: **Phase 1 — Repository skeleton**.
+Current active slice: **Phase 2 — Core knowledge model follow-on definition work**.
 
-Contributions in this phase should prefer structure, conventions, and concise docs over heavy implementation.
+Contributions in this phase should prioritize metadata, relationship, and indexing conventions while preserving baseline architecture and accepted object-class conventions.
 
 ## Drift checks for pull requests
 
