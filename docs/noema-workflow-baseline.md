@@ -53,9 +53,9 @@ Do not introduce implementation shortcuts that collapse independent axes. In par
 Implementation should progress in development-plan order unless a documented dependency requires otherwise:
 
 - Completed and accepted: Phase 1 repository skeleton
-- Completed and accepted: initial Phase 2 core knowledge object convention layer
-- Current active slice: Phase 2 follow-on definition work (metadata, relationship, and indexing conventions)
-- Next queued slices: Phase 3 human client baseline, Phase 4 agent interface baseline, Phase 5 maintainer workflow baseline, Phase 6 multi-user/auth/deployment baseline
+- Completed and accepted: Phase 2 definition package (core object conventions, metadata profile, relationship/traceability conventions, and index/catalog baseline)
+- Current active slice: Phase 3 human client baseline
+- Next queued slices: Phase 4 agent interface baseline, Phase 5 maintainer workflow baseline, Phase 6 multi-user/auth/deployment baseline
 
 ### Rule 4: Make each PR traceable to baseline
 
@@ -67,32 +67,27 @@ Each implementation PR should include:
 
 ## Next implementation slice (immediate)
 
-The next implementation slice remains in **Phase 2: Core knowledge model follow-on definition work**.
+The next implementation slice is now **Phase 3: Human client baseline**.
 
 ### Slice objective
 
-Refine the initial Phase 2 convention layer with clearer metadata, relationship, and indexing definitions while preserving the accepted baseline model.
+Deliver the first practical human-facing usage layer while preserving the accepted baseline architecture and completed Phase 2 semantics.
 
 ### Slice deliverables
 
-1. Clarify required and optional metadata expectations for core object classes.
-2. Define tighter relationship/link conventions between raw, structured, proposals, and logs.
-3. Define baseline index/catalog expectations for navigation and traceability.
-4. Keep this work documentation-first and traceable to baseline docs.
-
-Relationship and discoverability convention outputs for this slice:
-
-- `docs/noema-relationship-traceability-conventions.md`
-- `docs/noema-index-catalog-baseline.md`
+1. Define an Obsidian-compatible baseline workspace view for human users without making Obsidian the authority layer.
+2. Establish baseline human browse/review flows over structured, proposal, and traceability-linked content.
+3. Document owner/reviewer/reader workflow guidance that aligns with baseline policy boundaries.
+4. Keep this work implementation-light, documentation-first, and traceable to baseline docs.
 
 ### Slice done criteria
 
 This slice is complete when:
 
-- Core object conventions include clearer metadata and relationship definitions for consistent use.
-- Baseline index/catalog expectations are documented for implementation follow-through.
-- The Phase 2 convention layer stays aligned with architecture and workflow baselines.
-- The next-slice pointer after this work clearly targets Phase 3 (human client baseline).
+- Human-facing baseline guidance exists for workspace browsing/review while preserving editor-agnostic identity.
+- Obsidian compatibility is explicitly supported without treating Obsidian as the authority layer.
+- Human role workflows (owner/reviewer/reader) are documented at baseline depth.
+- The next-slice pointer after this work clearly targets Phase 4 (agent interface baseline).
 
 ## Definition of done for baseline adoption
 
