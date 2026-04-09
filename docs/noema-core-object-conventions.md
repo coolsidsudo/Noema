@@ -22,18 +22,20 @@ These conventions are intentionally lightweight:
 
 ## Shared minimum metadata expectations
 
-All object classes should include minimal metadata either in Markdown frontmatter or a sidecar metadata file.
+All object classes should include metadata as defined by the baseline profile:
 
-Preferred baseline fields:
+- `docs/noema-object-metadata-profile-v0.md`
 
-- `id`: stable object identifier (string)
-- `class`: one of `raw`, `structured`, `proposals`, `logs`
-- `created_at`: creation timestamp in ISO 8601 format
-- `created_by`: human or agent identity
-- `workspace`: workspace/project identifier
-- `status`: lifecycle state for the object class
+At minimum, each object includes these required fields:
 
-Additional fields may be added by future slices, but these are the baseline expectations for traceability.
+- `id`
+- `class`
+- `created_at`
+- `created_by`
+- `workspace`
+- `status`
+
+Recommended and optional fields, plus normalization guidance, are defined in the profile document so future slices can extend metadata consistently without redefining baseline semantics.
 
 ## Object class conventions
 
