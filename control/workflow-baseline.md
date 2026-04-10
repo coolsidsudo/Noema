@@ -55,8 +55,8 @@ Implementation should progress in development-plan order unless a documented dep
 - Completed and accepted: Phase 0 architecture baseline
 - Completed and accepted: Phase 1 repository skeleton
 - Completed and accepted: Phase 2 definition package (core object conventions, metadata profile, relationship/traceability conventions, and index/catalog baseline)
-- Current active slice: Phase 3 human client baseline
-- Next queued slice: Phase 4 agent interface baseline
+- Current active slice: Phase 4 agent interface baseline
+- Next queued slice: Phase 5 maintainer workflow baseline
 
 ### Rule 4: Make each PR traceable to baseline
 
@@ -68,27 +68,27 @@ Each implementation PR should include:
 
 ## Current implementation slice (immediate)
 
-The current implementation slice remains **Phase 3: Human client baseline**.
+The current implementation slice remains **Phase 4: Agent interface baseline**.
 
 ### Slice objective
 
-Deliver the first practical human-facing usage layer while preserving the accepted baseline architecture and completed Phase 2 semantics.
+Deliver the first practical machine-facing bounded interface layer for agent users while preserving accepted baseline semantics.
 
 ### Slice deliverables
 
-1. Define an Obsidian-compatible baseline workspace view for human users without making Obsidian the authority layer.
-2. Establish baseline human browse/review flows over structured, proposal, and traceability-linked content.
-3. Document owner/reviewer/reader workflow guidance that aligns with baseline policy boundaries.
+1. Define the baseline bounded read/query interface expectations for agent users.
+2. Define the baseline proposal submission path for machine contributors.
+3. Define baseline agent identity, scope, and auditability expectations.
 4. Keep this work implementation-light, documentation-first, and traceable to baseline docs.
 
 ### Slice done criteria
 
 This slice is complete when:
 
-- Human-facing baseline guidance exists for workspace browsing/review while preserving editor-agnostic identity.
-- Obsidian compatibility is explicitly supported without treating Obsidian as the authority layer.
-- Human role workflows (owner/reviewer/reader) are documented at baseline depth.
-- The next-slice pointer after this work clearly targets Phase 4 (agent interface baseline).
+- Bounded machine-facing read/query and proposal submission expectations are documented.
+- Agent participation is attributable, scoped, and review-bounded.
+- Canonical publication remains separated from agent proposal submission authority.
+- The next-slice pointer after this work clearly targets Phase 5 (maintainer workflow baseline).
 
 ## Definition of done for baseline adoption
 
