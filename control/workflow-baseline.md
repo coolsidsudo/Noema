@@ -6,14 +6,14 @@ This document adopts the accepted architecture baseline into the active project 
 It is the execution bridge between:
 
 - `docs/noema-original-system-design.md` (architecture source of truth)
-- `docs/noema-development-plan.md` (phase sequencing source of truth)
+- `control/development-plan.md` (phase sequencing source of truth)
 
 ## Architecture source of truth (authoritative)
 
 The current architecture source of truth is:
 
 1. `docs/noema-original-system-design.md`
-2. `docs/noema-development-plan.md`
+2. `control/development-plan.md`
 3. `README.md` (project-facing summary aligned to the two docs above)
 
 If implementation details conflict with these documents, implementation must be updated to match the baseline unless the baseline is intentionally revised through an explicit architecture change.

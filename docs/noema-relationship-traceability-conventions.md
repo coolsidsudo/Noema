@@ -163,6 +163,6 @@ This document extends, and does not replace:
 
 - `docs/noema-core-object-conventions.md`
 - `docs/noema-object-metadata-profile-v0.md`
-- `docs/noema-workflow-baseline.md`
+- `control/workflow-baseline.md`
 
 Use this as the relationship and traceability companion for the initial core object convention layer.

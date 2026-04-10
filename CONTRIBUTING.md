@@ -2,13 +2,15 @@
 
 Thanks for contributing.
 
+This document describes contribution workflow for this repository and is not part of the Noema system definition.
+
 ## Baseline-first workflow
 
 Before proposing implementation changes, read:
 
 1. `docs/noema-original-system-design.md`
-2. `docs/noema-development-plan.md`
-3. `docs/noema-workflow-baseline.md`
+2. `control/development-plan.md`
+3. `control/workflow-baseline.md`
 
 Treat these as the architecture and execution baseline.
 
