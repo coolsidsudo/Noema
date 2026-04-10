@@ -135,7 +135,7 @@ This index/catalog approach extends and aligns with:
 - `docs/noema-core-object-conventions.md`
 - `docs/noema-object-metadata-profile-v0.md`
 - `docs/noema-relationship-traceability-conventions.md`
-- `docs/noema-workflow-baseline.md`
+- `control/workflow-baseline.md`
 
 It does not replace those documents and should be interpreted as the discoverability companion to the initial Phase 2 convention layer.
 

@@ -4,7 +4,9 @@ Noema is an open-source, self-hosted knowledge platform for multiple humans and 
 
 ## Status
 
-The architecture baseline and workflow baseline are established and adopted. The Phase 1 repository skeleton and the full Phase 2 definition package (core object conventions, metadata profile, relationship/traceability conventions, and index/catalog baseline) are accepted. Current execution focus is Phase 3 human client baseline work.
+Noema has a documented architecture baseline and core system-definition package in `docs/`.
+
+Repository implementation planning and active execution tracking are maintained separately in `control/`.
 
 ## Key principles
 
@@ -42,17 +44,24 @@ Phase 1 introduces a minimal, architecture-aligned structure:
 
 See `CONTRIBUTING.md` for baseline-first contribution guidance.
 
+## Development vs System Documentation
+
+- `docs/` defines the Noema system itself (what Noema is and how it works).
+- `control/` contains repository development/control workflow artifacts (how this repository is currently building Noema).
+- External users should rely on `docs/` for system definition.
+
 ## Documents
 
 - [Original system design](docs/noema-original-system-design.md)
-- [Development plan](docs/noema-development-plan.md)
-- [Workflow baseline adoption](docs/noema-workflow-baseline.md)
 - [Core knowledge object conventions](docs/noema-core-object-conventions.md)
 - [Baseline relationship and traceability conventions](docs/noema-relationship-traceability-conventions.md)
 - [Baseline object metadata profile (v0)](docs/noema-object-metadata-profile-v0.md)
 - [Baseline index/catalog approach](docs/noema-index-catalog-baseline.md)
 - [Phase 3 human client baseline (Slice 1)](docs/noema-phase3-human-client-baseline.md)
 - [Contributing guide](CONTRIBUTING.md)
+- [Control layer overview](control/README.md)
+- [Repository development plan](control/development-plan.md)
+- [Repository workflow baseline](control/workflow-baseline.md)
 
 ## Inspiration
 

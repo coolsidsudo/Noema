@@ -4,7 +4,7 @@ This plan outlines a practical early sequence for building Noema without overcom
 
 ## Active workflow note
 
-The accepted architecture baseline is now actively adopted for implementation workflow through `docs/noema-workflow-baseline.md`.
+The accepted architecture baseline is now actively adopted for implementation workflow through `control/workflow-baseline.md`.
 
 Accepted completed slices: **Phase 0 (architecture baseline), Phase 1 (repository skeleton), and the full Phase 2 definition package (core object conventions, metadata profile, relationship/traceability conventions, and index/catalog baseline)**.
 

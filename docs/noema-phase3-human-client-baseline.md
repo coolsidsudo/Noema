@@ -12,12 +12,12 @@ This slice extends and aligns with:
 
 - `README.md`
 - `docs/noema-original-system-design.md`
-- `docs/noema-development-plan.md`
+- `control/development-plan.md`
 - `docs/noema-core-object-conventions.md`
 - `docs/noema-object-metadata-profile-v0.md`
 - `docs/noema-relationship-traceability-conventions.md`
 - `docs/noema-index-catalog-baseline.md`
-- `docs/noema-workflow-baseline.md`
+- `control/workflow-baseline.md`
 
 ## Slice goals
 
