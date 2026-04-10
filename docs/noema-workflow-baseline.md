@@ -52,10 +52,11 @@ Do not introduce implementation shortcuts that collapse independent axes. In par
 
 Implementation should progress in development-plan order unless a documented dependency requires otherwise:
 
+- Completed and accepted: Phase 0 architecture baseline
 - Completed and accepted: Phase 1 repository skeleton
 - Completed and accepted: Phase 2 definition package (core object conventions, metadata profile, relationship/traceability conventions, and index/catalog baseline)
 - Current active slice: Phase 3 human client baseline
-- Next queued slices: Phase 4 agent interface baseline, Phase 5 maintainer workflow baseline, Phase 6 multi-user/auth/deployment baseline
+- Next queued slice: Phase 4 agent interface baseline
 
 ### Rule 4: Make each PR traceable to baseline
 
@@ -65,9 +66,9 @@ Each implementation PR should include:
 - Drift check statement (what was intentionally not changed)
 - Next-slice pointer (what follows directly next)
 
-## Next implementation slice (immediate)
+## Current implementation slice (immediate)
 
-The next implementation slice is now **Phase 3: Human client baseline**.
+The current implementation slice remains **Phase 3: Human client baseline**.
 
 ### Slice objective
 

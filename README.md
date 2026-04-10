@@ -51,6 +51,7 @@ See `CONTRIBUTING.md` for baseline-first contribution guidance.
 - [Baseline relationship and traceability conventions](docs/noema-relationship-traceability-conventions.md)
 - [Baseline object metadata profile (v0)](docs/noema-object-metadata-profile-v0.md)
 - [Baseline index/catalog approach](docs/noema-index-catalog-baseline.md)
+- [Phase 3 human client baseline (Slice 1)](docs/noema-phase3-human-client-baseline.md)
 - [Contributing guide](CONTRIBUTING.md)
 
 ## Inspiration
