@@ -16,9 +16,9 @@ Treat these as the architecture and execution baseline.
 
 ## Phase alignment
 
-Current active slice: **Phase 3 — Human client baseline**.
+Current active slice: **Phase 4 — Agent interface baseline**.
 
-Contributions in this phase should prioritize an Obsidian-compatible human workspace view, baseline human browse/review paths, and workflow guidance for owner/reviewer/reader usage while preserving baseline architecture and accepted Phase 2 semantics.
+Contributions in this phase should prioritize bounded machine-facing read/query and proposal submission interface definitions, including agent identity/scope/auditability expectations, while preserving baseline architecture and accepted Phase 2/3 semantics.
 
 ## Drift checks for pull requests
 

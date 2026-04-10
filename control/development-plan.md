@@ -8,9 +8,9 @@ The accepted architecture baseline is now actively adopted for implementation wo
 
 Accepted completed slices: **Phase 0 (architecture baseline), Phase 1 (repository skeleton), and the full Phase 2 definition package (core object conventions, metadata profile, relationship/traceability conventions, and index/catalog baseline)**.
 
-Current execution focus: **Phase 3 human client baseline**.
+Current execution focus: **Phase 4 agent interface baseline**.
 
-Next queued slice: **Phase 4 agent interface baseline**.
+Next queued slice: **Phase 5 maintainer workflow baseline**.
 
 ## Phase 0: Architecture baseline
 

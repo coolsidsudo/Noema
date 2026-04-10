@@ -58,6 +58,7 @@ See `CONTRIBUTING.md` for baseline-first contribution guidance.
 - [Baseline object metadata profile (v0)](docs/noema-object-metadata-profile-v0.md)
 - [Baseline index/catalog approach](docs/noema-index-catalog-baseline.md)
 - [Phase 3 human client baseline (Slice 1)](docs/noema-phase3-human-client-baseline.md)
+- [Phase 4 agent interface baseline (Slice 1)](docs/noema-phase4-agent-interface-baseline.md)
 - [Contributing guide](CONTRIBUTING.md)
 - [Control layer overview](control/README.md)
 - [Repository development plan](control/development-plan.md)
