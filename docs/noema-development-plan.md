@@ -10,6 +10,8 @@ Accepted completed slices: **Phase 0 (architecture baseline), Phase 1 (repositor
 
 Current execution focus: **Phase 3 human client baseline**.
 
+Next queued slice: **Phase 4 agent interface baseline**.
+
 ## Phase 0: Architecture baseline
 
 **Objective**
