@@ -187,6 +187,6 @@ This baseline explicitly avoids:
 
 ## Next-slice pointer
 
-After this Phase 4 Slice 1 baseline, the next planned execution pointer remains:
+After this Phase 4 Slice 1 baseline, the next planned execution pointer remains within Phase 4 for subsequent agent-interface contract work.
 
-- **Phase 5 — Maintainer workflow baseline**
+Later accepted Phase 4 slices extend this baseline.

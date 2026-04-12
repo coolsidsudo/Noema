@@ -16,9 +16,9 @@ Treat these as the architecture and execution baseline.
 
 ## Phase alignment
 
-Current active slice: **Phase 4 — Slice 3 agent operation-state semantics baseline**.
+Current active slice: **Phase 4 — Slice 4 review/apply execution interoperability semantics baseline**.
 
-Contributions in this phase should prioritize proposal state-transition semantics, review/result contract semantics, and policy-profile presets aligned with the accepted Slice 1/2 operation contract, while preserving baseline architecture and accepted Phase 2/3 semantics.
+Contributions in this phase should prioritize review/apply boundary semantics, apply-state/result interoperability semantics, and machine-visible proposal outcome semantics aligned with accepted Slice 1/2/3 contracts, while preserving baseline architecture and accepted Phase 2/3 semantics.
 
 ## Drift checks for pull requests
 
