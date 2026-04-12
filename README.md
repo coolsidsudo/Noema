@@ -60,6 +60,7 @@ See `CONTRIBUTING.md` for baseline-first contribution guidance.
 - [Phase 3 human client baseline (Slice 1)](docs/noema-phase3-human-client-baseline.md)
 - [Phase 4 agent interface baseline (Slice 1)](docs/noema-phase4-agent-interface-baseline.md)
 - [Phase 4 agent surface contract (Slice 2)](docs/noema-phase4-agent-surface-contract.md)
+- [Phase 4 agent operation-state semantics (Slice 3)](docs/noema-phase4-agent-operation-state-semantics.md)
 - [Contributing guide](CONTRIBUTING.md)
 - [Control layer overview](control/README.md)
 - [Repository development plan](control/development-plan.md)
