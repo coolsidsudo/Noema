@@ -55,8 +55,9 @@ Implementation should progress in development-plan order unless a documented dep
 - Completed and accepted: Phase 0 architecture baseline
 - Completed and accepted: Phase 1 repository skeleton
 - Completed and accepted: Phase 2 definition package (core object conventions, metadata profile, relationship/traceability conventions, and index/catalog baseline)
-- Current active slice: Phase 4 agent interface baseline
-- Next queued slice: Phase 5 maintainer workflow baseline
+- Current active slice: Phase 4 Slice 3 agent operation-state semantics baseline
+- Next queued slice: Phase 4 next bounded slice (review/apply execution interoperability semantics)
+- Phase 5 queue status: queued after remaining Phase 4 baseline closure
 
 ### Rule 4: Make each PR traceable to baseline
 
@@ -68,27 +69,29 @@ Each implementation PR should include:
 
 ## Current implementation slice (immediate)
 
-The current implementation slice remains **Phase 4: Agent interface baseline**.
+The current implementation slice remains **Phase 4 Slice 3: Agent operation-state semantics baseline**.
 
 ### Slice objective
 
-Deliver the first practical machine-facing bounded interface layer for agent users while preserving accepted baseline semantics.
+Define baseline proposal operation-state semantics for the accepted machine-facing contract while preserving accepted baseline semantics.
 
 ### Slice deliverables
 
-1. Define the baseline bounded read/query interface expectations for agent users.
-2. Define the baseline proposal submission path for machine contributors.
-3. Define baseline agent identity, scope, and auditability expectations.
-4. Keep this work implementation-light, documentation-first, and traceable to baseline docs.
+1. Define baseline proposal state transitions at operation level.
+2. Define review-decision and outcome semantics for accepted/rejected/withdrawn states.
+3. Define result-link, review-history, and log-link expectations aligned with traceability baselines.
+4. Define baseline policy-profile presets for common bounded agent participation modes.
+5. Keep this work implementation-light, documentation-first, and traceable to baseline docs.
 
 ### Slice done criteria
 
 This slice is complete when:
 
-- Bounded machine-facing read/query and proposal submission expectations are documented.
-- Agent participation is attributable, scoped, and review-bounded.
-- Canonical publication remains separated from agent proposal submission authority.
-- The next-slice pointer after this work clearly targets Phase 5 (maintainer workflow baseline).
+- Proposal lifecycle states and transitions are explicitly documented.
+- Review decisions and accepted/rejected/withdrawn contracts are explicit and traceable.
+- Result links, review history, and log linkage expectations are documented.
+- Canonical publication remains separated from agent proposal/review support authority.
+- The next-slice pointer remains inside Phase 4 unless baseline closure is explicitly declared.
 
 ## Definition of done for baseline adoption
 
