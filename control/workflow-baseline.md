@@ -55,8 +55,8 @@ Implementation should progress in development-plan order unless a documented dep
 - Completed and accepted: Phase 0 architecture baseline
 - Completed and accepted: Phase 1 repository skeleton
 - Completed and accepted: Phase 2 definition package (core object conventions, metadata profile, relationship/traceability conventions, and index/catalog baseline)
-- Current active slice: Phase 4 Slice 5 review/apply interoperability hardening semantics baseline
-- Next queued slice: Phase 4 next bounded slice (policy-profile refinement for hardened apply/recovery interoperability)
+- Current active slice: Phase 4 Slice 6 apply/recovery policy-profile refinement interoperability baseline
+- Next queued slice: Phase 4 next bounded slice after Slice 6 closure (to be declared in-sequence)
 - Phase 5 queue status: queued after remaining Phase 4 baseline closure
 
 ### Rule 4: Make each PR traceable to baseline
@@ -69,27 +69,25 @@ Each implementation PR should include:
 
 ## Current implementation slice (immediate)
 
-The current implementation slice remains **Phase 4 Slice 5: Review/apply interoperability hardening semantics baseline**.
+The current implementation slice is **Phase 4 Slice 6: Apply/recovery policy-profile refinement interoperability baseline**.
 
 ### Slice objective
 
-Define hardened review/apply interoperability semantics for multi-step apply sequencing, richer conflicts, and bounded recovery while preserving accepted baseline semantics.
+Define apply/recovery policy-profile refinement interoperability semantics while preserving accepted baseline semantics.
 
 ### Slice deliverables
 
-1. Define baseline multi-step apply sequencing semantics (ordering, identity/correlation, partial progress, completion criteria).
-2. Define richer machine-visible conflict categories for review/apply interoperability.
-3. Define bounded recovery semantics for retry, resume, correction, superseding attempts, and abandonment.
-4. Define machine-visible status/result behavior across resumed/retried/corrected/superseded apply paths.
-5. Keep this work implementation-light, documentation-first, and traceable to baseline docs.
+1. Define baseline policy-profile refinement semantics for apply/recovery interoperability.
+2. Preserve accepted multi-step apply sequencing, conflict categories, and bounded recovery semantics from prior slices.
+3. Keep this work implementation-light, documentation-first, and traceable to baseline docs.
 
 ### Slice done criteria
 
 This slice is complete when:
 
-- Review completion and apply/materialization completion remain explicitly distinguishable.
-- Multi-step apply sequencing, conflict typing, and bounded recovery semantics are explicit and traceable.
-- `results_in`, `supersedes`, review history, and apply/log linkage remain coherent through recovery paths.
+- Baseline apply/recovery policy-profile refinement semantics are explicit and bounded.
+- Machine-visible policy-profile expectations for hardened apply/recovery interpretation are defined.
+- Accepted multi-step apply sequencing, typed conflict semantics, bounded recovery semantics, and lineage/log coherence from prior slices remain preserved rather than redefined.
 - Canonical publication remains separated from agent proposal/review support authority.
 - The next-slice pointer remains inside Phase 4 unless baseline closure is explicitly declared.
 
