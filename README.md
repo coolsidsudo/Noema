@@ -63,6 +63,7 @@ See `CONTRIBUTING.md` for baseline-first contribution guidance.
 - [Agent operation-state semantics](docs/noema-agent-operation-state-semantics.md)
 - [Review/apply execution interoperability semantics](docs/noema-review-apply-interoperability-semantics.md)
 - [Review/apply interoperability hardening semantics](docs/noema-review-apply-hardening-semantics.md)
+- [Apply/recovery policy-profile refinement interoperability baseline](docs/noema-apply-recovery-policy-profiles.md)
 - [Contributing guide](CONTRIBUTING.md)
 - [Control layer overview](control/README.md)
 - [Repository development plan](control/development-plan.md)
