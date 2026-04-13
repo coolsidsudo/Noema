@@ -55,10 +55,10 @@ Implementation should progress in development-plan order unless a documented dep
 - Completed and accepted: Phase 0 architecture baseline
 - Completed and accepted: Phase 1 repository skeleton
 - Completed and accepted: Phase 2 definition package (core object conventions, metadata profile, relationship/traceability conventions, and index/catalog baseline)
-- Latest completed/accepted slice: Phase 4 Slice 6 apply/recovery policy-profile refinement interoperability baseline
-- Current active slice: Phase 4 interoperability consistency verification and profile-compatibility conformance guidance across implementations
-- Next queued slice: Phase 4 next bounded slice after current conformance-guidance slice closure (to be declared in-sequence)
-- Phase 5 queue status: queued after remaining Phase 4 baseline closure
+- Latest completed/accepted slice: Phase 4 interoperability consistency verification and profile-compatibility conformance guidance across implementations
+- Current active slice: Phase 5 first bounded maintainer workflow implementation slice (to be declared in-sequence)
+- Next queued slice: Phase 5 next bounded slice after first maintainer workflow slice closure (to be declared in-sequence)
+- Phase 5 queue status: in progress (first bounded maintainer workflow slice to be declared in-sequence)
 
 ### Rule 4: Make each PR traceable to baseline
 
@@ -70,27 +70,24 @@ Each implementation PR should include:
 
 ## Current implementation slice (immediate)
 
-The current implementation slice is **Phase 4: interoperability consistency verification and profile-compatibility conformance guidance across implementations**.
+The current implementation slice is **Phase 5: first bounded maintainer workflow implementation slice (to be declared in-sequence)**.
 
 ### Slice objective
 
-Define bounded interoperability consistency and conformance guidance for accepted Slice 6 policy-profile semantics while preserving accepted baseline semantics.
+Start Phase 5 with a bounded maintainer workflow baseline implementation slice while preserving accepted architecture and prior phase semantics.
 
 ### Slice deliverables
 
-1. Define interoperability consistency checks for apply/recovery policy-profile interpretation.
-2. Define profile-compatibility conformance guidance across implementations for accepted Slice 6 semantics.
-3. Keep this work implementation-light, documentation-first, and traceable to baseline docs.
+1. Declare and execute the first bounded Phase 5 maintainer workflow slice in sequence.
+2. Keep implementation scope minimal, traceable, and aligned to baseline documents.
 
 ### Slice done criteria
 
 This slice is complete when:
 
-- Interoperability consistency expectations for accepted Slice 6 semantics are explicit and bounded.
-- Profile-compatibility conformance guidance across implementations is explicit and machine-interpretation-friendly.
-- Accepted Slice 1/2/3/4/5/6 semantics remain preserved rather than redefined.
-- Canonical publication remains separated from agent proposal/review support authority.
-- The next-slice pointer remains inside Phase 4 unless baseline closure is explicitly declared.
+- The first bounded Phase 5 maintainer workflow slice is explicitly declared and completed in sequence.
+- Baseline architecture and accepted Phase 2/3/4 semantics remain preserved without drift.
+- The next-slice pointer advances to the next bounded Phase 5 slice.
 
 ## Definition of done for baseline adoption
 

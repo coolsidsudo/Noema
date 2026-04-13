@@ -64,6 +64,7 @@ See `CONTRIBUTING.md` for baseline-first contribution guidance.
 - [Review/apply execution interoperability semantics](docs/noema-review-apply-interoperability-semantics.md)
 - [Review/apply interoperability hardening semantics](docs/noema-review-apply-hardening-semantics.md)
 - [Apply/recovery policy-profile refinement interoperability baseline](docs/noema-apply-recovery-policy-profiles.md)
+- [Apply/recovery interoperability consistency and conformance guidance](docs/noema-apply-recovery-conformance-guidance.md)
 - [Contributing guide](CONTRIBUTING.md)
 - [Control layer overview](control/README.md)
 - [Repository development plan](control/development-plan.md)
