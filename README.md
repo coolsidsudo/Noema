@@ -62,6 +62,7 @@ See `CONTRIBUTING.md` for baseline-first contribution guidance.
 - [Phase 4 agent surface contract (Slice 2)](docs/noema-phase4-agent-surface-contract.md)
 - [Phase 4 agent operation-state semantics (Slice 3)](docs/noema-phase4-agent-operation-state-semantics.md)
 - [Phase 4 review/apply execution interoperability semantics (Slice 4)](docs/noema-phase4-review-apply-interoperability-semantics.md)
+- [Phase 4 review/apply interoperability hardening semantics (Slice 5)](docs/noema-phase4-review-apply-hardening-semantics.md)
 - [Contributing guide](CONTRIBUTING.md)
 - [Control layer overview](control/README.md)
 - [Repository development plan](control/development-plan.md)
