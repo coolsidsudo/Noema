@@ -55,8 +55,9 @@ Implementation should progress in development-plan order unless a documented dep
 - Completed and accepted: Phase 0 architecture baseline
 - Completed and accepted: Phase 1 repository skeleton
 - Completed and accepted: Phase 2 definition package (core object conventions, metadata profile, relationship/traceability conventions, and index/catalog baseline)
-- Current active slice: Phase 4 Slice 6 apply/recovery policy-profile refinement interoperability baseline
-- Next queued slice: Phase 4 next bounded slice after Slice 6 closure (to be declared in-sequence)
+- Latest completed/accepted slice: Phase 4 Slice 6 apply/recovery policy-profile refinement interoperability baseline
+- Current active slice: Phase 4 interoperability consistency verification and profile-compatibility conformance guidance across implementations
+- Next queued slice: Phase 4 next bounded slice after current conformance-guidance slice closure (to be declared in-sequence)
 - Phase 5 queue status: queued after remaining Phase 4 baseline closure
 
 ### Rule 4: Make each PR traceable to baseline
@@ -69,25 +70,25 @@ Each implementation PR should include:
 
 ## Current implementation slice (immediate)
 
-The current implementation slice is **Phase 4 Slice 6: Apply/recovery policy-profile refinement interoperability baseline**.
+The current implementation slice is **Phase 4: interoperability consistency verification and profile-compatibility conformance guidance across implementations**.
 
 ### Slice objective
 
-Define apply/recovery policy-profile refinement interoperability semantics while preserving accepted baseline semantics.
+Define bounded interoperability consistency and conformance guidance for accepted Slice 6 policy-profile semantics while preserving accepted baseline semantics.
 
 ### Slice deliverables
 
-1. Define baseline policy-profile refinement semantics for apply/recovery interoperability.
-2. Preserve accepted multi-step apply sequencing, conflict categories, and bounded recovery semantics from prior slices.
+1. Define interoperability consistency checks for apply/recovery policy-profile interpretation.
+2. Define profile-compatibility conformance guidance across implementations for accepted Slice 6 semantics.
 3. Keep this work implementation-light, documentation-first, and traceable to baseline docs.
 
 ### Slice done criteria
 
 This slice is complete when:
 
-- Baseline apply/recovery policy-profile refinement semantics are explicit and bounded.
-- Machine-visible policy-profile expectations for hardened apply/recovery interpretation are defined.
-- Accepted multi-step apply sequencing, typed conflict semantics, bounded recovery semantics, and lineage/log coherence from prior slices remain preserved rather than redefined.
+- Interoperability consistency expectations for accepted Slice 6 semantics are explicit and bounded.
+- Profile-compatibility conformance guidance across implementations is explicit and machine-interpretation-friendly.
+- Accepted Slice 1/2/3/4/5/6 semantics remain preserved rather than redefined.
 - Canonical publication remains separated from agent proposal/review support authority.
 - The next-slice pointer remains inside Phase 4 unless baseline closure is explicitly declared.
 

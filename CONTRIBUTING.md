@@ -16,9 +16,11 @@ Treat these as the architecture and execution baseline.
 
 ## Phase alignment
 
-Current active slice: **Phase 4 — Slice 6 apply/recovery policy-profile refinement interoperability baseline**.
+Latest completed/accepted slice: **Phase 4 — Slice 6 apply/recovery policy-profile refinement interoperability baseline**.
 
-Contributions in this phase should prioritize apply/recovery policy-profile refinement semantics aligned with accepted Slice 1/2/3/4/5 contracts, while preserving baseline architecture and accepted Phase 2/3/4 semantics.
+Current active slice: **Phase 4 — interoperability consistency verification and profile-compatibility conformance guidance across implementations**.
+
+Contributions in the current slice should prioritize bounded interoperability consistency/conformance guidance aligned with accepted Slice 1/2/3/4/5/6 contracts, while preserving baseline architecture and accepted Phase 2/3/4 semantics.
 
 ## Drift checks for pull requests
 
