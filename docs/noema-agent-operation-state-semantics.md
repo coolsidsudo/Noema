@@ -1,13 +1,15 @@
-# Noema Phase 4 Agent Operation-State Semantics (Slice 3)
+# Noema Agent Operation-State Semantics
 
 ## Purpose and boundary
 
-This document defines baseline operation-state semantics for the accepted Phase 4 machine-facing operation contract.
+This document defines stable operation-state semantics for Noema's machine-facing operation contract.
+
+This stable system-definition document originated from the accepted Phase 4 Slice 3 baseline.
 
 It extends:
 
-- `docs/noema-phase4-agent-interface-baseline.md` (Slice 1)
-- `docs/noema-phase4-agent-surface-contract.md` (Slice 2)
+- `docs/noema-agent-interface-baseline.md` (Slice 1)
+- `docs/noema-agent-surface-contract.md` (Slice 2)
 
 This slice is semantics-definition work only. It does not implement a workflow engine, auth stack, or deployment/runtime hardening.
 
@@ -21,9 +23,9 @@ This document aligns with:
 - `docs/noema-object-metadata-profile-v0.md`
 - `docs/noema-relationship-traceability-conventions.md`
 - `docs/noema-index-catalog-baseline.md`
-- `docs/noema-phase3-human-client-baseline.md`
-- `docs/noema-phase4-agent-interface-baseline.md`
-- `docs/noema-phase4-agent-surface-contract.md`
+- `docs/noema-human-client-baseline.md`
+- `docs/noema-agent-interface-baseline.md`
+- `docs/noema-agent-surface-contract.md`
 
 ## Scope in this slice
 
