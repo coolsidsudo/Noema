@@ -1,8 +1,10 @@
-# Noema Phase 4 Agent Interface Baseline (Slice 1)
+# Noema Agent Interface Baseline
 
 ## Purpose and boundary
 
-This document defines the first bounded Phase 4 baseline for machine-facing agent interaction in Noema.
+This document defines the stable machine-facing agent interface baseline for Noema.
+
+This stable system-definition document originated from the accepted Phase 4 Slice 1 baseline.
 
 The slice is intentionally documentation-first and interface-definition-first. It defines what agent users may read/query and how they may submit proposals while preserving Noema's accepted architecture semantics.
 
@@ -18,7 +20,7 @@ This slice extends and aligns with:
 - `docs/noema-object-metadata-profile-v0.md`
 - `docs/noema-relationship-traceability-conventions.md`
 - `docs/noema-index-catalog-baseline.md`
-- `docs/noema-phase3-human-client-baseline.md`
+- `docs/noema-human-client-baseline.md`
 - `control/development-plan.md`
 - `control/workflow-baseline.md`
 

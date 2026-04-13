@@ -1,15 +1,17 @@
-# Noema Phase 4 Review/Apply Interoperability Hardening Semantics (Slice 5)
+# Noema Review/Apply Interoperability Hardening Semantics
 
 ## Purpose and boundary
 
-This document defines the next bounded interoperability-hardening semantics that follow the accepted Phase 4 Slice 4 review/apply execution interoperability baseline.
+This document defines stable interoperability-hardening semantics that follow the accepted review/apply execution interoperability baseline.
+
+This stable system-definition document originated from the accepted Phase 4 Slice 5 baseline.
 
 It extends:
 
-- `docs/noema-phase4-agent-interface-baseline.md` (Slice 1)
-- `docs/noema-phase4-agent-surface-contract.md` (Slice 2)
-- `docs/noema-phase4-agent-operation-state-semantics.md` (Slice 3)
-- `docs/noema-phase4-review-apply-interoperability-semantics.md` (Slice 4)
+- `docs/noema-agent-interface-baseline.md` (Slice 1)
+- `docs/noema-agent-surface-contract.md` (Slice 2)
+- `docs/noema-agent-operation-state-semantics.md` (Slice 3)
+- `docs/noema-review-apply-interoperability-semantics.md` (Slice 4)
 
 This slice is semantics-definition work only. It does not implement a workflow engine, auth/user management, deployment hardening, direct canonical-write authority for agents, or Phase 5 maintainer workflows.
 
@@ -23,11 +25,11 @@ This document aligns with:
 - `docs/noema-object-metadata-profile-v0.md`
 - `docs/noema-relationship-traceability-conventions.md`
 - `docs/noema-index-catalog-baseline.md`
-- `docs/noema-phase3-human-client-baseline.md`
-- `docs/noema-phase4-agent-interface-baseline.md`
-- `docs/noema-phase4-agent-surface-contract.md`
-- `docs/noema-phase4-agent-operation-state-semantics.md`
-- `docs/noema-phase4-review-apply-interoperability-semantics.md`
+- `docs/noema-human-client-baseline.md`
+- `docs/noema-agent-interface-baseline.md`
+- `docs/noema-agent-surface-contract.md`
+- `docs/noema-agent-operation-state-semantics.md`
+- `docs/noema-review-apply-interoperability-semantics.md`
 
 ## Scope in this slice
 

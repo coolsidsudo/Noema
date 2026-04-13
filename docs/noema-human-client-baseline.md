@@ -1,8 +1,10 @@
-# Noema Phase 3 Human Client Baseline (Slice 1)
+# Noema Human Client Baseline
 
 ## Purpose
 
-This document defines the first bounded Phase 3 human client baseline for Noema.
+This document defines the stable human client baseline for Noema.
+
+This stable system-definition document originated from the accepted Phase 3 Slice 1 baseline.
 
 The scope is intentionally narrow: provide a practical, GUI-first browse/review projection over the accepted Phase 2 knowledge model without changing core architecture semantics.
 

@@ -1,14 +1,16 @@
-# Noema Phase 4 Review/Apply Execution Interoperability Semantics (Slice 4)
+# Noema Review/Apply Execution Interoperability Semantics
 
 ## Purpose and boundary
 
-This document defines the baseline interoperability semantics at the boundary between review decisions and apply/materialization outcomes for proposal operations in Noema.
+This document defines stable interoperability semantics at the boundary between review decisions and apply/materialization outcomes for proposal operations in Noema.
+
+This stable system-definition document originated from the accepted Phase 4 Slice 4 baseline.
 
 It extends:
 
-- `docs/noema-phase4-agent-interface-baseline.md` (Slice 1)
-- `docs/noema-phase4-agent-surface-contract.md` (Slice 2)
-- `docs/noema-phase4-agent-operation-state-semantics.md` (Slice 3)
+- `docs/noema-agent-interface-baseline.md` (Slice 1)
+- `docs/noema-agent-surface-contract.md` (Slice 2)
+- `docs/noema-agent-operation-state-semantics.md` (Slice 3)
 
 This slice is semantics-definition work only. It does not implement a workflow engine, auth/user management, deployment hardening, or direct canonical-write authority for agents.
 
@@ -22,10 +24,10 @@ This document aligns with:
 - `docs/noema-object-metadata-profile-v0.md`
 - `docs/noema-relationship-traceability-conventions.md`
 - `docs/noema-index-catalog-baseline.md`
-- `docs/noema-phase3-human-client-baseline.md`
-- `docs/noema-phase4-agent-interface-baseline.md`
-- `docs/noema-phase4-agent-surface-contract.md`
-- `docs/noema-phase4-agent-operation-state-semantics.md`
+- `docs/noema-human-client-baseline.md`
+- `docs/noema-agent-interface-baseline.md`
+- `docs/noema-agent-surface-contract.md`
+- `docs/noema-agent-operation-state-semantics.md`
 
 ## Scope in this slice
 

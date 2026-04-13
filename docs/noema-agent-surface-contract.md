@@ -1,8 +1,10 @@
-# Noema Phase 4 Agent Surface Contract (Slice 2)
+# Noema Agent Surface Contract
 
 ## Purpose and boundary
 
-This document defines the first concrete machine-facing surface contract for Noema's accepted Phase 4 Slice 1 agent-interface baseline.
+This document defines the stable machine-facing surface contract for Noema's agent-interface baseline.
+
+This stable system-definition document originated from the accepted Phase 4 Slice 2 baseline.
 
 It turns baseline semantics into explicit operation shapes for:
 
@@ -23,8 +25,8 @@ This contract extends and aligns with:
 - `docs/noema-object-metadata-profile-v0.md`
 - `docs/noema-relationship-traceability-conventions.md`
 - `docs/noema-index-catalog-baseline.md`
-- `docs/noema-phase3-human-client-baseline.md`
-- `docs/noema-phase4-agent-interface-baseline.md`
+- `docs/noema-human-client-baseline.md`
+- `docs/noema-agent-interface-baseline.md`
 
 ## Contract posture
 
