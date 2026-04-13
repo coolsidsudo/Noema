@@ -16,9 +16,9 @@ Treat these as the architecture and execution baseline.
 
 ## Phase alignment
 
-Current active slice: **Phase 4 — Slice 5 review/apply interoperability hardening semantics baseline**.
+Current active slice: **Phase 4 — Slice 6 apply/recovery policy-profile refinement interoperability baseline**.
 
-Contributions in this phase should prioritize multi-step apply sequencing semantics, richer machine-visible conflict semantics, bounded recovery semantics, and machine-visible resumed/retried/corrected/superseded outcome behavior aligned with accepted Slice 1/2/3/4 contracts, while preserving baseline architecture and accepted Phase 2/3/4 semantics.
+Contributions in this phase should prioritize apply/recovery policy-profile refinement semantics aligned with accepted Slice 1/2/3/4/5 contracts, while preserving baseline architecture and accepted Phase 2/3/4 semantics.
 
 ## Drift checks for pull requests
 

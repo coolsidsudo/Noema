@@ -8,9 +8,9 @@ The accepted architecture baseline is now actively adopted for implementation wo
 
 Accepted completed slices: **Phase 0 (architecture baseline), Phase 1 (repository skeleton), and the full Phase 2 definition package (core object conventions, metadata profile, relationship/traceability conventions, and index/catalog baseline)**.
 
-Current execution focus: **Phase 4 Slice 5 — review/apply interoperability hardening semantics baseline**.
+Current execution focus: **Phase 4 Slice 6 — apply/recovery policy-profile refinement interoperability baseline**.
 
-Next queued slice: **Phase 4 next bounded slice (policy-profile refinement for hardened apply/recovery interoperability)**.
+Next queued slice: **Phase 4 next bounded slice after Slice 6 closure (to be declared in-sequence)**.
 
 Phase 5 queue status: **Queued after remaining Phase 4 baseline closure**.
 
