@@ -55,8 +55,8 @@ Implementation should progress in development-plan order unless a documented dep
 - Completed and accepted: Phase 0 architecture baseline
 - Completed and accepted: Phase 1 repository skeleton
 - Completed and accepted: Phase 2 definition package (core object conventions, metadata profile, relationship/traceability conventions, and index/catalog baseline)
-- Latest completed/accepted slice: Phase 5 Slice 2 deterministic relationship and traceability cross-reference checks in the maintainer baseline
-- Current active slice: Phase 5 next bounded maintainer workflow implementation slice after Slice 2
+- Latest completed/accepted slice: Phase 5 Slice 3 deterministic proposal review queue enrichment from existing traceability metadata
+- Current active slice: Phase 5 next bounded maintainer workflow implementation slice after Slice 3
 - Next queued slice: Phase 5 follow-on bounded maintainer hardening/reporting slice (to be declared in-sequence)
 - Phase 5 queue status: in progress (Slice 1 and Slice 2 accepted; continuing in bounded sequence)
 

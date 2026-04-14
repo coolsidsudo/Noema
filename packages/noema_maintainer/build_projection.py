@@ -39,6 +39,105 @@ def _write_markdown(path: Path, title: str, lines: list[str]) -> None:
     path.write_text("\n".join(body), encoding="utf-8")
 
 
+def _as_id_list(value: object) -> list[str]:
+    if isinstance(value, list):
+        return [str(item).strip() for item in value if str(item).strip()]
+    if isinstance(value, str):
+        stripped = value.strip()
+        return [stripped] if stripped else []
+    return []
+
+
+def _render_reference_with_hint(
+    object_id: str,
+    path_hint_by_id: dict[str, str],
+) -> str:
+    path_hint = path_hint_by_id.get(object_id)
+    if path_hint:
+        return f"`{object_id}` (`{path_hint}`)"
+    return f"`{object_id}` (unresolved)"
+
+
+def _render_proposal_queue_lines(
+    proposal_records: list[ObjectRecord],
+    *,
+    repo_root: Path,
+    workspace_records: list[ObjectRecord],
+    issues: list[ValidationIssue],
+    workspace: str,
+) -> list[str]:
+    path_hint_by_id: dict[str, str] = {}
+    for record in sorted(
+        workspace_records,
+        key=lambda r: (
+            str(r.metadata.get("id", "")),
+            r.object_class,
+            str(r.path),
+        ),
+    ):
+        object_id = str(record.metadata.get("id", ""))
+        if object_id and object_id not in path_hint_by_id:
+            path_hint_by_id[object_id] = _render_repo_relative_path(record.path, repo_root)
+
+    unresolved_issue_codes_by_proposal: dict[str, set[str]] = {}
+    for issue in issues:
+        if issue.workspace != workspace:
+            continue
+        if "_reference_not_found" not in issue.code:
+            continue
+        if not issue.object_id:
+            continue
+        unresolved_issue_codes_by_proposal.setdefault(issue.object_id, set()).add(issue.code)
+
+    lines: list[str] = []
+    for proposal in proposal_records:
+        proposal_id = str(proposal.metadata.get("id", ""))
+        lines.append(_object_line(proposal, repo_root))
+
+        target_ids = _as_id_list(proposal.metadata.get("target_ids"))
+        if target_ids:
+            rendered_targets = ", ".join(
+                _render_reference_with_hint(target_id, path_hint_by_id) for target_id in target_ids
+            )
+            lines.append(f"  - Targets: {rendered_targets}")
+
+        support_ids: list[str] = []
+        for key in ("supporting_raw_ids", "support_raw_ids", "supports"):
+            support_ids.extend(_as_id_list(proposal.metadata.get(key)))
+        support_ids = sorted(set(support_ids))
+        if support_ids:
+            rendered_support = ", ".join(
+                _render_reference_with_hint(support_id, path_hint_by_id) for support_id in support_ids
+            )
+            lines.append(f"  - Supporting raw ids: {rendered_support}")
+
+        result_ids = _as_id_list(proposal.metadata.get("results_in"))
+        if result_ids:
+            rendered_results = ", ".join(
+                _render_reference_with_hint(result_id, path_hint_by_id) for result_id in result_ids
+            )
+            lines.append(f"  - Results in: {rendered_results}")
+
+        unresolved_codes = sorted(unresolved_issue_codes_by_proposal.get(proposal_id, set()))
+        if unresolved_codes:
+            preview_codes = unresolved_codes[:2]
+            remaining_count = len(unresolved_codes) - len(preview_codes)
+            if remaining_count > 0:
+                code_summary = f"{', '.join(preview_codes)} (+{remaining_count} more)"
+            else:
+                code_summary = ", ".join(preview_codes)
+            lines.append(f"  - ⚠ Validation warning: unresolved references ({code_summary})")
+
+        lines.append("")
+
+    if not lines:
+        return ["- _No proposals found._"]
+
+    while lines and lines[-1] == "":
+        lines.pop()
+    return lines
+
+
 def build_workspace_projection(
     repo_root: Path,
     workspace_root: Path,
@@ -74,7 +173,13 @@ def build_workspace_projection(
             str(r.metadata.get("id", "")),
         )
     )
-    proposal_lines = [_object_line(r, repo_root) for r in proposal_records] or ["- _No proposals found._"]
+    proposal_lines = _render_proposal_queue_lines(
+        proposal_records,
+        repo_root=repo_root,
+        workspace_records=workspace_records,
+        issues=issues,
+        workspace=workspace,
+    )
     proposal_queue = review_root / "proposal-queue.md"
     _write_markdown(proposal_queue, "Proposal review queue", proposal_lines)
     outputs.append(_render_output_path(proposal_queue, repo_root, workspace_root))
