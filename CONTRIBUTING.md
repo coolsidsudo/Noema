@@ -16,11 +16,19 @@ Treat these as the architecture and execution baseline.
 
 ## Phase alignment
 
-Latest completed/accepted slice: **Phase 4 — interoperability consistency verification and profile-compatibility conformance guidance across implementations**.
+Latest completed/accepted slice: **Phase 5 Slice 2 — deterministic relationship and traceability cross-reference checks in the maintainer baseline**.
 
-Current active slice: **Phase 5 — first bounded maintainer workflow implementation slice (to be declared in-sequence)**.
+Current active slice: **Phase 5 — next bounded maintainer workflow implementation slice after Slice 2**.
 
 Contributions in the current slice should prioritize bounded Phase 5 maintainer workflow baseline progress while preserving baseline architecture and accepted Phase 2/3/4 semantics.
+
+## Local verification command baseline
+
+Run repository tests from repo root with:
+
+- `pytest -q`
+
+The repository test configuration ensures local package imports resolve under standard `pytest` invocation (no extra `PYTHONPATH` prefix required).
 
 ## Drift checks for pull requests
 
