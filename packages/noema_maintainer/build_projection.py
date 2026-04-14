@@ -212,6 +212,62 @@ def _render_recent_changes_lines(
     return lines
 
 
+def _render_workspace_home_lines(
+    *,
+    workspace: str,
+    class_counts: dict[str, int],
+    workspace_issues: list[ValidationIssue],
+) -> list[str]:
+    lines: list[str] = [
+        "Welcome to the deterministic workspace projection landing page.",
+        "",
+        "## Workspace summary",
+        f"- Workspace: `{workspace}`",
+        f"- Total records: `{sum(class_counts.values())}`",
+        "",
+        "### Class counts",
+    ]
+    for object_class in OBJECT_CLASSES:
+        lines.append(f"- `{object_class}`: `{class_counts[object_class]}`")
+
+    lines.extend(
+        [
+            "",
+            "## Navigation",
+            "- Browse all classes: `../browse/README.md`",
+        ]
+    )
+    for object_class in OBJECT_CLASSES:
+        lines.append(f"- Browse `{object_class}`: `../browse/by-class-{object_class}.md`")
+    lines.extend(
+        [
+            "- Proposal review queue: `../review/proposal-queue.md`",
+            "- Recent changes: `../logs/recent-changes.md`",
+            "- Build report: `../build-report.json`",
+            "",
+            "## Validation summary",
+        ]
+    )
+
+    if not workspace_issues:
+        lines.append("- ✅ No validation issues detected for this workspace.")
+        return lines
+
+    lines.append(f"- Validation issue count: `{len(workspace_issues)}`")
+    code_counts: dict[str, int] = {}
+    for issue in workspace_issues:
+        code_counts[issue.code] = code_counts.get(issue.code, 0) + 1
+    lines.append("- Top issue codes:")
+    for code, count in sorted(code_counts.items(), key=lambda item: (-item[1], item[0]))[:5]:
+        lines.append(f"  - `{code}`: `{count}`")
+
+    remaining = len(code_counts) - 5
+    if remaining > 0:
+        lines.append(f"  - _{remaining} more issue code(s) not shown._")
+    lines.append("- See `../build-report.json` for full issue details.")
+    return lines
+
+
 def build_workspace_projection(
     repo_root: Path,
     workspace_root: Path,
@@ -228,6 +284,17 @@ def build_workspace_projection(
     logs_root = projection_root / "logs"
 
     outputs: list[str] = []
+    class_counts = {cls: len([r for r in workspace_records if r.object_class == cls]) for cls in OBJECT_CLASSES}
+    workspace_issues = [i for i in issues if i.workspace == workspace]
+
+    home_lines = _render_workspace_home_lines(
+        workspace=workspace,
+        class_counts=class_counts,
+        workspace_issues=workspace_issues,
+    )
+    home_page = projection_root / "home" / "README.md"
+    _write_markdown(home_page, "Workspace Home", home_lines)
+    outputs.append(_render_output_path(home_page, repo_root, workspace_root))
 
     for object_class in OBJECT_CLASSES:
         page_records = [r for r in workspace_records if r.object_class == object_class]
@@ -237,6 +304,14 @@ def build_workspace_projection(
         output_path = browse_root / f"by-class-{object_class}.md"
         _write_markdown(output_path, f"Browse by class: {object_class}", lines)
         outputs.append(_render_output_path(output_path, repo_root, workspace_root))
+
+    browse_index_lines = ["Browse workspace records by object class:"]
+    browse_index_lines.extend(
+        [f"- `{object_class}` ({class_counts[object_class]}): `./by-class-{object_class}.md`" for object_class in OBJECT_CLASSES]
+    )
+    browse_readme = browse_root / "README.md"
+    _write_markdown(browse_readme, "Browse by class", browse_index_lines)
+    outputs.append(_render_output_path(browse_readme, repo_root, workspace_root))
 
     proposal_records = [r for r in workspace_records if r.object_class == "proposals"]
     status_priority = {"under_review": 0, "draft": 1, "accepted": 2, "rejected": 3, "withdrawn": 4}
@@ -277,11 +352,10 @@ def build_workspace_projection(
     _write_markdown(recent_changes, "Recent changes", log_lines)
     outputs.append(_render_output_path(recent_changes, repo_root, workspace_root))
 
-    workspace_issues = [i for i in issues if i.workspace == workspace]
     report = {
         "workspace": workspace,
         "record_count": len(workspace_records),
-        "class_counts": {cls: len([r for r in workspace_records if r.object_class == cls]) for cls in OBJECT_CLASSES},
+        "class_counts": class_counts,
         "validation": {
             "error_count": len(workspace_issues),
             "errors": [
