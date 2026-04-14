@@ -153,6 +153,13 @@ def test_scan_and_validation_and_build_deterministic(tmp_path: Path) -> None:
     assert report["validation"]["error_count"] >= 1
 
     by_class_raw = (ws_root / "ws-alpha" / "projection" / "browse" / "by-class-raw.md").read_text(encoding="utf-8")
+    by_class_structured = (
+        ws_root / "ws-alpha" / "projection" / "browse" / "by-class-structured.md"
+    ).read_text(encoding="utf-8")
+    by_class_proposals = (
+        ws_root / "ws-alpha" / "projection" / "browse" / "by-class-proposals.md"
+    ).read_text(encoding="utf-8")
+    by_class_logs = (ws_root / "ws-alpha" / "projection" / "browse" / "by-class-logs.md").read_text(encoding="utf-8")
     browse_readme = (ws_root / "ws-alpha" / "projection" / "browse" / "README.md").read_text(encoding="utf-8")
     home_readme = (ws_root / "ws-alpha" / "projection" / "home" / "README.md").read_text(encoding="utf-8")
     proposal_queue = (ws_root / "ws-alpha" / "projection" / "review" / "proposal-queue.md").read_text(encoding="utf-8")
@@ -164,6 +171,21 @@ def test_scan_and_validation_and_build_deterministic(tmp_path: Path) -> None:
     assert tmp_path_str not in by_class_raw
     assert tmp_path_str not in report_text
     assert "`raw/sources/raw-a.md`" in by_class_raw
+    assert "Timestamp cue (created_at): `2026-04-01T00:00:00Z`" in by_class_raw
+    assert "- `struct-a`: Structured A (active) — `structured/pages/struct-a.md`" in by_class_structured
+    assert "Timestamp cue (created_at): `2026-04-02T00:00:00Z`" in by_class_structured
+    assert "- `proposal-a` (under_review) — `proposals/queue/proposal-a.md`" in by_class_proposals
+    assert "Targets: `struct-a` (`structured/pages/struct-a.md`)" in by_class_proposals
+    assert "Results in: `struct-a` (`structured/pages/struct-a.md`)" in by_class_proposals
+    assert "Validation warning: proposal_missing_targets" in by_class_proposals
+    assert (
+        "Validation warning: proposal_results_in_reference_not_found, "
+        "proposal_target_reference_not_found"
+    ) in by_class_proposals
+    assert "- `log-a` (recorded) — `logs/events/log-a.md`" in by_class_logs
+    assert "Summary: Rebuilt projection after metadata refresh." in by_class_logs
+    assert "Records event for: `missing-proposal` (unresolved)" in by_class_logs
+    assert "Validation warning: log_records_event_for_reference_not_found" in by_class_logs
     assert "workspace-root/ws-alpha/projection/browse/by-class-raw.md" in report["outputs"]
     assert "workspace-root/ws-alpha/projection/home/README.md" in report["outputs"]
     assert "workspace-root/ws-alpha/projection/browse/README.md" in report["outputs"]
@@ -493,6 +515,9 @@ def test_relationship_cross_reference_checks_workspace_local(tmp_path: Path) -> 
     run(["--repo-root", str(repo), "--workspaces-root", "workspace-root", "--workspace", "ws-two"])
     report_path = ws_root / "ws-two" / "projection" / "build-report.json"
     report = json.loads(report_path.read_text(encoding="utf-8"))
+    browse_structured = (ws_root / "ws-two" / "projection" / "browse" / "by-class-structured.md").read_text(
+        encoding="utf-8"
+    )
 
     error_codes = {error["code"] for error in report["validation"]["errors"]}
     assert "proposal_target_reference_not_found" in error_codes
@@ -500,6 +525,10 @@ def test_relationship_cross_reference_checks_workspace_local(tmp_path: Path) -> 
     assert "log_records_event_for_reference_not_found" in error_codes
     assert "structured_supports_reference_not_found_raw" in error_codes
     assert "supersedes_reference_not_found" in error_codes
+    assert "Supports: `missing-raw` (unresolved)" in browse_structured
+    assert "Supersedes: `missing-prior-object` (unresolved)" in browse_structured
+    assert "Validation warning: structured_supports_reference_not_found_raw" in browse_structured
+    assert "Validation warning: supersedes_reference_not_found" in browse_structured
 
 
 def test_workspace_home_validation_summary_is_bounded(tmp_path: Path) -> None:
