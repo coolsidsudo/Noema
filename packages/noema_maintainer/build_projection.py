@@ -74,6 +74,114 @@ def _build_path_hint_by_id(workspace_records: list[ObjectRecord], repo_root: Pat
     return path_hint_by_id
 
 
+def _issue_codes_for_record(
+    *,
+    record: ObjectRecord,
+    repo_root: Path,
+    workspace_issues: list[ValidationIssue],
+) -> list[str]:
+    object_id = str(record.metadata.get("id", ""))
+    rel_path = _render_repo_relative_path(record.path, repo_root)
+    codes: set[str] = set()
+    for issue in workspace_issues:
+        if issue.object_id and object_id and issue.object_id == object_id:
+            codes.add(issue.code)
+            continue
+        issue_rel_path = _render_repo_relative_path(Path(issue.object_path), repo_root)
+        if issue_rel_path == rel_path:
+            codes.add(issue.code)
+    return sorted(codes)
+
+
+def _render_enriched_browse_lines(
+    *,
+    object_class: str,
+    page_records: list[ObjectRecord],
+    repo_root: Path,
+    workspace_records: list[ObjectRecord],
+    workspace_issues: list[ValidationIssue],
+) -> list[str]:
+    if not page_records:
+        return ["- _No records found._"]
+
+    path_hint_by_id = _build_path_hint_by_id(workspace_records, repo_root)
+    lines: list[str] = []
+    for record in page_records:
+        lines.append(_object_line(record, repo_root))
+
+        recency_source = "updated_at" if record.metadata.get("updated_at") else "created_at"
+        recency_value = str(record.metadata.get(recency_source, "")).strip()
+        if recency_value:
+            lines.append(f"  - Timestamp cue ({recency_source}): `{recency_value}`")
+
+        summary = str(record.metadata.get("summary", "")).strip()
+        if summary:
+            lines.append(f"  - Summary: {summary}")
+
+        tags = _as_id_list(record.metadata.get("tags"))
+        if tags:
+            rendered_tags = ", ".join(f"`{tag}`" for tag in sorted(set(tags)))
+            lines.append(f"  - Tags: {rendered_tags}")
+
+        if object_class == "structured":
+            support_ids = _as_id_list(record.metadata.get("supports"))
+            if support_ids:
+                rendered_support = ", ".join(
+                    _render_reference_with_hint(support_id, path_hint_by_id) for support_id in support_ids
+                )
+                lines.append(f"  - Supports: {rendered_support}")
+
+        if object_class == "proposals":
+            target_ids = _as_id_list(record.metadata.get("target_ids"))
+            if target_ids:
+                rendered_targets = ", ".join(
+                    _render_reference_with_hint(target_id, path_hint_by_id) for target_id in target_ids
+                )
+                lines.append(f"  - Targets: {rendered_targets}")
+
+            result_ids = _as_id_list(record.metadata.get("results_in"))
+            if result_ids:
+                rendered_results = ", ".join(
+                    _render_reference_with_hint(result_id, path_hint_by_id) for result_id in result_ids
+                )
+                lines.append(f"  - Results in: {rendered_results}")
+
+        if object_class == "logs":
+            event_for_ids = _as_id_list(record.metadata.get("records_event_for"))
+            if event_for_ids:
+                rendered_event_for = ", ".join(
+                    _render_reference_with_hint(event_for_id, path_hint_by_id) for event_for_id in event_for_ids
+                )
+                lines.append(f"  - Records event for: {rendered_event_for}")
+
+        supersedes_ids = _as_id_list(record.metadata.get("supersedes"))
+        if supersedes_ids:
+            rendered_supersedes = ", ".join(
+                _render_reference_with_hint(superseded_id, path_hint_by_id) for superseded_id in supersedes_ids
+            )
+            lines.append(f"  - Supersedes: {rendered_supersedes}")
+
+        issue_codes = _issue_codes_for_record(
+            record=record,
+            repo_root=repo_root,
+            workspace_issues=workspace_issues,
+        )
+        if issue_codes:
+            preview_codes = issue_codes[:3]
+            remaining_count = len(issue_codes) - len(preview_codes)
+            if remaining_count > 0:
+                code_summary = f"{', '.join(preview_codes)} (+{remaining_count} more)"
+            else:
+                code_summary = ", ".join(preview_codes)
+            lines.append(f"  - ⚠ Validation warning: {code_summary}")
+
+        lines.append("")
+
+    while lines and lines[-1] == "":
+        lines.pop()
+    return lines
+
+
 def _render_proposal_queue_lines(
     proposal_records: list[ObjectRecord],
     *,
@@ -298,9 +406,13 @@ def build_workspace_projection(
 
     for object_class in OBJECT_CLASSES:
         page_records = [r for r in workspace_records if r.object_class == object_class]
-        lines = [_object_line(r, repo_root) for r in page_records]
-        if not lines:
-            lines = ["- _No records found._"]
+        lines = _render_enriched_browse_lines(
+            object_class=object_class,
+            page_records=page_records,
+            repo_root=repo_root,
+            workspace_records=workspace_records,
+            workspace_issues=workspace_issues,
+        )
         output_path = browse_root / f"by-class-{object_class}.md"
         _write_markdown(output_path, f"Browse by class: {object_class}", lines)
         outputs.append(_render_output_path(output_path, repo_root, workspace_root))
