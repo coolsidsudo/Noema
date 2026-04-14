@@ -56,6 +56,10 @@ def test_scan_and_validation_and_build_deterministic(tmp_path: Path) -> None:
                 "status: under_review",
                 "target_ids:",
                 "  - struct-a",
+                "supporting_raw_ids:",
+                "  - raw-a",
+                "results_in:",
+                "  - struct-a",
             ]
         ),
     )
@@ -87,6 +91,23 @@ def test_scan_and_validation_and_build_deterministic(tmp_path: Path) -> None:
             ]
         ),
     )
+    _write_object(
+        repo / "proposals" / "queue" / "proposal-missing-ref.md",
+        "\n".join(
+            [
+                "id: proposal-missing-ref",
+                "class: proposals",
+                "created_at: 2026-04-06T00:00:00Z",
+                "created_by: tester",
+                "workspace: ws-alpha",
+                "status: accepted",
+                "target_ids:",
+                "  - missing-struct",
+                "results_in:",
+                "  - missing-result",
+            ]
+        ),
+    )
 
     ws_root = repo / "workspace-root"
     (ws_root / "ws-alpha").mkdir(parents=True)
@@ -97,6 +118,7 @@ def test_scan_and_validation_and_build_deterministic(tmp_path: Path) -> None:
     assert any(i.code == "proposal_missing_targets" for i in issues)
 
     first = run(["--repo-root", str(repo), "--workspaces-root", "workspace-root", "--workspace", "ws-alpha"])
+    first_queue = (ws_root / "ws-alpha" / "projection" / "review" / "proposal-queue.md").read_text(encoding="utf-8")
     second = run(["--repo-root", str(repo), "--workspaces-root", "workspace-root", "--workspace", "ws-alpha"])
     assert first == 0
     assert second == 0
@@ -108,6 +130,7 @@ def test_scan_and_validation_and_build_deterministic(tmp_path: Path) -> None:
     assert report["validation"]["error_count"] >= 1
 
     by_class_raw = (ws_root / "ws-alpha" / "projection" / "browse" / "by-class-raw.md").read_text(encoding="utf-8")
+    proposal_queue = (ws_root / "ws-alpha" / "projection" / "review" / "proposal-queue.md").read_text(encoding="utf-8")
     assert "raw-a" in by_class_raw
     tmp_path_str = str(tmp_path)
     report_text = report_path.read_text(encoding="utf-8")
@@ -118,6 +141,15 @@ def test_scan_and_validation_and_build_deterministic(tmp_path: Path) -> None:
     assert "workspace-root/ws-alpha/projection/browse/by-class-raw.md" in report["outputs"]
     assert all(not output.startswith(tmp_path_str) for output in report["outputs"])
     assert all(not error["object_path"].startswith(tmp_path_str) for error in report["validation"]["errors"])
+    assert "Targets: `struct-a` (`structured/pages/struct-a.md`)" in proposal_queue
+    assert "Supporting raw ids: `raw-a` (`raw/sources/raw-a.md`)" in proposal_queue
+    assert "Results in: `struct-a` (`structured/pages/struct-a.md`)" in proposal_queue
+    assert (
+        "Validation warning: unresolved references (proposal_results_in_reference_not_found, "
+        "proposal_target_reference_not_found)"
+    ) in proposal_queue
+    assert "\n\n- `proposal-bad`" in proposal_queue
+    assert proposal_queue == first_queue
 
 
 def test_cli_all_workspaces(tmp_path: Path) -> None:
