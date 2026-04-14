@@ -142,6 +142,7 @@ def test_scan_and_validation_and_build_deterministic(tmp_path: Path) -> None:
     first = run(["--repo-root", str(repo), "--workspaces-root", "workspace-root", "--workspace", "ws-alpha"])
     first_queue = (ws_root / "ws-alpha" / "projection" / "review" / "proposal-queue.md").read_text(encoding="utf-8")
     first_home = (ws_root / "ws-alpha" / "projection" / "home" / "README.md").read_text(encoding="utf-8")
+    first_report = (ws_root / "ws-alpha" / "projection" / "build-report.json").read_text(encoding="utf-8")
     second = run(["--repo-root", str(repo), "--workspaces-root", "workspace-root", "--workspace", "ws-alpha"])
     assert first == 0
     assert second == 0
@@ -151,6 +152,28 @@ def test_scan_and_validation_and_build_deterministic(tmp_path: Path) -> None:
     assert report["workspace"] == "ws-alpha"
     assert report["class_counts"]["raw"] == 1
     assert report["validation"]["error_count"] >= 1
+    assert report["validation"]["issue_count_by_class"]["proposals"] == 3
+    assert report["validation"]["issue_count_by_class"]["logs"] == 1
+    assert report["validation"]["issue_count_by_code"]["proposal_missing_targets"] == 1
+    assert report["validation"]["issue_count_by_code"]["proposal_target_reference_not_found"] == 1
+    assert report["validation"]["issue_count_by_code"]["proposal_results_in_reference_not_found"] == 1
+    assert report["validation"]["issue_count_by_code"]["log_records_event_for_reference_not_found"] == 1
+    assert report["validation"]["affected_object_ids_by_code"]["proposal_missing_targets"]["sample_object_ids"] == [
+        "proposal-bad"
+    ]
+    assert report["validation"]["affected_object_ids_by_code"]["proposal_target_reference_not_found"][
+        "sample_object_ids"
+    ] == ["proposal-missing-ref"]
+    assert report["validation"]["unresolved_reference_summary"]["proposal_targets"]["issue_count"] == 1
+    assert report["validation"]["unresolved_reference_summary"]["proposal_targets"]["sample_referenced_ids"] == [
+        "missing-struct"
+    ]
+    assert report["validation"]["unresolved_reference_summary"]["proposal_results_in"]["sample_referenced_ids"] == [
+        "missing-result"
+    ]
+    assert report["validation"]["unresolved_reference_summary"]["log_records_event_for"]["sample_referenced_ids"] == [
+        "missing-proposal"
+    ]
 
     by_class_raw = (ws_root / "ws-alpha" / "projection" / "browse" / "by-class-raw.md").read_text(encoding="utf-8")
     by_class_structured = (
@@ -231,6 +254,7 @@ def test_scan_and_validation_and_build_deterministic(tmp_path: Path) -> None:
     assert recent_changes.index("`log-bad`") < recent_changes.index("`log-a`")
     assert proposal_queue == first_queue
     assert home_readme == first_home
+    assert report_path.read_text(encoding="utf-8") == first_report
 
 
 def test_cli_all_workspaces(tmp_path: Path) -> None:
@@ -529,6 +553,15 @@ def test_relationship_cross_reference_checks_workspace_local(tmp_path: Path) -> 
     assert "Supersedes: `missing-prior-object` (unresolved)" in browse_structured
     assert "Validation warning: structured_supports_reference_not_found_raw" in browse_structured
     assert "Validation warning: supersedes_reference_not_found" in browse_structured
+    assert report["validation"]["issue_count_by_class"]["proposals"] == 3
+    assert report["validation"]["issue_count_by_class"]["structured"] == 2
+    assert report["validation"]["issue_count_by_class"]["logs"] == 1
+    assert report["validation"]["issue_count_by_code"]["proposal_target_reference_not_found"] == 2
+    assert report["validation"]["unresolved_reference_summary"]["proposal_targets"]["issue_count"] == 2
+    assert report["validation"]["unresolved_reference_summary"]["proposal_results_in"]["issue_count"] == 1
+    assert report["validation"]["unresolved_reference_summary"]["log_records_event_for"]["issue_count"] == 1
+    assert report["validation"]["unresolved_reference_summary"]["structured_supports_raw"]["issue_count"] == 1
+    assert report["validation"]["unresolved_reference_summary"]["supersedes"]["issue_count"] == 1
 
 
 def test_workspace_home_validation_summary_is_bounded(tmp_path: Path) -> None:

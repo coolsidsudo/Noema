@@ -7,6 +7,14 @@ from typing import Any
 from .checks import ValidationIssue
 from .scan import OBJECT_CLASSES, ObjectRecord
 
+RELATIONSHIP_CATEGORY_BY_CODE = {
+    "proposal_target_reference_not_found": "proposal_targets",
+    "proposal_results_in_reference_not_found": "proposal_results_in",
+    "log_records_event_for_reference_not_found": "log_records_event_for",
+    "structured_supports_reference_not_found_raw": "structured_supports_raw",
+    "supersedes_reference_not_found": "supersedes",
+}
+
 
 def _render_repo_relative_path(path: Path, repo_root: Path) -> str:
     try:
@@ -376,6 +384,105 @@ def _render_workspace_home_lines(
     return lines
 
 
+def _issue_object_class(
+    issue: ValidationIssue,
+    *,
+    object_class_by_id: dict[str, str],
+    repo_root: Path,
+) -> str:
+    if issue.object_id and issue.object_id in object_class_by_id:
+        return object_class_by_id[issue.object_id]
+
+    rel_path = _render_repo_relative_path(Path(issue.object_path), repo_root)
+    path_parts = Path(rel_path).parts
+    if path_parts and path_parts[0] in OBJECT_CLASSES:
+        return str(path_parts[0])
+    return "unknown"
+
+
+def _extract_first_quoted_value(message: str) -> str:
+    quote = "'"
+    if quote not in message:
+        return ""
+    parts = message.split(quote)
+    if len(parts) < 3:
+        return ""
+    return parts[1].strip()
+
+
+def _build_validation_summary(
+    *,
+    workspace_issues: list[ValidationIssue],
+    workspace_records: list[ObjectRecord],
+    repo_root: Path,
+) -> dict[str, Any]:
+    object_class_by_id: dict[str, str] = {}
+    for record in workspace_records:
+        object_id = str(record.metadata.get("id", "")).strip()
+        if object_id and object_id not in object_class_by_id:
+            object_class_by_id[object_id] = record.object_class
+
+    issue_count_by_class = {object_class: 0 for object_class in OBJECT_CLASSES}
+    issue_count_by_code: dict[str, int] = {}
+    object_ids_by_code: dict[str, set[str]] = {}
+    unresolved_by_relationship: dict[str, dict[str, set[str]]] = {
+        relationship: {"referenced_ids": set(), "issue_object_ids": set()}
+        for relationship in sorted(set(RELATIONSHIP_CATEGORY_BY_CODE.values()))
+    }
+
+    for issue in workspace_issues:
+        object_class = _issue_object_class(issue, object_class_by_id=object_class_by_id, repo_root=repo_root)
+        if object_class in issue_count_by_class:
+            issue_count_by_class[object_class] += 1
+
+        issue_count_by_code[issue.code] = issue_count_by_code.get(issue.code, 0) + 1
+
+        if issue.object_id:
+            object_ids_by_code.setdefault(issue.code, set()).add(issue.object_id)
+
+        relationship = RELATIONSHIP_CATEGORY_BY_CODE.get(issue.code)
+        if relationship:
+            unresolved_by_relationship[relationship]["issue_object_ids"].add(issue.object_id)
+            referenced_id = _extract_first_quoted_value(issue.message)
+            if referenced_id:
+                unresolved_by_relationship[relationship]["referenced_ids"].add(referenced_id)
+
+    bounded_object_ids_by_code: dict[str, dict[str, Any]] = {}
+    for code in sorted(issue_count_by_code):
+        object_ids = sorted(object_id for object_id in object_ids_by_code.get(code, set()) if object_id)
+        max_preview = 10
+        bounded_object_ids_by_code[code] = {
+            "count": len(object_ids),
+            "sample_object_ids": object_ids[:max_preview],
+            "truncated": len(object_ids) > max_preview,
+        }
+
+    unresolved_summary: dict[str, Any] = {}
+    for relationship in sorted(unresolved_by_relationship):
+        relationship_data = unresolved_by_relationship[relationship]
+        referenced_ids = sorted(i for i in relationship_data["referenced_ids"] if i)
+        issue_object_ids = sorted(i for i in relationship_data["issue_object_ids"] if i)
+        relationship_issue_count = sum(
+            count
+            for code, count in issue_count_by_code.items()
+            if RELATIONSHIP_CATEGORY_BY_CODE.get(code) == relationship
+        )
+        unresolved_summary[relationship] = {
+            "issue_count": relationship_issue_count,
+            "sample_referenced_ids": referenced_ids[:10],
+            "sample_issue_object_ids": issue_object_ids[:10],
+            "referenced_ids_truncated": len(referenced_ids) > 10,
+            "issue_object_ids_truncated": len(issue_object_ids) > 10,
+        }
+
+    return {
+        "issue_count_by_class": issue_count_by_class,
+        "issue_count_by_code": {code: issue_count_by_code[code] for code in sorted(issue_count_by_code)},
+        "affected_object_ids_by_code": bounded_object_ids_by_code,
+        "unresolved_reference_summary": unresolved_summary,
+    }
+
+
 def build_workspace_projection(
     repo_root: Path,
     workspace_root: Path,
@@ -470,6 +577,11 @@ def build_workspace_projection(
         "class_counts": class_counts,
         "validation": {
             "error_count": len(workspace_issues),
+            **_build_validation_summary(
+                workspace_issues=workspace_issues,
+                workspace_records=workspace_records,
+                repo_root=repo_root,
+            ),
             "errors": [
                 {
                     "code": i.code,
