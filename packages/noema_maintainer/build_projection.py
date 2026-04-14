@@ -8,9 +8,23 @@ from .checks import ValidationIssue
 from .scan import OBJECT_CLASSES, ObjectRecord
 
 
-def _object_line(record: ObjectRecord) -> str:
+def _render_repo_relative_path(path: Path, repo_root: Path) -> str:
+    try:
+        return str(path.relative_to(repo_root))
+    except ValueError:
+        return str(path)
+
+
+def _render_output_path(path: Path, repo_root: Path, workspace_root: Path) -> str:
+    try:
+        return str(path.relative_to(repo_root))
+    except ValueError:
+        return str(path.relative_to(workspace_root))
+
+
+def _object_line(record: ObjectRecord, repo_root: Path) -> str:
     title = str(record.metadata.get("title", ""))
-    rel_path = str(record.path)
+    rel_path = _render_repo_relative_path(record.path, repo_root)
     base = f"- `{record.metadata.get('id', '')}`"
     if title:
         base += f": {title}"
@@ -44,12 +58,12 @@ def build_workspace_projection(
 
     for object_class in OBJECT_CLASSES:
         page_records = [r for r in workspace_records if r.object_class == object_class]
-        lines = [_object_line(r) for r in page_records]
+        lines = [_object_line(r, repo_root) for r in page_records]
         if not lines:
             lines = ["- _No records found._"]
         output_path = browse_root / f"by-class-{object_class}.md"
         _write_markdown(output_path, f"Browse by class: {object_class}", lines)
-        outputs.append(str(output_path))
+        outputs.append(_render_output_path(output_path, repo_root, workspace_root))
 
     proposal_records = [r for r in workspace_records if r.object_class == "proposals"]
     status_priority = {"under_review": 0, "draft": 1, "accepted": 2, "rejected": 3, "withdrawn": 4}
@@ -60,10 +74,10 @@ def build_workspace_projection(
             str(r.metadata.get("id", "")),
         )
     )
-    proposal_lines = [_object_line(r) for r in proposal_records] or ["- _No proposals found._"]
+    proposal_lines = [_object_line(r, repo_root) for r in proposal_records] or ["- _No proposals found._"]
     proposal_queue = review_root / "proposal-queue.md"
     _write_markdown(proposal_queue, "Proposal review queue", proposal_lines)
-    outputs.append(str(proposal_queue))
+    outputs.append(_render_output_path(proposal_queue, repo_root, workspace_root))
 
     log_records = [r for r in workspace_records if r.object_class == "logs"]
     log_records.sort(
@@ -73,10 +87,10 @@ def build_workspace_projection(
         ),
         reverse=True,
     )
-    log_lines = [_object_line(r) for r in log_records] or ["- _No recent log changes found._"]
+    log_lines = [_object_line(r, repo_root) for r in log_records] or ["- _No recent log changes found._"]
     recent_changes = logs_root / "recent-changes.md"
     _write_markdown(recent_changes, "Recent changes", log_lines)
-    outputs.append(str(recent_changes))
+    outputs.append(_render_output_path(recent_changes, repo_root, workspace_root))
 
     workspace_issues = [i for i in issues if i.workspace == workspace]
     report = {
@@ -89,7 +103,7 @@ def build_workspace_projection(
                 {
                     "code": i.code,
                     "message": i.message,
-                    "object_path": i.object_path,
+                    "object_path": _render_repo_relative_path(Path(i.object_path), repo_root),
                     "object_id": i.object_id,
                 }
                 for i in workspace_issues
