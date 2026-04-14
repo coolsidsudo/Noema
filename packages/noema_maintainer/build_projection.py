@@ -58,14 +58,7 @@ def _render_reference_with_hint(
     return f"`{object_id}` (unresolved)"
 
 
-def _render_proposal_queue_lines(
-    proposal_records: list[ObjectRecord],
-    *,
-    repo_root: Path,
-    workspace_records: list[ObjectRecord],
-    issues: list[ValidationIssue],
-    workspace: str,
-) -> list[str]:
+def _build_path_hint_by_id(workspace_records: list[ObjectRecord], repo_root: Path) -> dict[str, str]:
     path_hint_by_id: dict[str, str] = {}
     for record in sorted(
         workspace_records,
@@ -78,6 +71,18 @@ def _render_proposal_queue_lines(
         object_id = str(record.metadata.get("id", ""))
         if object_id and object_id not in path_hint_by_id:
             path_hint_by_id[object_id] = _render_repo_relative_path(record.path, repo_root)
+    return path_hint_by_id
+
+
+def _render_proposal_queue_lines(
+    proposal_records: list[ObjectRecord],
+    *,
+    repo_root: Path,
+    workspace_records: list[ObjectRecord],
+    issues: list[ValidationIssue],
+    workspace: str,
+) -> list[str]:
+    path_hint_by_id = _build_path_hint_by_id(workspace_records, repo_root)
 
     unresolved_issue_codes_by_proposal: dict[str, set[str]] = {}
     for issue in issues:
@@ -138,6 +143,75 @@ def _render_proposal_queue_lines(
     return lines
 
 
+def _render_recent_changes_lines(
+    log_records: list[ObjectRecord],
+    *,
+    repo_root: Path,
+    workspace_records: list[ObjectRecord],
+    issues: list[ValidationIssue],
+    workspace: str,
+) -> list[str]:
+    if not log_records:
+        return ["- _No recent log changes found._"]
+
+    path_hint_by_id = _build_path_hint_by_id(workspace_records, repo_root)
+
+    unresolved_issue_codes_by_log: dict[str, set[str]] = {}
+    for issue in issues:
+        if issue.workspace != workspace:
+            continue
+        if issue.code != "log_records_event_for_reference_not_found":
+            continue
+        if not issue.object_id:
+            continue
+        unresolved_issue_codes_by_log.setdefault(issue.object_id, set()).add(issue.code)
+
+    lines: list[str] = []
+    for log_record in log_records:
+        log_id = str(log_record.metadata.get("id", ""))
+        lines.append(_object_line(log_record, repo_root))
+
+        event_type = str(log_record.metadata.get("event_type", "")).strip()
+        if event_type:
+            lines.append(f"  - Event type: `{event_type}`")
+
+        recency_source = "updated_at" if log_record.metadata.get("updated_at") else "created_at"
+        recency_value = str(log_record.metadata.get(recency_source, "")).strip()
+        if recency_value:
+            lines.append(f"  - Recent timestamp cue ({recency_source}): `{recency_value}`")
+
+        event_for_ids = _as_id_list(log_record.metadata.get("records_event_for"))
+        if event_for_ids:
+            rendered_event_for = ", ".join(
+                _render_reference_with_hint(event_for_id, path_hint_by_id) for event_for_id in event_for_ids
+            )
+            lines.append(f"  - Records event for: {rendered_event_for}")
+
+        summary = str(log_record.metadata.get("summary", "")).strip()
+        if summary:
+            lines.append(f"  - Summary: {summary}")
+
+        unresolved_codes = sorted(unresolved_issue_codes_by_log.get(log_id, set()))
+        if unresolved_codes:
+            unresolved_event_for_ids = sorted(event_for_id for event_for_id in event_for_ids if event_for_id not in path_hint_by_id)
+            if unresolved_event_for_ids:
+                unresolved_preview = ", ".join(f"`{event_for_id}`" for event_for_id in unresolved_event_for_ids[:3])
+                remaining_count = len(unresolved_event_for_ids) - 3
+                if remaining_count > 0:
+                    unresolved_preview = f"{unresolved_preview} (+{remaining_count} more)"
+                lines.append(
+                    f"  - ⚠ Validation warning: unresolved records_event_for references: {unresolved_preview}"
+                )
+            else:
+                lines.append("  - ⚠ Validation warning: unresolved records_event_for references detected")
+
+        lines.append("")
+
+    while lines and lines[-1] == "":
+        lines.pop()
+    return lines
+
+
 def build_workspace_projection(
     repo_root: Path,
     workspace_root: Path,
@@ -192,7 +266,13 @@ def build_workspace_projection(
         ),
         reverse=True,
     )
-    log_lines = [_object_line(r, repo_root) for r in log_records] or ["- _No recent log changes found._"]
+    log_lines = _render_recent_changes_lines(
+        log_records,
+        repo_root=repo_root,
+        workspace_records=workspace_records,
+        issues=issues,
+        workspace=workspace,
+    )
     recent_changes = logs_root / "recent-changes.md"
     _write_markdown(recent_changes, "Recent changes", log_lines)
     outputs.append(_render_output_path(recent_changes, repo_root, workspace_root))
