@@ -74,6 +74,27 @@ def test_scan_and_validation_and_build_deterministic(tmp_path: Path) -> None:
                 "workspace: ws-alpha",
                 "status: recorded",
                 "event_type: rebuild",
+                "summary: Rebuilt projection after metadata refresh.",
+                "records_event_for:",
+                "  - proposal-a",
+                "  - struct-a",
+                "updated_at: 2026-04-04T01:00:00Z",
+            ]
+        ),
+    )
+    _write_object(
+        repo / "logs" / "events" / "log-bad.md",
+        "\n".join(
+            [
+                "id: log-bad",
+                "class: logs",
+                "created_at: 2026-04-04T02:00:00Z",
+                "created_by: tester",
+                "workspace: ws-alpha",
+                "status: recorded",
+                "event_type: review_reject",
+                "records_event_for:",
+                "  - missing-proposal",
             ]
         ),
     )
@@ -131,6 +152,7 @@ def test_scan_and_validation_and_build_deterministic(tmp_path: Path) -> None:
 
     by_class_raw = (ws_root / "ws-alpha" / "projection" / "browse" / "by-class-raw.md").read_text(encoding="utf-8")
     proposal_queue = (ws_root / "ws-alpha" / "projection" / "review" / "proposal-queue.md").read_text(encoding="utf-8")
+    recent_changes = (ws_root / "ws-alpha" / "projection" / "logs" / "recent-changes.md").read_text(encoding="utf-8")
     assert "raw-a" in by_class_raw
     tmp_path_str = str(tmp_path)
     report_text = report_path.read_text(encoding="utf-8")
@@ -149,6 +171,23 @@ def test_scan_and_validation_and_build_deterministic(tmp_path: Path) -> None:
         "proposal_target_reference_not_found)"
     ) in proposal_queue
     assert "\n\n- `proposal-bad`" in proposal_queue
+    assert "- `log-bad` (recorded) — `logs/events/log-bad.md`" in recent_changes
+    assert "Event type: `review_reject`" in recent_changes
+    assert "Recent timestamp cue (created_at): `2026-04-04T02:00:00Z`" in recent_changes
+    assert "Records event for: `missing-proposal` (unresolved)" in recent_changes
+    assert (
+        "Validation warning: unresolved records_event_for references: "
+        "`missing-proposal`"
+    ) in recent_changes
+    assert "- `log-a` (recorded) — `logs/events/log-a.md`" in recent_changes
+    assert "Event type: `rebuild`" in recent_changes
+    assert "Recent timestamp cue (updated_at): `2026-04-04T01:00:00Z`" in recent_changes
+    assert (
+        "Records event for: `proposal-a` (`proposals/queue/proposal-a.md`), "
+        "`struct-a` (`structured/pages/struct-a.md`)"
+    ) in recent_changes
+    assert "Summary: Rebuilt projection after metadata refresh." in recent_changes
+    assert recent_changes.index("`log-bad`") < recent_changes.index("`log-a`")
     assert proposal_queue == first_queue
 
 
