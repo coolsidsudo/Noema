@@ -109,6 +109,15 @@ def test_scan_and_validation_and_build_deterministic(tmp_path: Path) -> None:
 
     by_class_raw = (ws_root / "ws-alpha" / "projection" / "browse" / "by-class-raw.md").read_text(encoding="utf-8")
     assert "raw-a" in by_class_raw
+    tmp_path_str = str(tmp_path)
+    report_text = report_path.read_text(encoding="utf-8")
+
+    assert tmp_path_str not in by_class_raw
+    assert tmp_path_str not in report_text
+    assert "`raw/sources/raw-a.md`" in by_class_raw
+    assert "workspace-root/ws-alpha/projection/browse/by-class-raw.md" in report["outputs"]
+    assert all(not output.startswith(tmp_path_str) for output in report["outputs"])
+    assert all(not error["object_path"].startswith(tmp_path_str) for error in report["validation"]["errors"])
 
 
 def test_cli_all_workspaces(tmp_path: Path) -> None:
@@ -148,3 +157,36 @@ def test_cli_all_workspaces(tmp_path: Path) -> None:
     assert code == 0
     assert (ws_root / "ws-one" / "projection" / "build-report.json").exists()
     assert (ws_root / "ws-two" / "projection" / "build-report.json").exists()
+
+
+def test_report_outputs_no_absolute_paths_when_workspaces_root_is_outside_repo(tmp_path: Path) -> None:
+    repo = tmp_path / "repo"
+    repo.mkdir(parents=True)
+    _write_object(
+        repo / "raw" / "sources" / "raw-ext.md",
+        "\n".join(
+            [
+                "id: raw-ext",
+                "class: raw",
+                "created_at: 2026-04-01T00:00:00Z",
+                "created_by: tester",
+                "workspace: ws-ext",
+                "status: ingested",
+            ]
+        ),
+    )
+
+    external_ws_root = tmp_path / "workspace-root-outside"
+    (external_ws_root / "ws-ext").mkdir(parents=True)
+
+    code = run(["--repo-root", str(repo), "--workspaces-root", str(external_ws_root), "--workspace", "ws-ext"])
+    assert code == 0
+
+    report_path = external_ws_root / "ws-ext" / "projection" / "build-report.json"
+    report_text = report_path.read_text(encoding="utf-8")
+    report = json.loads(report_text)
+
+    tmp_path_str = str(tmp_path)
+    assert tmp_path_str not in report_text
+    assert all(not output.startswith(tmp_path_str) for output in report["outputs"])
+    assert "ws-ext/projection/browse/by-class-raw.md" in report["outputs"]
