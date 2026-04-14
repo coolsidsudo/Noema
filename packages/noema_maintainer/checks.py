@@ -22,14 +22,70 @@ class ValidationIssue:
     workspace: str
 
 
+def _as_id_list(value: object) -> list[str]:
+    if isinstance(value, list):
+        return [str(item).strip() for item in value if str(item).strip()]
+    if isinstance(value, str):
+        stripped = value.strip()
+        return [stripped] if stripped else []
+    return []
+
+
+def _index_records_by_workspace(records: list[ObjectRecord]) -> dict[str, dict[str, list[ObjectRecord]]]:
+    indexed: dict[str, dict[str, list[ObjectRecord]]] = {}
+    for record in records:
+        workspace = str(record.metadata.get("workspace", ""))
+        object_id = str(record.metadata.get("id", ""))
+        if workspace == "" or object_id == "":
+            continue
+        workspace_index = indexed.setdefault(workspace, {})
+        workspace_index.setdefault(object_id, []).append(record)
+    return indexed
+
+
+def _append_missing_reference_issue(
+    *,
+    issues: list[ValidationIssue],
+    code: str,
+    message: str,
+    record: ObjectRecord,
+    object_id: str,
+    workspace: str,
+) -> None:
+    issues.append(
+        ValidationIssue(
+            code=code,
+            message=message,
+            object_path=str(record.path),
+            object_id=object_id,
+            workspace=workspace,
+        )
+    )
+
+
+def _is_known_reference(
+    workspace_index: dict[str, list[ObjectRecord]],
+    reference_id: str,
+    expected_class: str | None = None,
+) -> bool:
+    referenced_records = workspace_index.get(reference_id, [])
+    if not referenced_records:
+        return False
+    if expected_class is None:
+        return True
+    return any(r.object_class == expected_class for r in referenced_records)
+
+
 
 def validate_records(records: list[ObjectRecord]) -> list[ValidationIssue]:
     issues: list[ValidationIssue] = []
+    by_workspace = _index_records_by_workspace(records)
 
     for record in records:
         metadata = record.metadata
         object_id = str(metadata.get("id", ""))
         workspace = str(metadata.get("workspace", ""))
+        workspace_index = by_workspace.get(workspace, {})
 
         for field in REQUIRED_FIELDS:
             value = metadata.get(field)
@@ -71,14 +127,71 @@ def validate_records(records: list[ObjectRecord]) -> list[ValidationIssue]:
         if record.object_class == "proposals" and status and status != "draft":
             target_ids = metadata.get("target_ids")
             if not isinstance(target_ids, list) or len(target_ids) == 0:
-                issues.append(
-                    ValidationIssue(
-                        code="proposal_missing_targets",
-                        message="Non-draft proposals must include at least one target_id.",
-                        object_path=str(record.path),
+                _append_missing_reference_issue(
+                    issues=issues,
+                    code="proposal_missing_targets",
+                    message="Non-draft proposals must include at least one target_id.",
+                    record=record,
+                    object_id=object_id,
+                    workspace=workspace,
+                )
+            else:
+                for target_id in _as_id_list(target_ids):
+                    if not _is_known_reference(workspace_index, target_id):
+                        _append_missing_reference_issue(
+                            issues=issues,
+                            code="proposal_target_reference_not_found",
+                            message=f"Proposal target_id '{target_id}' does not resolve in workspace '{workspace}'.",
+                            record=record,
+                            object_id=object_id,
+                            workspace=workspace,
+                        )
+
+        if record.object_class == "proposals" and status == "accepted":
+            for result_id in _as_id_list(metadata.get("results_in")):
+                if not _is_known_reference(workspace_index, result_id):
+                    _append_missing_reference_issue(
+                        issues=issues,
+                        code="proposal_results_in_reference_not_found",
+                        message=f"Proposal results_in reference '{result_id}' does not resolve in workspace '{workspace}'.",
+                        record=record,
                         object_id=object_id,
                         workspace=workspace,
                     )
+
+        if record.object_class == "logs":
+            for event_for_id in _as_id_list(metadata.get("records_event_for")):
+                if not _is_known_reference(workspace_index, event_for_id):
+                    _append_missing_reference_issue(
+                        issues=issues,
+                        code="log_records_event_for_reference_not_found",
+                        message=f"Log records_event_for reference '{event_for_id}' does not resolve in workspace '{workspace}'.",
+                        record=record,
+                        object_id=object_id,
+                        workspace=workspace,
+                    )
+
+        if record.object_class == "structured":
+            for support_id in _as_id_list(metadata.get("supports")):
+                if not _is_known_reference(workspace_index, support_id, expected_class="raw"):
+                    _append_missing_reference_issue(
+                        issues=issues,
+                        code="structured_supports_reference_not_found_raw",
+                        message=f"Structured supports reference '{support_id}' does not resolve to a raw object in workspace '{workspace}'.",
+                        record=record,
+                        object_id=object_id,
+                        workspace=workspace,
+                    )
+
+        for superseded_id in _as_id_list(metadata.get("supersedes")):
+            if not _is_known_reference(workspace_index, superseded_id):
+                _append_missing_reference_issue(
+                    issues=issues,
+                    code="supersedes_reference_not_found",
+                    message=f"Supersedes reference '{superseded_id}' does not resolve in workspace '{workspace}'.",
+                    record=record,
+                    object_id=object_id,
+                    workspace=workspace,
                 )
 
     issues.sort(key=lambda i: (i.workspace, i.code, i.object_path, i.object_id))

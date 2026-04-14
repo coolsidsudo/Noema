@@ -26,3 +26,5 @@ Optional flags:
 - `--workspaces-root <path>` to point at a different workspaces directory root.
 
 The tool scans Markdown objects with YAML frontmatter from `raw/`, `structured/`, `proposals/`, and `logs/`, validates bounded baseline checks, and rebuilds deterministic projection outputs plus `projection/build-report.json` for each workspace.
+
+In addition to required metadata/status checks, the Phase 5 baseline validator performs workspace-local cross-reference checks for declared relationship fields when present (`target_ids`, accepted `results_in`, `records_event_for`, structured `supports`, and `supersedes`).

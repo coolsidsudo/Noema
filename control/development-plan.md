@@ -8,13 +8,13 @@ The accepted architecture baseline is now actively adopted for implementation wo
 
 Accepted completed slices: **Phase 0 (architecture baseline), Phase 1 (repository skeleton), and the full Phase 2 definition package (core object conventions, metadata profile, relationship/traceability conventions, and index/catalog baseline)**.
 
-Latest completed/accepted slice: **Phase 4 — interoperability consistency verification and profile-compatibility conformance guidance across implementations**.
+Latest completed/accepted slice: **Phase 5 Slice 2 — deterministic relationship and traceability cross-reference checks in the maintainer baseline**.
 
-Current execution focus: **Phase 5 — first bounded maintainer workflow implementation slice (to be declared in-sequence)**.
+Current execution focus: **Phase 5 — next bounded maintainer workflow implementation slice after Slice 2**.
 
-Next queued slice: **Phase 5 next bounded slice after first maintainer workflow slice closure (to be declared in-sequence)**.
+Next queued slice: **Phase 5 follow-on bounded maintainer hardening/reporting slice (to be declared in-sequence)**.
 
-Phase 5 queue status: **In progress (first bounded maintainer workflow slice to be declared in-sequence)**.
+Phase 5 queue status: **In progress (Slice 1 and Slice 2 accepted; continuing in bounded sequence)**.
 
 ## Phase 0: Architecture baseline
 
