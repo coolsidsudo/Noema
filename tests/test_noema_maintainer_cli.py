@@ -660,3 +660,104 @@ def test_projection_integrity_diagnostics_detect_missing_and_inconsistent_output
     assert issue_codes.count("projection_required_output_missing") == 1
     assert issue_codes.count("projection_report_missing_output_entry") == 2
     assert issue_codes.count("projection_report_unexpected_output_entry") == 1
+
+
+def test_workspace_local_duplicate_object_id_is_invalid(tmp_path: Path) -> None:
+    repo = tmp_path
+    ws_root = repo / "workspace-root"
+    (ws_root / "ws-one").mkdir(parents=True)
+
+    _write_object(
+        repo / "raw" / "sources" / "duplicate-raw.md",
+        "\n".join(
+            [
+                "id: duplicate-id",
+                "class: raw",
+                "created_at: 2026-04-01T00:00:00Z",
+                "created_by: tester",
+                "workspace: ws-one",
+                "status: ingested",
+            ]
+        ),
+    )
+    _write_object(
+        repo / "structured" / "pages" / "duplicate-structured.md",
+        "\n".join(
+            [
+                "id: duplicate-id",
+                "class: structured",
+                "created_at: 2026-04-02T00:00:00Z",
+                "created_by: tester",
+                "workspace: ws-one",
+                "status: active",
+            ]
+        ),
+    )
+
+    records = scan_repository(repo)
+    issues = validate_records(records)
+    duplicate_issues = [issue for issue in issues if issue.code == "duplicate_object_id_in_workspace"]
+    assert len(duplicate_issues) == 2
+    assert all(issue.workspace == "ws-one" for issue in duplicate_issues)
+    assert [issue.object_path for issue in duplicate_issues] == sorted([issue.object_path for issue in duplicate_issues])
+
+    run(["--repo-root", str(repo), "--workspaces-root", "workspace-root", "--workspace", "ws-one"])
+    report_path = ws_root / "ws-one" / "projection" / "build-report.json"
+    report_text = report_path.read_text(encoding="utf-8")
+    report = json.loads(report_text)
+    assert report["validation"]["issue_count_by_code"]["duplicate_object_id_in_workspace"] == 2
+    assert str(tmp_path) not in report_text
+    duplicate_messages = [
+        error["message"]
+        for error in report["validation"]["errors"]
+        if error["code"] == "duplicate_object_id_in_workspace"
+    ]
+    assert duplicate_messages
+    assert all("raw/sources/duplicate-raw.md" in message for message in duplicate_messages)
+    assert all("structured/pages/duplicate-structured.md" in message for message in duplicate_messages)
+
+
+def test_cross_workspace_duplicate_object_id_reuse_is_valid(tmp_path: Path) -> None:
+    repo = tmp_path
+    ws_root = repo / "workspace-root"
+    (ws_root / "ws-one").mkdir(parents=True)
+    (ws_root / "ws-two").mkdir(parents=True)
+
+    _write_object(
+        repo / "raw" / "sources" / "ws-one-raw.md",
+        "\n".join(
+            [
+                "id: shared-id",
+                "class: raw",
+                "created_at: 2026-04-01T00:00:00Z",
+                "created_by: tester",
+                "workspace: ws-one",
+                "status: ingested",
+            ]
+        ),
+    )
+    _write_object(
+        repo / "structured" / "pages" / "ws-two-structured.md",
+        "\n".join(
+            [
+                "id: shared-id",
+                "class: structured",
+                "created_at: 2026-04-02T00:00:00Z",
+                "created_by: tester",
+                "workspace: ws-two",
+                "status: active",
+            ]
+        ),
+    )
+
+    records = scan_repository(repo)
+    issues = validate_records(records)
+    assert all(issue.code != "duplicate_object_id_in_workspace" for issue in issues)
+
+    run(["--repo-root", str(repo), "--workspaces-root", "workspace-root", "--workspace", "ws-one"])
+    run(["--repo-root", str(repo), "--workspaces-root", "workspace-root", "--workspace", "ws-two"])
+
+    ws_one_report = json.loads((ws_root / "ws-one" / "projection" / "build-report.json").read_text(encoding="utf-8"))
+    ws_two_report = json.loads((ws_root / "ws-two" / "projection" / "build-report.json").read_text(encoding="utf-8"))
+    assert ws_one_report["validation"]["issue_count_by_code"].get("duplicate_object_id_in_workspace", 0) == 0
+    assert ws_two_report["validation"]["issue_count_by_code"].get("duplicate_object_id_in_workspace", 0) == 0

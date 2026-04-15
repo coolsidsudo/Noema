@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from pathlib import Path
 
 from .scan import ObjectRecord
 
@@ -76,10 +77,43 @@ def _is_known_reference(
     return any(r.object_class == expected_class for r in referenced_records)
 
 
+def _portable_path_hint(record: ObjectRecord) -> str:
+    path = Path(record.path)
+    parts = path.parts
+    if record.object_class in parts:
+        class_idx = parts.index(record.object_class)
+        return Path(*parts[class_idx:]).as_posix()
+    return path.name
+
+
 
 def validate_records(records: list[ObjectRecord]) -> list[ValidationIssue]:
     issues: list[ValidationIssue] = []
     by_workspace = _index_records_by_workspace(records)
+
+    for workspace, objects_by_id in by_workspace.items():
+        for object_id, duplicate_records in objects_by_id.items():
+            if len(duplicate_records) < 2:
+                continue
+            ordered_duplicates = sorted(duplicate_records, key=lambda r: str(r.path))
+            duplicate_paths = [_portable_path_hint(record) for record in ordered_duplicates]
+            preview_paths = ", ".join(duplicate_paths[:3])
+            if len(duplicate_paths) > 3:
+                preview_paths += f", +{len(duplicate_paths) - 3} more"
+            message = (
+                f"Object id '{object_id}' is duplicated in workspace '{workspace}' "
+                f"across {len(duplicate_paths)} objects: {preview_paths}"
+            )
+            for duplicate_record in ordered_duplicates:
+                issues.append(
+                    ValidationIssue(
+                        code="duplicate_object_id_in_workspace",
+                        message=message,
+                        object_path=str(duplicate_record.path),
+                        object_id=object_id,
+                        workspace=workspace,
+                    )
+                )
 
     for record in records:
         metadata = record.metadata
