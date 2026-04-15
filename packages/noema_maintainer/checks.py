@@ -202,7 +202,19 @@ def validate_records(records: list[ObjectRecord]) -> list[ValidationIssue]:
                         )
 
         if record.object_class == "proposals" and status == "accepted":
-            for result_id in _as_id_list(metadata.get("results_in")):
+            result_ids = _as_id_list(metadata.get("results_in"))
+            if not result_ids:
+                _append_missing_reference_issue(
+                    issues=issues,
+                    code="accepted_proposal_missing_results_in",
+                    message=(
+                        f"Accepted proposal '{object_id}' is missing required non-empty results_in outcome linkage."
+                    ),
+                    record=record,
+                    object_id=object_id,
+                    workspace=workspace,
+                )
+            for result_id in result_ids:
                 if not _is_known_reference(workspace_index, result_id):
                     _append_missing_reference_issue(
                         issues=issues,

@@ -583,6 +583,127 @@ def test_relationship_cross_reference_checks_workspace_local(tmp_path: Path) -> 
     assert report["validation"]["unresolved_reference_summary"]["supersedes"]["issue_count"] == 1
 
 
+def test_accepted_proposal_results_in_completeness_validation(tmp_path: Path) -> None:
+    repo = tmp_path
+    ws_root = repo / "workspace-root"
+    (ws_root / "ws-results").mkdir(parents=True)
+
+    _write_object(
+        repo / "raw" / "sources" / "raw-r1.md",
+        "\n".join(
+            [
+                "id: raw-r1",
+                "class: raw",
+                "created_at: 2026-04-01T00:00:00Z",
+                "created_by: tester",
+                "workspace: ws-results",
+                "status: ingested",
+            ]
+        ),
+    )
+    _write_object(
+        repo / "structured" / "pages" / "structured-r1.md",
+        "\n".join(
+            [
+                "id: structured-r1",
+                "class: structured",
+                "created_at: 2026-04-02T00:00:00Z",
+                "created_by: tester",
+                "workspace: ws-results",
+                "status: active",
+                "supports:",
+                "  - raw-r1",
+            ]
+        ),
+    )
+    _write_object(
+        repo / "proposals" / "queue" / "proposal-accepted-missing-results.md",
+        "\n".join(
+            [
+                "id: proposal-accepted-missing-results",
+                "class: proposals",
+                "created_at: 2026-04-03T00:00:00Z",
+                "created_by: tester",
+                "workspace: ws-results",
+                "status: accepted",
+                "target_ids:",
+                "  - structured-r1",
+            ]
+        ),
+    )
+    _write_object(
+        repo / "proposals" / "queue" / "proposal-accepted-with-results.md",
+        "\n".join(
+            [
+                "id: proposal-accepted-with-results",
+                "class: proposals",
+                "created_at: 2026-04-04T00:00:00Z",
+                "created_by: tester",
+                "workspace: ws-results",
+                "status: accepted",
+                "target_ids:",
+                "  - structured-r1",
+                "results_in:",
+                "  - structured-r1",
+            ]
+        ),
+    )
+    _write_object(
+        repo / "proposals" / "queue" / "proposal-under-review-no-results.md",
+        "\n".join(
+            [
+                "id: proposal-under-review-no-results",
+                "class: proposals",
+                "created_at: 2026-04-05T00:00:00Z",
+                "created_by: tester",
+                "workspace: ws-results",
+                "status: under_review",
+                "target_ids:",
+                "  - structured-r1",
+            ]
+        ),
+    )
+    _write_object(
+        repo / "logs" / "events" / "log-results.md",
+        "\n".join(
+            [
+                "id: log-results",
+                "class: logs",
+                "created_at: 2026-04-06T00:00:00Z",
+                "created_by: tester",
+                "workspace: ws-results",
+                "status: recorded",
+                "records_event_for:",
+                "  - proposal-accepted-missing-results",
+                "  - proposal-accepted-with-results",
+            ]
+        ),
+    )
+
+    records = scan_repository(repo)
+    issues = validate_records(records)
+
+    missing_results_issues = [
+        issue for issue in issues if issue.code == "accepted_proposal_missing_results_in"
+    ]
+    assert len(missing_results_issues) == 1
+    assert missing_results_issues[0].object_id == "proposal-accepted-missing-results"
+    assert all(issue.object_id != "proposal-under-review-no-results" for issue in missing_results_issues)
+
+    run(["--repo-root", str(repo), "--workspaces-root", "workspace-root", "--workspace", "ws-results"])
+    report_path = ws_root / "ws-results" / "projection" / "build-report.json"
+    report = json.loads(report_path.read_text(encoding="utf-8"))
+    by_class_proposals = (ws_root / "ws-results" / "projection" / "browse" / "by-class-proposals.md").read_text(
+        encoding="utf-8"
+    )
+
+    assert report["validation"]["issue_count_by_code"]["accepted_proposal_missing_results_in"] == 1
+    assert report["validation"]["affected_object_ids_by_code"]["accepted_proposal_missing_results_in"][
+        "sample_object_ids"
+    ] == ["proposal-accepted-missing-results"]
+    assert "Validation warning: accepted_proposal_missing_results_in" in by_class_proposals
+
+
 def test_workspace_home_validation_summary_is_bounded(tmp_path: Path) -> None:
     repo = tmp_path
     ws_root = repo / "workspace-root"
