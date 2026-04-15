@@ -55,10 +55,10 @@ Implementation should progress in development-plan order unless a documented dep
 - Completed and accepted: Phase 0 architecture baseline
 - Completed and accepted: Phase 1 repository skeleton
 - Completed and accepted: Phase 2 definition package (core object conventions, metadata profile, relationship/traceability conventions, and index/catalog baseline)
-- Latest completed/accepted slice: Phase 5 Slice 8 deterministic projection/report completeness and consistency hardening
-- Current active slice: Phase 5 Slice 9 next bounded maintainer workflow slice after accepted Slice 8
-- Next queued slice: Phase 5 follow-on bounded maintainer workflow slice after Slice 9 (to be declared in-sequence)
-- Phase 5 queue status: in progress (Slices 1–8 accepted/closed; continuing in bounded sequence with Slice 9 active)
+- Latest completed/accepted slice: Phase 5 Slice 9 deterministic workspace-local object ID uniqueness validation and diagnostics
+- Current active slice: Phase 5 Slice 10 next bounded maintainer workflow slice after accepted Slice 9
+- Next queued slice: Phase 5 follow-on bounded maintainer workflow slice after Slice 10 (to be declared in-sequence)
+- Phase 5 queue status: in progress (Slices 1–9 accepted/closed; continuing in bounded sequence with Slice 10 active)
 
 ### Rule 4: Make each PR traceable to baseline
 
@@ -70,7 +70,7 @@ Each implementation PR should include:
 
 ## Current implementation slice (immediate)
 
-The current implementation slice is **Phase 5 Slice 9: next bounded maintainer workflow slice after accepted Slice 8**.
+The current implementation slice is **Phase 5 Slice 10: next bounded maintainer workflow slice after accepted Slice 9**.
 
 ### Slice objective
 
