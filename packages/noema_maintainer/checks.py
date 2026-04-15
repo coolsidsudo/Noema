@@ -32,6 +32,14 @@ def _as_id_list(value: object) -> list[str]:
     return []
 
 
+def _is_explicit_true(value: object) -> bool:
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, str):
+        return value.strip().lower() == "true"
+    return False
+
+
 def _index_records_by_workspace(records: list[ObjectRecord]) -> dict[str, dict[str, list[ObjectRecord]]]:
     indexed: dict[str, dict[str, list[ObjectRecord]]] = {}
     for record in records:
@@ -206,7 +214,21 @@ def validate_records(records: list[ObjectRecord]) -> list[ValidationIssue]:
                     )
 
         if record.object_class == "structured":
-            for support_id in _as_id_list(metadata.get("supports")):
+            support_ids = _as_id_list(metadata.get("supports"))
+            support_exempt = _is_explicit_true(metadata.get("support_exempt"))
+            if status == "active" and not support_ids and not support_exempt:
+                _append_missing_reference_issue(
+                    issues=issues,
+                    code="structured_missing_required_supports_raw",
+                    message=(
+                        "Active structured objects must include at least one raw support reference "
+                        "via 'supports' unless explicitly exempt with support_exempt: true."
+                    ),
+                    record=record,
+                    object_id=object_id,
+                    workspace=workspace,
+                )
+            for support_id in support_ids:
                 if not _is_known_reference(workspace_index, support_id, expected_class="raw"):
                     _append_missing_reference_issue(
                         issues=issues,

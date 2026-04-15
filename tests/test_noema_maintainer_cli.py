@@ -46,6 +46,8 @@ def test_scan_and_validation_and_build_deterministic(tmp_path: Path) -> None:
                 "workspace: ws-alpha",
                 "status: active",
                 "title: Structured A",
+                "supports:",
+                "  - raw-a",
             ]
         ),
     )
@@ -417,6 +419,8 @@ def test_relationship_cross_reference_checks_workspace_local(tmp_path: Path) -> 
                 "created_by: tester",
                 "workspace: ws-one",
                 "status: active",
+                "supports:",
+                "  - raw-one",
                 "supersedes:",
                 "  - structured-one",
             ]
@@ -508,6 +512,7 @@ def test_relationship_cross_reference_checks_workspace_local(tmp_path: Path) -> 
                 "created_by: tester",
                 "workspace: ws-two",
                 "status: active",
+                "support_exempt: true",
                 "supersedes:",
                 "  - missing-prior-object",
             ]
@@ -761,3 +766,95 @@ def test_cross_workspace_duplicate_object_id_reuse_is_valid(tmp_path: Path) -> N
     ws_two_report = json.loads((ws_root / "ws-two" / "projection" / "build-report.json").read_text(encoding="utf-8"))
     assert ws_one_report["validation"]["issue_count_by_code"].get("duplicate_object_id_in_workspace", 0) == 0
     assert ws_two_report["validation"]["issue_count_by_code"].get("duplicate_object_id_in_workspace", 0) == 0
+
+
+def test_structured_support_completeness_validation_and_projection_diagnostics(tmp_path: Path) -> None:
+    repo = tmp_path
+    ws_root = repo / "workspace-root"
+    (ws_root / "ws-support").mkdir(parents=True)
+
+    _write_object(
+        repo / "raw" / "sources" / "raw-support.md",
+        "\n".join(
+            [
+                "id: raw-support",
+                "class: raw",
+                "created_at: 2026-04-01T00:00:00Z",
+                "created_by: tester",
+                "workspace: ws-support",
+                "status: ingested",
+            ]
+        ),
+    )
+    _write_object(
+        repo / "structured" / "pages" / "structured-valid-supported.md",
+        "\n".join(
+            [
+                "id: structured-valid-supported",
+                "class: structured",
+                "created_at: 2026-04-02T00:00:00Z",
+                "created_by: tester",
+                "workspace: ws-support",
+                "status: active",
+                "supports:",
+                "  - raw-support",
+            ]
+        ),
+    )
+    _write_object(
+        repo / "structured" / "pages" / "structured-invalid-missing-support.md",
+        "\n".join(
+            [
+                "id: structured-invalid-missing-support",
+                "class: structured",
+                "created_at: 2026-04-03T00:00:00Z",
+                "created_by: tester",
+                "workspace: ws-support",
+                "status: active",
+            ]
+        ),
+    )
+    _write_object(
+        repo / "structured" / "pages" / "structured-valid-exempt.md",
+        "\n".join(
+            [
+                "id: structured-valid-exempt",
+                "class: structured",
+                "created_at: 2026-04-04T00:00:00Z",
+                "created_by: tester",
+                "workspace: ws-support",
+                "status: active",
+                "support_exempt: true",
+            ]
+        ),
+    )
+
+    records = scan_repository(repo)
+    issues = validate_records(records)
+    missing_support_issues = [i for i in issues if i.code == "structured_missing_required_supports_raw"]
+    assert len(missing_support_issues) == 1
+    assert missing_support_issues[0].object_id == "structured-invalid-missing-support"
+    assert all(
+        issue.object_id != "structured-valid-supported" or issue.code != "structured_missing_required_supports_raw"
+        for issue in issues
+    )
+    assert all(
+        issue.object_id != "structured-valid-exempt" or issue.code != "structured_missing_required_supports_raw"
+        for issue in issues
+    )
+
+    run(["--repo-root", str(repo), "--workspaces-root", "workspace-root", "--workspace", "ws-support"])
+    report = json.loads((ws_root / "ws-support" / "projection" / "build-report.json").read_text(encoding="utf-8"))
+    browse_structured = (
+        ws_root / "ws-support" / "projection" / "browse" / "by-class-structured.md"
+    ).read_text(encoding="utf-8")
+
+    assert report["validation"]["issue_count_by_code"]["structured_missing_required_supports_raw"] == 1
+    assert report["validation"]["issue_count_by_class"]["structured"] == 1
+    assert report["validation"]["affected_object_ids_by_code"]["structured_missing_required_supports_raw"][
+        "sample_object_ids"
+    ] == ["structured-invalid-missing-support"]
+    assert "structured_missing_required_supports_raw" in browse_structured
+    assert "structured-invalid-missing-support" in browse_structured
+    assert "structured-valid-exempt" in browse_structured
+    assert "structured-valid-supported" in browse_structured
