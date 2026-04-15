@@ -15,6 +15,18 @@ RELATIONSHIP_CATEGORY_BY_CODE = {
     "supersedes_reference_not_found": "supersedes",
 }
 
+REQUIRED_PROJECTION_ARTIFACTS = (
+    "home/README.md",
+    "browse/README.md",
+    "browse/by-class-raw.md",
+    "browse/by-class-structured.md",
+    "browse/by-class-proposals.md",
+    "browse/by-class-logs.md",
+    "review/proposal-queue.md",
+    "logs/recent-changes.md",
+    "build-report.json",
+)
+
 
 def _render_repo_relative_path(path: Path, repo_root: Path) -> str:
     try:
@@ -483,6 +495,69 @@ def _build_validation_summary(
     }
 
 
+def _build_projection_integrity_summary(
+    *,
+    projection_root: Path,
+    required_outputs: list[str],
+    report_outputs: list[str],
+) -> dict[str, Any]:
+    projection_marker = "/projection/"
+
+    def _to_projection_relative(output_path: str) -> str:
+        normalized = Path(output_path).as_posix().strip("/")
+        marker_index = normalized.find(projection_marker)
+        if marker_index >= 0:
+            return normalized[marker_index + len(projection_marker) :]
+        if normalized.endswith("/projection"):
+            return ""
+        return normalized
+
+    existing_outputs = sorted(
+        output
+        for output in required_outputs
+        if (projection_root / _to_projection_relative(output)).exists()
+    )
+    missing_on_disk = sorted(set(required_outputs) - set(existing_outputs))
+    missing_in_report = sorted(set(required_outputs) - set(report_outputs))
+    unexpected_in_report = sorted(set(report_outputs) - set(required_outputs))
+
+    diagnostics = []
+    for output in missing_on_disk:
+        diagnostics.append(
+            {
+                "code": "projection_required_output_missing",
+                "path": output,
+            }
+        )
+    for output in missing_in_report:
+        diagnostics.append(
+            {
+                "code": "projection_report_missing_output_entry",
+                "path": output,
+            }
+        )
+    for output in unexpected_in_report:
+        diagnostics.append(
+            {
+                "code": "projection_report_unexpected_output_entry",
+                "path": output,
+            }
+        )
+    diagnostics = sorted(diagnostics, key=lambda item: (str(item["code"]), str(item["path"])))
+    return {
+        "required_outputs": required_outputs,
+        "existing_outputs": existing_outputs,
+        "missing_on_disk": missing_on_disk,
+        "missing_in_report": missing_in_report,
+        "unexpected_in_report": unexpected_in_report,
+        "diagnostics": {
+            "issue_count": len(diagnostics),
+            "issues": diagnostics[:20],
+            "truncated": len(diagnostics) > 20,
+        },
+    }
+
+
 def build_workspace_projection(
     repo_root: Path,
     workspace_root: Path,
@@ -571,6 +646,12 @@ def build_workspace_projection(
     _write_markdown(recent_changes, "Recent changes", log_lines)
     outputs.append(_render_output_path(recent_changes, repo_root, workspace_root))
 
+    report_path = projection_root / "build-report.json"
+    report_output = _render_output_path(report_path, repo_root, workspace_root)
+    output_prefix = report_output.rsplit("/projection/build-report.json", 1)[0]
+    required_outputs = sorted(f"{output_prefix}/projection/{artifact}" for artifact in REQUIRED_PROJECTION_ARTIFACTS)
+    report_outputs = sorted(outputs + [report_output])
+
     report = {
         "workspace": workspace,
         "record_count": len(workspace_records),
@@ -592,11 +673,17 @@ def build_workspace_projection(
                 for i in workspace_issues
             ],
         },
-        "outputs": sorted(outputs),
+        "outputs": report_outputs,
     }
 
-    report_path = projection_root / "build-report.json"
     report_path.parent.mkdir(parents=True, exist_ok=True)
+    report_path.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    projection_integrity = _build_projection_integrity_summary(
+        projection_root=projection_root,
+        required_outputs=required_outputs,
+        report_outputs=report_outputs,
+    )
+    report["projection"] = projection_integrity
     report_path.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
     return report

@@ -3,7 +3,11 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from packages.noema_maintainer.build_projection import build_workspace_projection
+from packages.noema_maintainer.build_projection import (
+    REQUIRED_PROJECTION_ARTIFACTS,
+    _build_projection_integrity_summary,
+    build_workspace_projection,
+)
 from packages.noema_maintainer.checks import ValidationIssue, validate_records
 from packages.noema_maintainer.cli import run
 from packages.noema_maintainer.scan import scan_repository
@@ -212,8 +216,16 @@ def test_scan_and_validation_and_build_deterministic(tmp_path: Path) -> None:
     assert "workspace-root/ws-alpha/projection/browse/by-class-raw.md" in report["outputs"]
     assert "workspace-root/ws-alpha/projection/home/README.md" in report["outputs"]
     assert "workspace-root/ws-alpha/projection/browse/README.md" in report["outputs"]
+    assert "workspace-root/ws-alpha/projection/build-report.json" in report["outputs"]
     assert all(not output.startswith(tmp_path_str) for output in report["outputs"])
     assert all(not error["object_path"].startswith(tmp_path_str) for error in report["validation"]["errors"])
+    assert report["projection"]["diagnostics"]["issue_count"] == 0
+    assert report["projection"]["missing_on_disk"] == []
+    assert report["projection"]["missing_in_report"] == []
+    assert report["projection"]["unexpected_in_report"] == []
+    assert report["projection"]["required_outputs"] == sorted(
+        [f"workspace-root/ws-alpha/projection/{artifact}" for artifact in REQUIRED_PROJECTION_ARTIFACTS]
+    )
     assert "- `raw` (1): `./by-class-raw.md`" in browse_readme
     assert "- `proposals` (3): `./by-class-proposals.md`" in browse_readme
     assert "- Workspace: `ws-alpha`" in home_readme
@@ -610,3 +622,41 @@ def test_workspace_home_validation_summary_is_bounded(tmp_path: Path) -> None:
     assert "issue-6" not in home_readme
     assert "issue-7" not in home_readme
     assert "_2 more issue code(s) not shown._" in home_readme
+
+
+def test_projection_integrity_diagnostics_detect_missing_and_inconsistent_outputs(tmp_path: Path) -> None:
+    projection_root = tmp_path / "workspace-root" / "ws-int" / "projection"
+    (projection_root / "home").mkdir(parents=True)
+    (projection_root / "home" / "README.md").write_text("# Home\n", encoding="utf-8")
+    (projection_root / "build-report.json").write_text("{}\n", encoding="utf-8")
+
+    required_outputs = sorted(
+        [
+            "ws-int/projection/home/README.md",
+            "ws-int/projection/build-report.json",
+            "ws-int/projection/browse/README.md",
+        ]
+    )
+    report_outputs = sorted(
+        [
+            "ws-int/projection/home/README.md",
+            "ws-int/projection/extra/unexpected.md",
+        ]
+    )
+    integrity = _build_projection_integrity_summary(
+        projection_root=projection_root,
+        required_outputs=required_outputs,
+        report_outputs=report_outputs,
+    )
+
+    assert integrity["missing_on_disk"] == ["ws-int/projection/browse/README.md"]
+    assert integrity["missing_in_report"] == [
+        "ws-int/projection/browse/README.md",
+        "ws-int/projection/build-report.json",
+    ]
+    assert integrity["unexpected_in_report"] == ["ws-int/projection/extra/unexpected.md"]
+    assert integrity["diagnostics"]["issue_count"] == 4
+    issue_codes = [issue["code"] for issue in integrity["diagnostics"]["issues"]]
+    assert issue_codes.count("projection_required_output_missing") == 1
+    assert issue_codes.count("projection_report_missing_output_entry") == 2
+    assert issue_codes.count("projection_report_unexpected_output_entry") == 1
