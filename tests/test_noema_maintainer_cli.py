@@ -158,12 +158,13 @@ def test_scan_and_validation_and_build_deterministic(tmp_path: Path) -> None:
     assert report["workspace"] == "ws-alpha"
     assert report["class_counts"]["raw"] == 1
     assert report["validation"]["error_count"] >= 1
-    assert report["validation"]["issue_count_by_class"]["proposals"] == 3
+    assert report["validation"]["issue_count_by_class"]["proposals"] == 4
     assert report["validation"]["issue_count_by_class"]["logs"] == 1
     assert report["validation"]["issue_count_by_code"]["proposal_missing_targets"] == 1
     assert report["validation"]["issue_count_by_code"]["proposal_target_reference_not_found"] == 1
     assert report["validation"]["issue_count_by_code"]["proposal_results_in_reference_not_found"] == 1
     assert report["validation"]["issue_count_by_code"]["log_records_event_for_reference_not_found"] == 1
+    assert report["validation"]["issue_count_by_code"]["terminal_proposal_missing_log_traceability"] == 1
     assert report["validation"]["affected_object_ids_by_code"]["proposal_missing_targets"]["sample_object_ids"] == [
         "proposal-bad"
     ]
@@ -236,11 +237,12 @@ def test_scan_and_validation_and_build_deterministic(tmp_path: Path) -> None:
     assert "- Browse `structured`: `../browse/by-class-structured.md`" in home_readme
     assert "- Proposal review queue: `../review/proposal-queue.md`" in home_readme
     assert "- Recent changes: `../logs/recent-changes.md`" in home_readme
-    assert "- Validation issue count: `4`" in home_readme
+    assert "- Validation issue count: `5`" in home_readme
     assert "proposal_target_reference_not_found" in home_readme
     assert "proposal_results_in_reference_not_found" in home_readme
     assert "log_records_event_for_reference_not_found" in home_readme
     assert "proposal_missing_targets" in home_readme
+    assert "terminal_proposal_missing_log_traceability" in home_readme
     assert "Targets: `struct-a` (`structured/pages/struct-a.md`)" in proposal_queue
     assert "Supporting raw ids: `raw-a` (`raw/sources/raw-a.md`)" in proposal_queue
     assert "Results in: `struct-a` (`structured/pages/struct-a.md`)" in proposal_queue
@@ -570,7 +572,7 @@ def test_relationship_cross_reference_checks_workspace_local(tmp_path: Path) -> 
     assert "Supersedes: `missing-prior-object` (unresolved)" in browse_structured
     assert "Validation warning: structured_supports_reference_not_found_raw" in browse_structured
     assert "Validation warning: supersedes_reference_not_found" in browse_structured
-    assert report["validation"]["issue_count_by_class"]["proposals"] == 3
+    assert report["validation"]["issue_count_by_class"]["proposals"] == 4
     assert report["validation"]["issue_count_by_class"]["structured"] == 2
     assert report["validation"]["issue_count_by_class"]["logs"] == 1
     assert report["validation"]["issue_count_by_code"]["proposal_target_reference_not_found"] == 2
@@ -858,3 +860,114 @@ def test_structured_support_completeness_validation_and_projection_diagnostics(t
     assert "structured-invalid-missing-support" in browse_structured
     assert "structured-valid-exempt" in browse_structured
     assert "structured-valid-supported" in browse_structured
+
+
+def test_terminal_proposal_log_completeness_validation_and_reporting(tmp_path: Path) -> None:
+    repo = tmp_path
+    ws_root = repo / "workspace-root"
+    (ws_root / "ws-terminal").mkdir(parents=True)
+
+    _write_object(
+        repo / "structured" / "pages" / "structured-target.md",
+        "\n".join(
+            [
+                "id: structured-target",
+                "class: structured",
+                "created_at: 2026-04-01T00:00:00Z",
+                "created_by: tester",
+                "workspace: ws-terminal",
+                "status: active",
+                "support_exempt: true",
+            ]
+        ),
+    )
+    _write_object(
+        repo / "proposals" / "queue" / "proposal-terminal-missing-log.md",
+        "\n".join(
+            [
+                "id: proposal-terminal-missing-log",
+                "class: proposals",
+                "created_at: 2026-04-02T00:00:00Z",
+                "created_by: tester",
+                "workspace: ws-terminal",
+                "status: accepted",
+                "target_ids:",
+                "  - structured-target",
+                "results_in:",
+                "  - structured-target",
+            ]
+        ),
+    )
+    _write_object(
+        repo / "proposals" / "queue" / "proposal-terminal-with-log.md",
+        "\n".join(
+            [
+                "id: proposal-terminal-with-log",
+                "class: proposals",
+                "created_at: 2026-04-03T00:00:00Z",
+                "created_by: tester",
+                "workspace: ws-terminal",
+                "status: rejected",
+                "target_ids:",
+                "  - structured-target",
+            ]
+        ),
+    )
+    _write_object(
+        repo / "proposals" / "queue" / "proposal-non-terminal.md",
+        "\n".join(
+            [
+                "id: proposal-non-terminal",
+                "class: proposals",
+                "created_at: 2026-04-04T00:00:00Z",
+                "created_by: tester",
+                "workspace: ws-terminal",
+                "status: under_review",
+                "target_ids:",
+                "  - structured-target",
+            ]
+        ),
+    )
+    _write_object(
+        repo / "logs" / "events" / "terminal-log.md",
+        "\n".join(
+            [
+                "id: terminal-log",
+                "class: logs",
+                "created_at: 2026-04-05T00:00:00Z",
+                "created_by: tester",
+                "workspace: ws-terminal",
+                "status: recorded",
+                "records_event_for:",
+                "  - proposal-terminal-with-log",
+            ]
+        ),
+    )
+
+    records = scan_repository(repo)
+    issues = validate_records(records)
+
+    terminal_missing_issues = [i for i in issues if i.code == "terminal_proposal_missing_log_traceability"]
+    assert len(terminal_missing_issues) == 1
+    assert terminal_missing_issues[0].object_id == "proposal-terminal-missing-log"
+    assert all(
+        issue.object_id != "proposal-terminal-with-log" or issue.code != "terminal_proposal_missing_log_traceability"
+        for issue in issues
+    )
+    assert all(
+        issue.object_id != "proposal-non-terminal" or issue.code != "terminal_proposal_missing_log_traceability"
+        for issue in issues
+    )
+
+    run(["--repo-root", str(repo), "--workspaces-root", "workspace-root", "--workspace", "ws-terminal"])
+    report = json.loads((ws_root / "ws-terminal" / "projection" / "build-report.json").read_text(encoding="utf-8"))
+    by_class_proposals = (
+        ws_root / "ws-terminal" / "projection" / "browse" / "by-class-proposals.md"
+    ).read_text(encoding="utf-8")
+
+    assert report["validation"]["issue_count_by_code"]["terminal_proposal_missing_log_traceability"] == 1
+    assert report["validation"]["affected_object_ids_by_code"]["terminal_proposal_missing_log_traceability"][
+        "sample_object_ids"
+    ] == ["proposal-terminal-missing-log"]
+    assert "terminal_proposal_missing_log_traceability" in by_class_proposals
+    assert "proposal-terminal-missing-log" in by_class_proposals

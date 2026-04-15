@@ -12,6 +12,7 @@ VALID_STATUS_BY_CLASS = {
     "proposals": {"draft", "under_review", "accepted", "rejected", "withdrawn"},
     "logs": {"recorded", "corrected"},
 }
+TERMINAL_PROPOSAL_STATUSES = {"accepted", "rejected", "withdrawn"}
 
 
 @dataclass(frozen=True)
@@ -98,6 +99,17 @@ def _portable_path_hint(record: ObjectRecord) -> str:
 def validate_records(records: list[ObjectRecord]) -> list[ValidationIssue]:
     issues: list[ValidationIssue] = []
     by_workspace = _index_records_by_workspace(records)
+    proposal_ids_with_log_traceability_by_workspace: dict[str, set[str]] = {}
+
+    for record in records:
+        if record.object_class != "logs":
+            continue
+        workspace = str(record.metadata.get("workspace", ""))
+        if workspace == "":
+            continue
+        linked_proposal_ids = proposal_ids_with_log_traceability_by_workspace.setdefault(workspace, set())
+        for object_id in _as_id_list(record.metadata.get("records_event_for")):
+            linked_proposal_ids.add(object_id)
 
     for workspace, objects_by_id in by_workspace.items():
         for object_id, duplicate_records in objects_by_id.items():
@@ -200,6 +212,21 @@ def validate_records(records: list[ObjectRecord]) -> list[ValidationIssue]:
                         object_id=object_id,
                         workspace=workspace,
                     )
+
+        if record.object_class == "proposals" and status in TERMINAL_PROPOSAL_STATUSES:
+            linked_proposal_ids = proposal_ids_with_log_traceability_by_workspace.get(workspace, set())
+            if object_id and object_id not in linked_proposal_ids:
+                _append_missing_reference_issue(
+                    issues=issues,
+                    code="terminal_proposal_missing_log_traceability",
+                    message=(
+                        f"Terminal proposal '{object_id}' with status '{status}' is missing required workspace-local "
+                        "log traceability via records_event_for."
+                    ),
+                    record=record,
+                    object_id=object_id,
+                    workspace=workspace,
+                )
 
         if record.object_class == "logs":
             for event_for_id in _as_id_list(metadata.get("records_event_for")):
