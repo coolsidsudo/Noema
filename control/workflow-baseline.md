@@ -55,10 +55,10 @@ Implementation should progress in development-plan order unless a documented dep
 - Completed and accepted: Phase 0 architecture baseline
 - Completed and accepted: Phase 1 repository skeleton
 - Completed and accepted: Phase 2 definition package (core object conventions, metadata profile, relationship/traceability conventions, and index/catalog baseline)
-- Latest completed/accepted slice: Phase 5 Slice 14 deterministic accepted-proposal results_in structured-class completeness validation and diagnostics
-- Current active slice: Phase 5 Slice 15 next bounded maintainer workflow slice after accepted Slice 14
-- Next queued slice: Phase 5 follow-on bounded maintainer workflow slice after Slice 15 (to be declared in-sequence)
-- Phase 5 queue status: in progress (Slices 1–14 accepted/closed; continuing in bounded sequence with Slice 15 active)
+- Latest completed/accepted slice: Phase 5 Slice 15 maintainer baseline completion review and Phase 5 closure criteria declaration
+- Current active slice: Phase 6 planning readiness and first bounded multi-user/auth/deployment baseline slice definition
+- Next queued slice: Phase 6 Slice 1 bounded implementation slice (to be declared in-sequence)
+- Phase 5 queue status: closed (Slices 1–15 accepted/closed with explicit closure criteria satisfied)
 
 ### Rule 4: Make each PR traceable to baseline
 
@@ -70,24 +70,31 @@ Each implementation PR should include:
 
 ## Current implementation slice (immediate)
 
-The current implementation slice is **Phase 5 Slice 15: next bounded maintainer workflow slice after accepted Slice 14**.
+The current implementation slice is **Phase 5 Slice 15: maintainer baseline completion review and Phase 5 closure criteria declaration**.
 
 ### Slice objective
 
-Continue Phase 5 with the next bounded maintainer workflow baseline slice while preserving accepted architecture and prior phase semantics.
+Declare a bounded closure decision for Phase 5 by checking accepted maintainer baseline coverage against the original Phase 5 goals in `control/development-plan.md`, then move execution posture out of open-ended Phase 5 continuation.
 
 ### Slice deliverables
 
-1. Declare and execute the next bounded Phase 5 maintainer workflow slice in sequence.
-2. Keep implementation scope minimal, traceable, and aligned to baseline documents.
+1. Record a concise Phase 5 completion review (goals, accepted baseline coverage, finish criteria).
+2. Record an explicit closure judgment: either close Phase 5 now or identify exactly one final bounded gap.
+3. Advance next-slice pointer toward Phase 6 if closure criteria are met.
 
 ### Slice done criteria
 
 This slice is complete when:
 
-- The accepted Phase 5 slice state remains reflected in control documents, and the next bounded slice is explicitly declared.
+- Phase 5 closure criteria are explicitly declared in control-layer docs (not implied).
+- Phase 5 status is decided as closure-ready vs one-final-gap, with no open-ended continuation wording.
 - Baseline architecture and accepted Phase 2/3/4 semantics remain preserved without drift.
-- The next-slice pointer advances to the next bounded Phase 5 slice.
+
+### Slice 15 closure judgment
+
+Phase 5 closure criteria are satisfied by the accepted Slices 1–14 maintainer baseline and Slice 15 control review.
+
+**Decision:** Phase 5 complete after this slice; transition execution pointer to Phase 6 planning/readiness slices.
 
 ## Definition of done for baseline adoption
 
