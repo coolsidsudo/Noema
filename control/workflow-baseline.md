@@ -56,8 +56,8 @@ Implementation should progress in development-plan order unless a documented dep
 - Completed and accepted: Phase 1 repository skeleton
 - Completed and accepted: Phase 2 definition package (core object conventions, metadata profile, relationship/traceability conventions, and index/catalog baseline)
 - Latest completed/accepted slice: Phase 5 Slice 15 maintainer baseline completion review and Phase 5 closure criteria declaration
-- Current active slice: Phase 6 Slice 1 baseline multi-user access and authority model semantics
-- Next queued slice: Phase 6 Slice 2A or 2B (bounded follow-on after Slice 1 acceptance)
+- Current active slice: Phase 6 Slice 2A baseline authentication and identity provisioning semantics (under review)
+- Next queued slice: Phase 6 Slice 2B deployment/self-hosting operations baseline semantics
 - Phase 5 queue status: closed (Slices 1–15 accepted/closed with explicit closure criteria satisfied)
 
 ### Rule 4: Make each PR traceable to baseline
@@ -70,33 +70,34 @@ Each implementation PR should include:
 
 ## Current implementation slice (immediate)
 
-The current implementation slice is **Phase 6 Slice 1: baseline multi-user access and authority model semantics**.
+The current implementation slice is **Phase 6 Slice 2A: baseline authentication and identity provisioning semantics (under review)**.
 
 ### Slice objective
 
-Define the stable baseline semantics of who can see what, who can change what, and how those differ in Noema before deeper authentication/deployment internals are specified.
+Define the stable baseline semantics for identity classes, authentication meaning, provisioning lifecycle, and workspace scope attachment so Slice 1 policy semantics can be applied to durable authenticated subjects.
 
 ### Slice deliverables
 
-1. Stable system-definition document in `docs/` for access/authority baseline semantics.
-2. Explicit visibility and authority separation semantics at workspace/object policy layers.
-3. Baseline human and agent role-family semantics with machine auditability expectations.
-4. Control-layer progression updates and next-slice pointer for Phase 6 continuation.
+1. Stable system-definition document in `docs/` for authentication and identity provisioning baseline semantics.
+2. Explicit separation semantics for authentication versus authorization (aligned to Slice 1 policy model).
+3. Baseline provisioning and workspace membership/scope-attachment semantics for human, agent, and service identities.
+4. Auditability posture for authenticated machine and human actions plus next-slice pointer to deployment/operations baseline.
 
 ### Slice done criteria
 
 This slice is complete when:
 
-- Access vs authority separation is explicit and preserved in stable docs.
-- Multi-human and multi-agent baseline participation semantics are coherent.
-- Workspace defaults and object-level policy refinement semantics are defined at baseline depth.
-- Deferred/non-goal boundaries are explicit (no auth internals, no deployment hardening internals).
+- Identity classes and durability/namespace expectations are explicit in stable docs.
+- Authentication meaning is explicit and clearly separated from authorization outcomes.
+- Provisioning lifecycle and workspace scope-attachment semantics are defined at baseline depth.
+- Deferred/non-goal boundaries remain explicit (no credential protocol internals, no federation internals, no deployment hardening internals).
 
-### Slice 1 review posture note
+### Slice 2A review posture note
 
-Phase 6 Slice 1 semantics are captured in `docs/noema-access-authority-baseline.md` and aligned with accepted Phase 3/4 baselines without architecture drift.
+Phase 6 Slice 2A semantics are captured in `docs/noema-auth-identity-provisioning-baseline.md` and aligned with accepted Phase 6 Slice 1 access/authority semantics without architecture drift.
 
-**Review posture:** Phase 6 Slice 1 remains the current implementation slice under review; Phase 6 Slice 2 remains queued as the bounded follow-on (auth/identity provisioning semantics baseline or deployment/operations baseline) after Slice 1 acceptance.
+**Review posture:** Phase 6 Slice 2A is the current implementation slice under review; Phase 6 Slice 2B deployment/self-hosting operations baseline semantics is the next bounded continuation slice.
+
 
 ## Definition of done for baseline adoption
 
