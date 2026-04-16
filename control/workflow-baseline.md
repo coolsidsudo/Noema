@@ -56,8 +56,8 @@ Implementation should progress in development-plan order unless a documented dep
 - Completed and accepted: Phase 1 repository skeleton
 - Completed and accepted: Phase 2 definition package (core object conventions, metadata profile, relationship/traceability conventions, and index/catalog baseline)
 - Latest completed/accepted slice: Phase 5 Slice 15 maintainer baseline completion review and Phase 5 closure criteria declaration
-- Current active slice: Phase 6 planning readiness and first bounded multi-user/auth/deployment baseline slice definition
-- Next queued slice: Phase 6 Slice 1 bounded implementation slice (to be declared in-sequence)
+- Current active slice: Phase 6 Slice 1 baseline multi-user access and authority model semantics
+- Next queued slice: Phase 6 Slice 2A or 2B (bounded follow-on after Slice 1 acceptance)
 - Phase 5 queue status: closed (Slices 1–15 accepted/closed with explicit closure criteria satisfied)
 
 ### Rule 4: Make each PR traceable to baseline
@@ -70,31 +70,33 @@ Each implementation PR should include:
 
 ## Current implementation slice (immediate)
 
-The current implementation slice is **Phase 5 Slice 15: maintainer baseline completion review and Phase 5 closure criteria declaration**.
+The current implementation slice is **Phase 6 Slice 1: baseline multi-user access and authority model semantics**.
 
 ### Slice objective
 
-Declare a bounded closure decision for Phase 5 by checking accepted maintainer baseline coverage against the original Phase 5 goals in `control/development-plan.md`, then move execution posture out of open-ended Phase 5 continuation.
+Define the stable baseline semantics of who can see what, who can change what, and how those differ in Noema before deeper authentication/deployment internals are specified.
 
 ### Slice deliverables
 
-1. Record a concise Phase 5 completion review (goals, accepted baseline coverage, finish criteria).
-2. Record an explicit closure judgment: either close Phase 5 now or identify exactly one final bounded gap.
-3. Advance next-slice pointer toward Phase 6 if closure criteria are met.
+1. Stable system-definition document in `docs/` for access/authority baseline semantics.
+2. Explicit visibility and authority separation semantics at workspace/object policy layers.
+3. Baseline human and agent role-family semantics with machine auditability expectations.
+4. Control-layer progression updates and next-slice pointer for Phase 6 continuation.
 
 ### Slice done criteria
 
 This slice is complete when:
 
-- Phase 5 closure criteria are explicitly declared in control-layer docs (not implied).
-- Phase 5 status is decided as closure-ready vs one-final-gap, with no open-ended continuation wording.
-- Baseline architecture and accepted Phase 2/3/4 semantics remain preserved without drift.
+- Access vs authority separation is explicit and preserved in stable docs.
+- Multi-human and multi-agent baseline participation semantics are coherent.
+- Workspace defaults and object-level policy refinement semantics are defined at baseline depth.
+- Deferred/non-goal boundaries are explicit (no auth internals, no deployment hardening internals).
 
-### Slice 15 closure judgment
+### Slice 1 review posture note
 
-Phase 5 closure criteria are satisfied by the accepted Slices 1–14 maintainer baseline and Slice 15 control review.
+Phase 6 Slice 1 semantics are captured in `docs/noema-access-authority-baseline.md` and aligned with accepted Phase 3/4 baselines without architecture drift.
 
-**Decision:** Phase 5 complete after this slice; transition execution pointer to Phase 6 planning/readiness slices.
+**Review posture:** Phase 6 Slice 1 remains the current implementation slice under review; Phase 6 Slice 2 remains queued as the bounded follow-on (auth/identity provisioning semantics baseline or deployment/operations baseline) after Slice 1 acceptance.
 
 ## Definition of done for baseline adoption
 

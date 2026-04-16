@@ -10,9 +10,10 @@ Accepted completed slices: **Phase 0 (architecture baseline), Phase 1 (repositor
 
 Latest completed/accepted slice: **Phase 5 Slice 15 — maintainer baseline completion review and Phase 5 closure criteria declaration**.
 
-Current execution focus: **Phase 6 planning readiness (Phase 5 closure decision declared)**.
+Current execution focus: **Phase 6 Slice 1 implementation — baseline multi-user access and authority model semantics**.
 
-Next queued slice: **Phase 6 Slice 1 — first bounded multi-user/auth/deployment baseline slice (to be declared in-sequence)**.
+
+Next queued slice: **Phase 6 Slice 2 (decision point) — authentication/identity provisioning semantics baseline or self-hosted deployment/operations baseline**.
 
 Phase 5 queue status: **Closed (Slices 1–15 accepted/closed with explicit closure criteria satisfied)**.
 
@@ -145,15 +146,28 @@ Accepted Phase 5 Slices 1–14 implemented deterministic repository scan/build b
 
 **Objective**
 
-Support real shared deployment with explicit policy boundaries.
+Support real shared deployment with explicit policy boundaries by sequencing semantics first, then identity/auth and deployment baselines.
 
 **Key outputs**
 
-- Baseline authentication and user-role model
-- Visibility and authority rules at workspace and object levels
-- Deployment guidance for NAS and VPS environments
-- Backup, restore, and operational baseline for self-hosting
+- Phase 6 Slice 1 access/authority baseline semantics (current implementation slice)
+- Baseline authentication and identity provisioning semantics (next bounded slice option)
+- Deployment/self-hosting operational baseline semantics for NAS/VPS (next bounded slice option)
+- Backup, restore, and operational posture guidance aligned to self-hosting constraints
 
 **Why it matters**
 
-Noema is meant to be reusable by others and deployable in real environments. This phase makes the project truly multi-user, governable, and practical to self-host beyond a single experimental setup.
+Noema is meant to be reusable by others and deployable in real environments. Phase 6 makes the project truly multi-user, governable, and practical to self-host beyond a single experimental setup while preserving implementation-light, baseline-first sequencing.
+
+### Phase 6 Slice 1 scope note
+
+Phase 6 Slice 1 defines the baseline scope for multi-user access and authority semantics in `docs/noema-access-authority-baseline.md`, including:
+
+1. baseline human/agent identity categories
+2. explicit visibility semantics (`private`, `team`, `public`, `scoped-agent`)
+3. explicit authority semantics (`create`, `modify`, `review`, `approve`, `publish/apply`)
+4. explicit visibility-vs-authority separation
+5. workspace-level defaults with object-level policy refinement
+6. baseline role families (`owner`, `reviewer`, `contributor`, `reader`, bounded agent roles)
+7. machine-originated action auditability expectations
+8. non-goals/deferred Phase 6 concerns (auth internals, credential lifecycle, deployment hardening internals)

@@ -53,6 +53,7 @@ See `CONTRIBUTING.md` for baseline-first contribution guidance.
 ## Documents
 
 - [Original system design](docs/noema-original-system-design.md)
+- [Access and authority baseline](docs/noema-access-authority-baseline.md)
 - [Core knowledge object conventions](docs/noema-core-object-conventions.md)
 - [Baseline relationship and traceability conventions](docs/noema-relationship-traceability-conventions.md)
 - [Baseline object metadata profile (v0)](docs/noema-object-metadata-profile-v0.md)
