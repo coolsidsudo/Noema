@@ -100,6 +100,7 @@ def validate_records(records: list[ObjectRecord]) -> list[ValidationIssue]:
     issues: list[ValidationIssue] = []
     by_workspace = _index_records_by_workspace(records)
     proposal_ids_with_log_traceability_by_workspace: dict[str, set[str]] = {}
+    logged_object_ids_by_workspace: dict[str, set[str]] = {}
 
     for record in records:
         if record.object_class != "logs":
@@ -108,8 +109,10 @@ def validate_records(records: list[ObjectRecord]) -> list[ValidationIssue]:
         if workspace == "":
             continue
         linked_proposal_ids = proposal_ids_with_log_traceability_by_workspace.setdefault(workspace, set())
+        logged_object_ids = logged_object_ids_by_workspace.setdefault(workspace, set())
         for object_id in _as_id_list(record.metadata.get("records_event_for")):
             linked_proposal_ids.add(object_id)
+            logged_object_ids.add(object_id)
 
     for workspace, objects_by_id in by_workspace.items():
         for object_id, duplicate_records in objects_by_id.items():
@@ -220,6 +223,22 @@ def validate_records(records: list[ObjectRecord]) -> list[ValidationIssue]:
                         issues=issues,
                         code="proposal_results_in_reference_not_found",
                         message=f"Proposal results_in reference '{result_id}' does not resolve in workspace '{workspace}'.",
+                        record=record,
+                        object_id=object_id,
+                        workspace=workspace,
+                    )
+            if result_ids:
+                logged_object_ids = logged_object_ids_by_workspace.get(workspace, set())
+                missing_log_coverage_ids = sorted({result_id for result_id in result_ids if result_id not in logged_object_ids})
+                if missing_log_coverage_ids:
+                    _append_missing_reference_issue(
+                        issues=issues,
+                        code="proposal_results_in_missing_log_traceability",
+                        message=(
+                            f"Accepted proposal '{object_id}' is missing workspace-local apply-log coverage via "
+                            "records_event_for for results_in id(s): "
+                            f"{', '.join(missing_log_coverage_ids)}."
+                        ),
                         record=record,
                         object_id=object_id,
                         workspace=workspace,
