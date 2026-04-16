@@ -10,10 +10,10 @@ Accepted completed slices: **Phase 0 (architecture baseline), Phase 1 (repositor
 
 Latest completed/accepted slice: **Phase 5 Slice 15 — maintainer baseline completion review and Phase 5 closure criteria declaration**.
 
-Current execution focus: **Phase 6 Slice 1 implementation — baseline multi-user access and authority model semantics**.
+Current execution focus: **Phase 6 Slice 2A implementation under review — baseline authentication and identity provisioning semantics**.
 
 
-Next queued slice: **Phase 6 Slice 2 (decision point) — authentication/identity provisioning semantics baseline or self-hosted deployment/operations baseline**.
+Next queued slice: **Phase 6 Slice 2B — self-hosted deployment/operations baseline semantics**.
 
 Phase 5 queue status: **Closed (Slices 1–15 accepted/closed with explicit closure criteria satisfied)**.
 
@@ -150,9 +150,9 @@ Support real shared deployment with explicit policy boundaries by sequencing sem
 
 **Key outputs**
 
-- Phase 6 Slice 1 access/authority baseline semantics (current implementation slice)
-- Baseline authentication and identity provisioning semantics (next bounded slice option)
-- Deployment/self-hosting operational baseline semantics for NAS/VPS (next bounded slice option)
+- Phase 6 Slice 1 access/authority baseline semantics (accepted prerequisite)
+- Phase 6 Slice 2A authentication and identity provisioning semantics baseline (current implementation slice)
+- Phase 6 Slice 2B deployment/self-hosting operational baseline semantics for NAS/VPS (next bounded slice)
 - Backup, restore, and operational posture guidance aligned to self-hosting constraints
 
 **Why it matters**
@@ -171,3 +171,19 @@ Phase 6 Slice 1 defines the baseline scope for multi-user access and authority s
 6. baseline role families (`owner`, `reviewer`, `contributor`, `reader`, bounded agent roles)
 7. machine-originated action auditability expectations
 8. non-goals/deferred Phase 6 concerns (auth internals, credential lifecycle, deployment hardening internals)
+
+
+### Phase 6 Slice 2A scope note
+
+Phase 6 Slice 2A defines baseline authentication and identity provisioning semantics in `docs/noema-auth-identity-provisioning-baseline.md`, including:
+
+1. baseline identity classes (`human`, `agent`, `service`)
+2. durable identity namespace posture and attribution expectations
+3. explicit authentication-vs-authorization separation
+4. provisioning semantics and baseline identity lifecycle states
+5. workspace membership and scope-attachment semantics
+6. agent credential/proxy attribution posture at baseline depth
+7. authenticated-action auditability requirements
+8. non-goals/deferred concerns for production auth-stack/deployment internals
+
+Next bounded continuation pointer: **Phase 6 Slice 2B — deployment/self-hosting operations baseline semantics**.
