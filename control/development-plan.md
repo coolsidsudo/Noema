@@ -8,13 +8,13 @@ The accepted architecture baseline is now actively adopted for implementation wo
 
 Accepted completed slices: **Phase 0 (architecture baseline), Phase 1 (repository skeleton), and the full Phase 2 definition package (core object conventions, metadata profile, relationship/traceability conventions, and index/catalog baseline)**.
 
-Latest completed/accepted slice: **Phase 5 Slice 14 — deterministic accepted-proposal results_in structured-class completeness validation and diagnostics**.
+Latest completed/accepted slice: **Phase 5 Slice 15 — maintainer baseline completion review and Phase 5 closure criteria declaration**.
 
-Current execution focus: **Phase 5 Slice 15 — next bounded maintainer workflow slice after accepted Slice 14**.
+Current execution focus: **Phase 6 planning readiness (Phase 5 closure decision declared)**.
 
-Next queued slice: **Phase 5 follow-on bounded maintainer workflow slice after Slice 15 (to be declared in-sequence)**.
+Next queued slice: **Phase 6 Slice 1 — first bounded multi-user/auth/deployment baseline slice (to be declared in-sequence)**.
 
-Phase 5 queue status: **In progress (Slices 1–14 accepted/closed; continuing in bounded sequence with Slice 15 active)**.
+Phase 5 queue status: **Closed (Slices 1–15 accepted/closed with explicit closure criteria satisfied)**.
 
 ## Phase 0: Architecture baseline
 
@@ -118,6 +118,28 @@ Implement the first maintainer/compiler/curator workflows.
 **Why it matters**
 
 This is the phase where Noema starts behaving like a compounding knowledge system. The maintainer workflow is what turns accumulated sources and questions into a maintained knowledge base rather than a pile of disconnected artifacts.
+
+### Phase 5 closure declaration (Slice 15)
+
+Phase 5 was defined to establish a maintainer/compiler/curator baseline across five capabilities:
+
+1. source ingest flow
+2. structured compilation and cross-linking flow
+3. proposal and review queue behavior
+4. linting/consistency-check workflow
+5. operational logging for maintainer actions
+
+Accepted Phase 5 Slices 1–14 implemented deterministic repository scan/build behavior, projection/report generation, relationship/reference checks, accepted-proposal completeness checks, apply-log coverage checks, and results_in structured-class correctness. Slice 15 confirms this accepted baseline now covers all five Phase 5 goal capabilities at a baseline level and does not require additional validator proliferation for Phase 5 closure.
+
+**Phase 5 completion criteria (explicit finish rule):**
+
+- Maintainer scan/build pipeline runs deterministically and emits reproducible projection outputs for workspace review surfaces.
+- Cross-link/reference validation covers proposal targets, accepted outcomes (`results_in`), structured support provenance (`supports`), supersession references, and log linkage references within workspace scope.
+- Proposal/review surfaces and diagnostics are present in projection outputs (`review/proposal-queue.md`, workspace build report summaries, and class browse pages).
+- Operational log traceability is enforced for terminal proposal lifecycle events and accepted proposal outcome application coverage.
+- Control documents no longer leave Phase 5 in an open-ended continuation loop and instead declare closure readiness and transition pointer.
+
+**Closure judgment:** Phase 5 is complete after Slice 15. No additional Phase 5 implementation slice is required for baseline closure.
 
 ## Phase 6: Multi-user / auth / deployment baseline
 
