@@ -56,6 +56,7 @@ See `CONTRIBUTING.md` for baseline-first contribution guidance.
 - [Access and authority baseline](docs/noema-access-authority-baseline.md)
 - [Authentication and identity provisioning baseline](docs/noema-auth-identity-provisioning-baseline.md)
 - [Self-hosted deployment and operations baseline](docs/noema-self-hosted-deployment-operations-baseline.md)
+- [Backup and restore operational guidance baseline](docs/noema-backup-restore-operational-guidance-baseline.md)
 - [Core knowledge object conventions](docs/noema-core-object-conventions.md)
 - [Baseline relationship and traceability conventions](docs/noema-relationship-traceability-conventions.md)
 - [Baseline object metadata profile (v0)](docs/noema-object-metadata-profile-v0.md)
