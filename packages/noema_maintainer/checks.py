@@ -227,6 +227,20 @@ def validate_records(records: list[ObjectRecord]) -> list[ValidationIssue]:
                         object_id=object_id,
                         workspace=workspace,
                     )
+                    continue
+                if not _is_known_reference(workspace_index, result_id, expected_class="structured"):
+                    resolved_classes = sorted({r.object_class for r in workspace_index.get(result_id, [])})
+                    _append_missing_reference_issue(
+                        issues=issues,
+                        code="proposal_results_in_reference_not_structured",
+                        message=(
+                            f"Proposal results_in reference '{result_id}' resolves in workspace '{workspace}' "
+                            f"but does not resolve to class 'structured' (resolved classes: {', '.join(resolved_classes)})."
+                        ),
+                        record=record,
+                        object_id=object_id,
+                        workspace=workspace,
+                    )
             if result_ids:
                 logged_object_ids = logged_object_ids_by_workspace.get(workspace, set())
                 missing_log_coverage_ids = sorted({result_id for result_id in result_ids if result_id not in logged_object_ids})
