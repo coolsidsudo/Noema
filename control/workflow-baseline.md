@@ -55,9 +55,9 @@ Implementation should progress in development-plan order unless a documented dep
 - Completed and accepted: Phase 0 architecture baseline
 - Completed and accepted: Phase 1 repository skeleton
 - Completed and accepted: Phase 2 definition package (core object conventions, metadata profile, relationship/traceability conventions, and index/catalog baseline)
-- Latest completed/accepted slice: Phase 6 Slice 2A authentication and identity provisioning baseline semantics
-- Current active slice: Phase 6 Slice 2B self-hosted deployment and operations baseline semantics (under review)
-- Next queued slice: Phase 6 follow-on selection after Slice 2B review (backup/restore operational guidance refinement or deployment hardening/profile guidance)
+- Latest completed/accepted slice: Phase 6 Slice 2B self-hosted deployment and operations baseline semantics
+- Current active slice: Phase 6 Slice 3 backup and restore operational guidance refinement baseline semantics (under review)
+- Next queued slice: Phase 6 follow-on slice after Slice 3 review (deployment hardening/profile guidance or tightly justified equivalent)
 - Phase 5 queue status: closed (Slices 1–15 accepted/closed with explicit closure criteria satisfied)
 
 ### Rule 4: Make each PR traceable to baseline
@@ -70,33 +70,34 @@ Each implementation PR should include:
 
 ## Current implementation slice (immediate)
 
-The current implementation slice is **Phase 6 Slice 2B: self-hosted deployment and operations baseline semantics (under review)**.
+The current implementation slice is **Phase 6 Slice 3: backup and restore operational guidance refinement baseline semantics (under review)**.
 
 ### Slice objective
 
-Define the stable baseline semantics for self-hosted deployment posture and operational boundaries so accepted Slice 1 and Slice 2A semantics can operate coherently in real NAS/VPS-style environments.
+Define the stable baseline semantics for backup and restore operational guidance so accepted Slice 1, Slice 2A, and Slice 2B semantics preserve continuity coherently in self-hosted NAS/VPS-practical environments.
 
 ### Slice deliverables
 
-1. Stable system-definition document in `docs/` for self-hosted deployment and operations baseline semantics.
-2. Explicit single-node-first and operator-controlled deployment posture with NAS/VPS practicality semantics.
-3. Baseline component/access-path, backup/restore, and operational continuity/change-management semantics.
-4. Clear responsibility boundaries, explicit deferrals, and next-slice pointer for post-2B follow-on work.
+1. Stable system-definition document in `docs/` for backup and restore operational guidance baseline semantics.
+2. Explicit backup coverage classes spanning knowledge artifacts and continuity-critical governance state.
+3. Coherent restore semantics with full vs partial posture clarity and governance/history continuity expectations.
+4. Verification/inspectability/portability posture and qualitative recovery-point/recovery-time guidance at baseline depth.
+5. Explicit operator responsibilities, deferrals/non-goals, and next-slice pointer for deployment hardening/profile guidance.
 
 ### Slice done criteria
 
 This slice is complete when:
 
-- Single-node-first, operator-controlled, NAS/VPS-practical deployment semantics are explicit in stable docs.
-- Baseline environment-boundary and access-path posture is defined without collapsing accepted policy/auth semantics.
-- Backup/restore and operational continuity/change-management semantics are defined at baseline depth.
-- Deferred/non-goal boundaries remain explicit (no deployment scripts, no container specifics, no production hardening internals).
+- Backup scope semantics are explicit for knowledge artifacts, workspace/project continuity state, and policy/auth continuity state.
+- Coherent restore semantics are explicit, including full vs partial restore posture and governance/history continuity expectations.
+- Verification posture is explicit, including recoverability confidence plus inspectability/portability expectations.
+- Recovery-point/recovery-time guidance remains qualitative, and deferred/non-goal boundaries remain explicit (no tooling implementation, no vendor snapshots, no detailed DR engineering, no production SRE targets).
 
-### Slice 2B review posture note
+### Slice 3 review posture note
 
-Phase 6 Slice 2B semantics are captured in `docs/noema-self-hosted-deployment-operations-baseline.md` and aligned with accepted Phase 6 Slice 1 and Slice 2A semantics without architecture drift.
+Phase 6 Slice 3 semantics are captured in `docs/noema-backup-restore-operational-guidance-baseline.md` and aligned with accepted Phase 6 Slice 1, Slice 2A, and Slice 2B semantics without architecture drift.
 
-**Review posture:** Phase 6 Slice 2B is the current implementation slice under review; next bounded continuation selection follows review and should prioritize either backup/restore operational guidance refinement or deployment hardening/profile guidance.
+**Review posture:** Phase 6 Slice 3 is the current implementation slice under review; next bounded continuation should focus on deployment hardening/profile guidance (or tightly justified equivalent follow-on).
 
 
 ## Definition of done for baseline adoption
