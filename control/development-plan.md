@@ -8,12 +8,12 @@ The accepted architecture baseline is now actively adopted for implementation wo
 
 Accepted completed slices: **Phase 0 (architecture baseline), Phase 1 (repository skeleton), and the full Phase 2 definition package (core object conventions, metadata profile, relationship/traceability conventions, and index/catalog baseline)**.
 
-Latest completed/accepted slice: **Phase 5 Slice 15 — maintainer baseline completion review and Phase 5 closure criteria declaration**.
+Latest completed/accepted slice: **Phase 6 Slice 2A — authentication and identity provisioning baseline semantics**.
 
-Current execution focus: **Phase 6 Slice 2A implementation under review — baseline authentication and identity provisioning semantics**.
+Current execution focus: **Phase 6 Slice 2B implementation under review — self-hosted deployment and operations baseline semantics**.
 
 
-Next queued slice: **Phase 6 Slice 2B — self-hosted deployment/operations baseline semantics**.
+Next queued slice: **Phase 6 follow-on slice (to be selected after Slice 2B review): backup/restore operational guidance refinement or deployment hardening/profile guidance**.
 
 Phase 5 queue status: **Closed (Slices 1–15 accepted/closed with explicit closure criteria satisfied)**.
 
@@ -151,8 +151,8 @@ Support real shared deployment with explicit policy boundaries by sequencing sem
 **Key outputs**
 
 - Phase 6 Slice 1 access/authority baseline semantics (accepted prerequisite)
-- Phase 6 Slice 2A authentication and identity provisioning semantics baseline (current implementation slice)
-- Phase 6 Slice 2B deployment/self-hosting operational baseline semantics for NAS/VPS (next bounded slice)
+- Phase 6 Slice 2A authentication and identity provisioning semantics baseline (accepted prerequisite)
+- Phase 6 Slice 2B deployment/self-hosting operational baseline semantics for NAS/VPS (current implementation slice)
 - Backup, restore, and operational posture guidance aligned to self-hosting constraints
 
 **Why it matters**
@@ -187,3 +187,18 @@ Phase 6 Slice 2A defines baseline authentication and identity provisioning seman
 8. non-goals/deferred concerns for production auth-stack/deployment internals
 
 Next bounded continuation pointer: **Phase 6 Slice 2B — deployment/self-hosting operations baseline semantics**.
+
+### Phase 6 Slice 2B scope note
+
+Phase 6 Slice 2B defines baseline self-hosted deployment and operations semantics in `docs/noema-self-hosted-deployment-operations-baseline.md`, including:
+
+1. single-node-first and operator-controlled deployment posture
+2. NAS/VPS practicality expectations
+3. baseline human-facing and machine-facing access-path semantics
+4. storage/workspace portability and inspectability expectations
+5. backup/restore continuity semantics at baseline depth
+6. upgrade/change-management baseline posture
+7. operator/admin responsibility boundaries
+8. explicit non-goals and deferred hardening/deployment-engineering concerns
+
+Next bounded continuation pointer: **Phase 6 follow-on slice selection after Slice 2B review — backup/restore operational guidance refinement or deployment hardening/profile guidance**.
