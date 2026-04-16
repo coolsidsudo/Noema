@@ -868,6 +868,159 @@ def test_accepted_proposal_results_log_traceability_validation_and_projection_wa
     assert "proposal-accepted-covered" in by_class_proposals
 
 
+def test_accepted_proposal_results_in_must_resolve_to_structured(tmp_path: Path) -> None:
+    repo = tmp_path
+    ws_root = repo / "workspace-root"
+    (ws_root / "ws-structured-results").mkdir(parents=True)
+
+    _write_object(
+        repo / "raw" / "sources" / "raw-base.md",
+        "\n".join(
+            [
+                "id: raw-base",
+                "class: raw",
+                "created_at: 2026-04-01T00:00:00Z",
+                "created_by: tester",
+                "workspace: ws-structured-results",
+                "status: ingested",
+            ]
+        ),
+    )
+    _write_object(
+        repo / "structured" / "pages" / "structured-good.md",
+        "\n".join(
+            [
+                "id: structured-good",
+                "class: structured",
+                "created_at: 2026-04-02T00:00:00Z",
+                "created_by: tester",
+                "workspace: ws-structured-results",
+                "status: active",
+                "supports:",
+                "  - raw-base",
+            ]
+        ),
+    )
+    _write_object(
+        repo / "proposals" / "queue" / "proposal-accepted-structured-ok.md",
+        "\n".join(
+            [
+                "id: proposal-accepted-structured-ok",
+                "class: proposals",
+                "created_at: 2026-04-03T00:00:00Z",
+                "created_by: tester",
+                "workspace: ws-structured-results",
+                "status: accepted",
+                "target_ids:",
+                "  - structured-good",
+                "results_in:",
+                "  - structured-good",
+            ]
+        ),
+    )
+    _write_object(
+        repo / "proposals" / "queue" / "proposal-accepted-raw-result.md",
+        "\n".join(
+            [
+                "id: proposal-accepted-raw-result",
+                "class: proposals",
+                "created_at: 2026-04-04T00:00:00Z",
+                "created_by: tester",
+                "workspace: ws-structured-results",
+                "status: accepted",
+                "target_ids:",
+                "  - structured-good",
+                "results_in:",
+                "  - raw-base",
+            ]
+        ),
+    )
+    _write_object(
+        repo / "proposals" / "queue" / "proposal-accepted-mixed-results.md",
+        "\n".join(
+            [
+                "id: proposal-accepted-mixed-results",
+                "class: proposals",
+                "created_at: 2026-04-05T00:00:00Z",
+                "created_by: tester",
+                "workspace: ws-structured-results",
+                "status: accepted",
+                "target_ids:",
+                "  - structured-good",
+                "results_in:",
+                "  - structured-good",
+                "  - raw-base",
+            ]
+        ),
+    )
+    _write_object(
+        repo / "proposals" / "queue" / "proposal-under-review-non-structured-result.md",
+        "\n".join(
+            [
+                "id: proposal-under-review-non-structured-result",
+                "class: proposals",
+                "created_at: 2026-04-06T00:00:00Z",
+                "created_by: tester",
+                "workspace: ws-structured-results",
+                "status: under_review",
+                "target_ids:",
+                "  - structured-good",
+                "results_in:",
+                "  - raw-base",
+            ]
+        ),
+    )
+    _write_object(
+        repo / "logs" / "events" / "log-results-coverage.md",
+        "\n".join(
+            [
+                "id: log-results-coverage",
+                "class: logs",
+                "created_at: 2026-04-07T00:00:00Z",
+                "created_by: tester",
+                "workspace: ws-structured-results",
+                "status: recorded",
+                "records_event_for:",
+                "  - proposal-accepted-structured-ok",
+                "  - proposal-accepted-raw-result",
+                "  - proposal-accepted-mixed-results",
+                "  - structured-good",
+                "  - raw-base",
+            ]
+        ),
+    )
+
+    records = scan_repository(repo)
+    issues = validate_records(records)
+
+    non_structured_issues = [
+        issue for issue in issues if issue.code == "proposal_results_in_reference_not_structured"
+    ]
+    assert [issue.object_id for issue in non_structured_issues] == [
+        "proposal-accepted-mixed-results",
+        "proposal-accepted-raw-result",
+    ]
+    assert all("raw" in issue.message for issue in non_structured_issues)
+    assert all(issue.object_id != "proposal-accepted-structured-ok" for issue in non_structured_issues)
+    assert all(issue.object_id != "proposal-under-review-non-structured-result" for issue in non_structured_issues)
+
+    run(["--repo-root", str(repo), "--workspaces-root", "workspace-root", "--workspace", "ws-structured-results"])
+    report = json.loads(
+        (ws_root / "ws-structured-results" / "projection" / "build-report.json").read_text(encoding="utf-8")
+    )
+    by_class_proposals = (
+        ws_root / "ws-structured-results" / "projection" / "browse" / "by-class-proposals.md"
+    ).read_text(encoding="utf-8")
+
+    assert report["validation"]["issue_count_by_code"]["proposal_results_in_reference_not_structured"] == 2
+    assert report["validation"]["affected_object_ids_by_code"]["proposal_results_in_reference_not_structured"][
+        "sample_object_ids"
+    ] == ["proposal-accepted-mixed-results", "proposal-accepted-raw-result"]
+    assert "proposal_results_in_reference_not_structured" in by_class_proposals
+    assert "proposal-accepted-mixed-results" in by_class_proposals
+    assert "proposal-accepted-raw-result" in by_class_proposals
+
+
 def test_workspace_home_validation_summary_is_bounded(tmp_path: Path) -> None:
     repo = tmp_path
     ws_root = repo / "workspace-root"
