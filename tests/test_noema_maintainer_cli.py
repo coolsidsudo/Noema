@@ -158,11 +158,12 @@ def test_scan_and_validation_and_build_deterministic(tmp_path: Path) -> None:
     assert report["workspace"] == "ws-alpha"
     assert report["class_counts"]["raw"] == 1
     assert report["validation"]["error_count"] >= 1
-    assert report["validation"]["issue_count_by_class"]["proposals"] == 4
+    assert report["validation"]["issue_count_by_class"]["proposals"] == 5
     assert report["validation"]["issue_count_by_class"]["logs"] == 1
     assert report["validation"]["issue_count_by_code"]["proposal_missing_targets"] == 1
     assert report["validation"]["issue_count_by_code"]["proposal_target_reference_not_found"] == 1
     assert report["validation"]["issue_count_by_code"]["proposal_results_in_reference_not_found"] == 1
+    assert report["validation"]["issue_count_by_code"]["proposal_results_in_missing_log_traceability"] == 1
     assert report["validation"]["issue_count_by_code"]["log_records_event_for_reference_not_found"] == 1
     assert report["validation"]["issue_count_by_code"]["terminal_proposal_missing_log_traceability"] == 1
     assert report["validation"]["affected_object_ids_by_code"]["proposal_missing_targets"]["sample_object_ids"] == [
@@ -208,10 +209,9 @@ def test_scan_and_validation_and_build_deterministic(tmp_path: Path) -> None:
     assert "Targets: `struct-a` (`structured/pages/struct-a.md`)" in by_class_proposals
     assert "Results in: `struct-a` (`structured/pages/struct-a.md`)" in by_class_proposals
     assert "Validation warning: proposal_missing_targets" in by_class_proposals
-    assert (
-        "Validation warning: proposal_results_in_reference_not_found, "
-        "proposal_target_reference_not_found"
-    ) in by_class_proposals
+    assert "proposal_results_in_missing_log_traceability" in by_class_proposals
+    assert "proposal_results_in_reference_not_found" in by_class_proposals
+    assert "proposal_target_reference_not_found" in by_class_proposals
     assert "- `log-a` (recorded) — `logs/events/log-a.md`" in by_class_logs
     assert "Summary: Rebuilt projection after metadata refresh." in by_class_logs
     assert "Records event for: `missing-proposal` (unresolved)" in by_class_logs
@@ -237,12 +237,13 @@ def test_scan_and_validation_and_build_deterministic(tmp_path: Path) -> None:
     assert "- Browse `structured`: `../browse/by-class-structured.md`" in home_readme
     assert "- Proposal review queue: `../review/proposal-queue.md`" in home_readme
     assert "- Recent changes: `../logs/recent-changes.md`" in home_readme
-    assert "- Validation issue count: `5`" in home_readme
+    assert "- Validation issue count: `6`" in home_readme
     assert "proposal_target_reference_not_found" in home_readme
     assert "proposal_results_in_reference_not_found" in home_readme
+    assert "proposal_results_in_missing_log_traceability" in home_readme
     assert "log_records_event_for_reference_not_found" in home_readme
     assert "proposal_missing_targets" in home_readme
-    assert "terminal_proposal_missing_log_traceability" in home_readme
+    assert "_1 more issue code(s) not shown._" in home_readme
     assert "Targets: `struct-a` (`structured/pages/struct-a.md`)" in proposal_queue
     assert "Supporting raw ids: `raw-a` (`raw/sources/raw-a.md`)" in proposal_queue
     assert "Results in: `struct-a` (`structured/pages/struct-a.md`)" in proposal_queue
@@ -408,6 +409,7 @@ def test_relationship_cross_reference_checks_workspace_local(tmp_path: Path) -> 
                 "status: recorded",
                 "records_event_for:",
                 "  - proposal-accepted-ok",
+                "  - structured-one",
             ]
         ),
     )
@@ -572,10 +574,11 @@ def test_relationship_cross_reference_checks_workspace_local(tmp_path: Path) -> 
     assert "Supersedes: `missing-prior-object` (unresolved)" in browse_structured
     assert "Validation warning: structured_supports_reference_not_found_raw" in browse_structured
     assert "Validation warning: supersedes_reference_not_found" in browse_structured
-    assert report["validation"]["issue_count_by_class"]["proposals"] == 4
+    assert report["validation"]["issue_count_by_class"]["proposals"] == 5
     assert report["validation"]["issue_count_by_class"]["structured"] == 2
     assert report["validation"]["issue_count_by_class"]["logs"] == 1
     assert report["validation"]["issue_count_by_code"]["proposal_target_reference_not_found"] == 2
+    assert report["validation"]["issue_count_by_code"]["proposal_results_in_missing_log_traceability"] == 1
     assert report["validation"]["unresolved_reference_summary"]["proposal_targets"]["issue_count"] == 2
     assert report["validation"]["unresolved_reference_summary"]["proposal_results_in"]["issue_count"] == 1
     assert report["validation"]["unresolved_reference_summary"]["log_records_event_for"]["issue_count"] == 1
@@ -676,6 +679,7 @@ def test_accepted_proposal_results_in_completeness_validation(tmp_path: Path) ->
                 "records_event_for:",
                 "  - proposal-accepted-missing-results",
                 "  - proposal-accepted-with-results",
+                "  - structured-r1",
             ]
         ),
     )
@@ -702,6 +706,166 @@ def test_accepted_proposal_results_in_completeness_validation(tmp_path: Path) ->
         "sample_object_ids"
     ] == ["proposal-accepted-missing-results"]
     assert "Validation warning: accepted_proposal_missing_results_in" in by_class_proposals
+
+
+def test_accepted_proposal_results_log_traceability_validation_and_projection_warning(tmp_path: Path) -> None:
+    repo = tmp_path
+    ws_root = repo / "workspace-root"
+    (ws_root / "ws-apply").mkdir(parents=True)
+
+    _write_object(
+        repo / "raw" / "sources" / "raw-apply.md",
+        "\n".join(
+            [
+                "id: raw-apply",
+                "class: raw",
+                "created_at: 2026-04-01T00:00:00Z",
+                "created_by: tester",
+                "workspace: ws-apply",
+                "status: ingested",
+            ]
+        ),
+    )
+    _write_object(
+        repo / "structured" / "pages" / "structured-a.md",
+        "\n".join(
+            [
+                "id: structured-a",
+                "class: structured",
+                "created_at: 2026-04-02T00:00:00Z",
+                "created_by: tester",
+                "workspace: ws-apply",
+                "status: active",
+                "supports:",
+                "  - raw-apply",
+            ]
+        ),
+    )
+    _write_object(
+        repo / "structured" / "pages" / "structured-b.md",
+        "\n".join(
+            [
+                "id: structured-b",
+                "class: structured",
+                "created_at: 2026-04-03T00:00:00Z",
+                "created_by: tester",
+                "workspace: ws-apply",
+                "status: active",
+                "supports:",
+                "  - raw-apply",
+            ]
+        ),
+    )
+    _write_object(
+        repo / "proposals" / "queue" / "proposal-accepted-covered.md",
+        "\n".join(
+            [
+                "id: proposal-accepted-covered",
+                "class: proposals",
+                "created_at: 2026-04-04T00:00:00Z",
+                "created_by: tester",
+                "workspace: ws-apply",
+                "status: accepted",
+                "target_ids:",
+                "  - structured-a",
+                "results_in:",
+                "  - structured-a",
+            ]
+        ),
+    )
+    _write_object(
+        repo / "proposals" / "queue" / "proposal-accepted-missing-log-coverage.md",
+        "\n".join(
+            [
+                "id: proposal-accepted-missing-log-coverage",
+                "class: proposals",
+                "created_at: 2026-04-05T00:00:00Z",
+                "created_by: tester",
+                "workspace: ws-apply",
+                "status: accepted",
+                "target_ids:",
+                "  - structured-a",
+                "results_in:",
+                "  - structured-a",
+                "  - structured-b",
+            ]
+        ),
+    )
+    _write_object(
+        repo / "proposals" / "queue" / "proposal-under-review.md",
+        "\n".join(
+            [
+                "id: proposal-under-review",
+                "class: proposals",
+                "created_at: 2026-04-06T00:00:00Z",
+                "created_by: tester",
+                "workspace: ws-apply",
+                "status: under_review",
+                "target_ids:",
+                "  - structured-a",
+                "results_in:",
+                "  - structured-b",
+            ]
+        ),
+    )
+    _write_object(
+        repo / "logs" / "events" / "log-apply-covered.md",
+        "\n".join(
+            [
+                "id: log-apply-covered",
+                "class: logs",
+                "created_at: 2026-04-07T00:00:00Z",
+                "created_by: tester",
+                "workspace: ws-apply",
+                "status: recorded",
+                "records_event_for:",
+                "  - proposal-accepted-covered",
+                "  - structured-a",
+            ]
+        ),
+    )
+    _write_object(
+        repo / "logs" / "events" / "log-apply-partial.md",
+        "\n".join(
+            [
+                "id: log-apply-partial",
+                "class: logs",
+                "created_at: 2026-04-08T00:00:00Z",
+                "created_by: tester",
+                "workspace: ws-apply",
+                "status: recorded",
+                "records_event_for:",
+                "  - proposal-accepted-missing-log-coverage",
+                "  - structured-a",
+            ]
+        ),
+    )
+
+    records = scan_repository(repo)
+    issues = validate_records(records)
+
+    missing_apply_coverage_issues = [
+        issue for issue in issues if issue.code == "proposal_results_in_missing_log_traceability"
+    ]
+    assert len(missing_apply_coverage_issues) == 1
+    assert missing_apply_coverage_issues[0].object_id == "proposal-accepted-missing-log-coverage"
+    assert "structured-b" in missing_apply_coverage_issues[0].message
+    assert all(issue.object_id != "proposal-accepted-covered" for issue in missing_apply_coverage_issues)
+    assert all(issue.object_id != "proposal-under-review" for issue in missing_apply_coverage_issues)
+
+    run(["--repo-root", str(repo), "--workspaces-root", "workspace-root", "--workspace", "ws-apply"])
+    report = json.loads((ws_root / "ws-apply" / "projection" / "build-report.json").read_text(encoding="utf-8"))
+    by_class_proposals = (ws_root / "ws-apply" / "projection" / "browse" / "by-class-proposals.md").read_text(
+        encoding="utf-8"
+    )
+
+    assert report["validation"]["issue_count_by_code"]["proposal_results_in_missing_log_traceability"] == 1
+    assert report["validation"]["affected_object_ids_by_code"]["proposal_results_in_missing_log_traceability"][
+        "sample_object_ids"
+    ] == ["proposal-accepted-missing-log-coverage"]
+    assert "proposal_results_in_missing_log_traceability" in by_class_proposals
+    assert "proposal-accepted-missing-log-coverage" in by_class_proposals
+    assert "proposal-accepted-covered" in by_class_proposals
 
 
 def test_workspace_home_validation_summary_is_bounded(tmp_path: Path) -> None:
