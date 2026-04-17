@@ -12,11 +12,17 @@ services:
     image: python:3.12-alpine
     container_name: noema-agent-surface
     working_dir: /surface
-    command: ["python", "-m", "http.server", "8787", "--bind", "0.0.0.0"]
+    command: ["python", "/surface/agent_surface/server.py"]
+    environment:
+      - NOEMA_AGENT_PORT=8787
+      - NOEMA_MACHINE_REPO_ROOT=/repo
+      - NOEMA_AGENT_CONTRACT_PATH=/surface/contracts/agent-surface-baseline.json
     ports:
       - "${NOEMA_AGENT_PORT:-8787}:8787"
     volumes:
-      - ./contracts:/surface:ro
+      - ${NOEMA_REPO_ROOT:?set in reference.env}:/repo:ro
+      - ./agent_surface:/surface/agent_surface:ro
+      - ./contracts:/surface/contracts:ro
     restart: unless-stopped
 
   noema-maintainer:

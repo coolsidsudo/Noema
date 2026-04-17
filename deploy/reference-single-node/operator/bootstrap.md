@@ -57,13 +57,30 @@ Open:
 
 This confirms a GUI-friendly projection browse path aligned with accepted human-client baseline behavior.
 
-## 4) Validate bounded machine-facing path
+## 4) Validate bounded machine-facing executable facade
 
-Open:
+Health check:
 
-- `http://<host>:${NOEMA_AGENT_PORT}/agent-surface-baseline.json`
+- `http://<host>:${NOEMA_AGENT_PORT}/healthz`
 
-This confirms an operator-visible bounded machine-facing surface anchor with proposal-layer-only write posture.
+Read/query operation checks (browser or curl examples):
+
+- `http://<host>:${NOEMA_AGENT_PORT}/v1/list_objects?class=structured&limit=5`
+- `http://<host>:${NOEMA_AGENT_PORT}/v1/get_object_by_id?id=structured/README.md`
+
+Contract visibility check:
+
+- `http://<host>:${NOEMA_AGENT_PORT}/v1/contract`
+
+Deferred continuity check (proposal-only posture preserved):
+
+- `http://<host>:${NOEMA_AGENT_PORT}/v1/submit_proposal`
+
+Expected behavior in this slice:
+
+- `list_objects` and `get_object_by_id` are executable
+- `submit_proposal` returns deferred/non-executable status
+- canonical publish/apply remains out of scope
 
 ## 5) Validate maintainer operational path
 
@@ -75,7 +92,17 @@ docker exec -it noema-maintainer python -m packages.noema_maintainer.cli --repo-
 
 This confirms maintainer/curator path availability without granting unreviewed canonical-write automation.
 
-## 6) Minimal continuity posture checks
+## 6) Run reference-package conformance checks
+
+From repository root:
+
+```bash
+python deploy/reference-single-node/checks/check_reference_package.py
+```
+
+This verifies the executable substitution and boundedness claims remain true in package assets and docs.
+
+## 7) Minimal continuity posture checks
 
 Before considering bootstrap complete, operator should verify:
 
@@ -84,7 +111,7 @@ Before considering bootstrap complete, operator should verify:
 3. `deploy/reference-single-node/config/reference.env` is preserved in operator continuity records
 4. compose package files and contract artifact are versioned/tracked for reproducible re-bootstrap
 
-## 7) Stop/start lifecycle
+## 8) Stop/start lifecycle
 
 Stop:
 
@@ -123,4 +150,4 @@ This operator bootstrap preserves:
 
 ## Next-slice pointer
 
-After this bootstrap baseline, next bounded work should validate reference-package conformance and incrementally replace placeholder surfaces with executable Noema runtime components while preserving current boundaries.
+After this executable-substitution baseline, next bounded work should focus on proposal-submission continuity wiring and deeper runtime-level conformance checks while preserving current boundaries.
