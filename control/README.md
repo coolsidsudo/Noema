@@ -19,3 +19,4 @@ Those changes do **not** change Noema's architecture or system semantics unless 
 
 - `development-plan.md`
 - `workflow-baseline.md`
+- `phase-7-slice-1-reference-deployment-package.md`
