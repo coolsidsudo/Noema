@@ -8,9 +8,9 @@ The accepted architecture baseline is now actively adopted for implementation wo
 
 Accepted completed slices: **Phase 0 (architecture baseline), Phase 1 (repository skeleton), and the full Phase 2 definition package (core object conventions, metadata profile, relationship/traceability conventions, and index/catalog baseline)**.
 
-Latest completed/accepted slice: **Phase 6 Slice 5 — implementation-constrained hardening conformance/validation guidance baseline semantics**.
+Latest completed/accepted slice: **Phase 6 Slice 6 — conformance evidence interoperability refinement scoping**.
 
-Current execution focus: **Phase 6 Slice 6 scoping under review — conformance evidence interoperability refinement (to be explicitly scoped)**.
+Current execution focus: **Slice 6 acceptance-close sync is complete in control-state; Phase 6 Slice 7 remains next queued/proposed and is not yet opened**.
 
 Phase 5 queue status: **Closed (Slices 1–15 accepted/closed with explicit closure criteria satisfied)**.
 
@@ -153,7 +153,7 @@ Support real shared deployment with explicit policy boundaries by sequencing sem
 - Backup and restore operational guidance refinement baseline semantics (defined prior slice)
 - Deployment hardening/profile guidance baseline semantics (accepted Slice 4 prerequisite)
 - Implementation-constrained hardening conformance/validation guidance baseline semantics (accepted Slice 5 prerequisite)
-- Conformance evidence interoperability refinement (current Slice 6 scoping slice under review)
+- Conformance evidence interoperability refinement scoping (accepted Slice 6 outcome)
 
 **Why it matters**
 
@@ -245,3 +245,17 @@ Phase 6 Slice 5 defines implementation-constrained hardening conformance/validat
 6. explicit relationship boundaries with accepted Slice 1, Slice 2A, Slice 2B, Slice 3, and Slice 4 semantics
 
 Next bounded continuation pointer: **Phase 6 Slice 6 — conformance evidence interoperability refinement (current under-review scoping slice)**.
+
+
+### Phase 6 Slice 6 scope note
+
+Phase 6 Slice 6 defines scoping semantics for conformance evidence interoperability refinement in `docs/noema-conformance-evidence-interoperability-refinement-scoping.md`, including:
+
+1. bounded definition of conformance evidence meaning after accepted Slice 5 semantics
+2. explicit interoperability-interpretation gap statement without reopening prior slices
+3. candidate evidence classes and evidence-shape dimensions for possible follow-on refinement
+4. minimum interpretation boundary rules without toolchain/schema/storage mandates
+5. explicit relationship boundaries with accepted Slice 4 and Slice 5 semantics
+6. explicit out-of-scope and anti-drift guardrails for harness/scanner/benchmark lock-in
+
+Next bounded continuation pointer: **Phase 6 Slice 7 remains next substantive queued/proposed follow-on (evidence interpretation profile/claim-mapping semantics), to be explicitly opened in a separate under-review slice if started**.
