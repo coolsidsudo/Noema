@@ -55,9 +55,9 @@ Implementation should progress in development-plan order unless a documented dep
 - Completed and accepted: Phase 0 architecture baseline
 - Completed and accepted: Phase 1 repository skeleton
 - Completed and accepted: Phase 2 definition package (core object conventions, metadata profile, relationship/traceability conventions, and index/catalog baseline)
-- Latest completed/accepted slice: Phase 6 Slice 5 implementation-constrained hardening conformance/validation guidance baseline semantics
-- Current active slice: Phase 6 Slice 6 conformance evidence interoperability refinement scoping (under review)
-- Next queued slice: Phase 6 next substantive slice after Slice 6 scoping closure (to be explicitly scoped)
+- Latest completed/accepted slice: Phase 6 Slice 6 conformance evidence interoperability refinement scoping
+- Current active slice: none (Slice 7 not yet opened)
+- Next queued slice: Phase 6 Slice 7 evidence interpretation profile/claim-mapping semantics (proposed; open explicitly if started)
 - Phase 5 queue status: closed (Slices 1–15 accepted/closed with explicit closure criteria satisfied)
 
 ### Rule 4: Make each PR traceable to baseline
@@ -70,31 +70,31 @@ Each implementation PR should include:
 
 ## Current implementation slice (immediate)
 
-The current implementation slice is **Phase 6 Slice 6: conformance evidence interoperability refinement scoping (under review)**.
+There is **no currently opened under-review slice** at this moment; Phase 6 Slice 6 is accepted and Slice 7 remains queued/proposed pending explicit open.
 
 ### Slice objective
 
-Define the bounded follow-on scope for conformance evidence interoperability refinement so accepted Slice 5 conformance/validation semantics can be adopted in implementation-facing workflows without changing accepted baseline semantics.
+Keep control-state synchronized to the accepted Slice 6 outcome without reopening docs semantics, and preserve coherent pointer language for a possible Slice 7 open.
 
 ### Slice deliverables
 
-1. Control-state scoping note for Slice 6 follow-on objective and boundary posture.
-2. Explicit continuity anchoring to accepted Slice 5 conformance/validation guidance semantics.
-3. Next-slice pointer coherence without prematurely claiming acceptance-close for Slice 6.
+1. Record Slice 6 as latest completed/accepted slice in control-state.
+2. Remove stale Slice 6 under-review wording from active-slice status lines.
+3. Keep Slice 7 as queued/proposed only unless explicitly opened in a later patch.
 
 ### Slice done criteria
 
 This slice is complete when:
 
-- Slice 5 remains recorded as accepted and unchanged in docs semantics.
-- Slice 6 follow-on scope is explicitly marked as under-review scoping (not accepted).
-- Control-state continuity and next-pointer language remain coherent with accepted flow.
+- Slice 6 is recorded as accepted in control-state.
+- Control-state no longer claims Slice 6 is under review.
+- Next-pointer language remains coherent: Slice 7 is queued/proposed and not yet opened.
 
 ### Slice 5 acceptance continuity posture note
 
-Accepted Phase 6 Slice 5 semantics are captured in `docs/noema-hardening-conformance-validation-guidance-baseline.md` and provide the direct semantic prerequisite for current Slice 6 follow-on scoping work.
+Accepted Phase 6 Slice 5 semantics are captured in `docs/noema-hardening-conformance-validation-guidance-baseline.md`, and accepted Slice 6 scoping semantics are captured in `docs/noema-conformance-evidence-interoperability-refinement-scoping.md`.
 
-**Review posture:** Phase 6 Slice 6 follow-on scoping is the current implementation slice under review; acceptance-close state updates remain deferred until explicit review closure.
+**Review posture:** No new under-review slice is opened by this patch; Slice 7 remains queued/proposed until explicitly started.
 
 
 ## Definition of done for baseline adoption
