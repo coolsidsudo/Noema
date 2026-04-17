@@ -55,9 +55,9 @@ Implementation should progress in development-plan order unless a documented dep
 - Completed and accepted: Phase 0 architecture baseline
 - Completed and accepted: Phase 1 repository skeleton
 - Completed and accepted: Phase 2 definition package (core object conventions, metadata profile, relationship/traceability conventions, and index/catalog baseline)
-- Latest completed/accepted slice: Phase 7 Slice 2 reference-package conformance checks and executable runtime substitution planning
+- Latest completed/accepted slice: Phase 7 Slice 3 first executable runtime substitution increment (recommended: bounded machine-facing facade) with matching conformance-check expansion
 - Current active slice: none (no under-review slice currently opened)
-- Next queued slice: Phase 7 Slice 3 first executable runtime substitution increment (recommended: bounded machine-facing facade) with matching conformance-check expansion (queued/proposed)
+- Next queued slice: Phase 7 Slice 4 bounded executable runtime substitution follow-on with matching conformance-check expansion continuation (queued/proposed; not yet opened)
 - Phase 5 queue status: closed (Slices 1–15 accepted/closed with explicit closure criteria satisfied)
 
 ### Rule 4: Make each PR traceable to baseline
@@ -79,25 +79,25 @@ For repository execution workflow:
 
 ## Current implementation slice (immediate)
 
-There is **no currently opened under-review slice** at this moment; Phase 7 Slice 2 is accepted/completed and Phase 7 Slice 3 remains queued/proposed pending explicit open.
+There is **no currently opened under-review slice** at this moment; Phase 7 Slice 3 is accepted/completed and Phase 7 Slice 4 remains queued/proposed pending explicit open.
 
 ### Slice objective
 
-Keep control-state synchronized to the accepted Phase 7 Slice 2 outcome without opening a new under-review slice by default.
+Keep control-state synchronized to the accepted Phase 7 Slice 3 outcome without opening a new under-review slice by default.
 
 ### Slice deliverables
 
-1. Record Phase 7 Slice 2 as latest completed/accepted slice in control-state.
-2. Remove stale under-review wording for Phase 7 Slice 2 from active-slice status lines.
-3. Keep Phase 7 Slice 3 as queued/proposed only unless explicitly opened in a later patch.
+1. Record Phase 7 Slice 3 as latest completed/accepted slice in control-state.
+2. Remove stale under-review wording for Phase 7 Slice 3 from active-slice status lines.
+3. Keep Phase 7 Slice 4 as queued/proposed only unless explicitly opened in a later patch.
 
 ### Slice done criteria
 
 This slice is complete when:
 
-- Phase 7 Slice 2 is recorded as accepted in control-state.
-- Control-state no longer claims Phase 7 Slice 2 is under review.
-- Next-pointer language remains coherent: Phase 7 Slice 3 is queued/proposed and not yet opened.
+- Phase 7 Slice 3 is recorded as accepted in control-state.
+- Control-state no longer claims Phase 7 Slice 3 is under review.
+- Next-pointer language remains coherent: Phase 7 Slice 4 is queued/proposed and not yet opened.
 
 ### Continuity note
 
@@ -106,9 +106,9 @@ Accepted Phase 6 deployment and backup/restore semantics remain authoritative in
 - `docs/noema-self-hosted-deployment-operations-baseline.md`
 - `docs/noema-backup-restore-operational-guidance-baseline.md`
 
-Accepted Phase 7 Slice 2 package checks and substitution-planning assets remain in `deploy/reference-single-node/`; this patch only synchronizes control-state and does not modify deployment assets.
+Accepted Phase 7 Slice 3 package/runtime-substitution and conformance-expansion assets remain in `deploy/reference-single-node/`; this patch only synchronizes control-state and does not modify deployment assets.
 
-**Review posture:** No new under-review slice is opened by this patch; Phase 7 Slice 3 remains queued/proposed until explicitly started.
+**Review posture:** No new under-review slice is opened by this patch; Phase 7 Slice 4 remains queued/proposed until explicitly started.
 
 
 ## Definition of done for baseline adoption
