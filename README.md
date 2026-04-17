@@ -39,7 +39,7 @@ Phase 1 introduces a minimal, architecture-aligned structure:
 - `logs/` — append-oriented operational records
 - `schemas/` — future schema and validation conventions
 - `packages/` — future services and libraries
-- `deploy/` — deployment assets and templates
+- `deploy/` — deployment assets, templates, and single-node reference package baseline
 - `examples/` — sample/reference layouts
 
 See `CONTRIBUTING.md` for baseline-first contribution guidance.
@@ -74,6 +74,7 @@ See `CONTRIBUTING.md` for baseline-first contribution guidance.
 - [Apply/recovery interoperability consistency and conformance guidance](docs/noema-apply-recovery-conformance-guidance.md)
 - [Contributing guide](CONTRIBUTING.md)
 - [Control layer overview](control/README.md)
+- [Reference single-node deployment package](deploy/reference-single-node/README.md)
 - [Repository development plan](control/development-plan.md)
 - [Repository workflow baseline](control/workflow-baseline.md)
 

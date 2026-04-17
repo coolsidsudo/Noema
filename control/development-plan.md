@@ -8,11 +8,45 @@ The accepted architecture baseline is now actively adopted for implementation wo
 
 Accepted completed slices: **Phase 0 (architecture baseline), Phase 1 (repository skeleton), and the full Phase 2 definition package (core object conventions, metadata profile, relationship/traceability conventions, and index/catalog baseline)**.
 
-Latest completed/accepted slice: **Phase 6 Slice 6 — conformance evidence interoperability refinement scoping**.
+Latest completed/accepted slice: **Phase 7 Slice 1 — minimal reference deployment package and operator bootstrap baseline**.
 
-Current execution focus: **Slice 6 acceptance-close sync is complete in control-state; Phase 6 Slice 7 remains next queued/proposed and is not yet opened**.
+Current execution focus: **No current under-review slice is open; Phase 7 Slice 2 remains next queued/proposed and is not yet opened**.
 
 Phase 5 queue status: **Closed (Slices 1–15 accepted/closed with explicit closure criteria satisfied)**.
+
+
+## Phase 7: Reference deployment packaging baseline
+
+**Objective**
+
+Move from accepted semantics into a bounded, concrete, single-node reference deployment package that operators can stand up and understand.
+
+**Key outputs**
+
+- Minimal repo-native reference deployment package under `deploy/`
+- Operator bootstrap guide for single-node self-hosted setup
+- Minimal configuration and layout artifacts for practical bootstrap
+- Explicit mapping across storage substrate, human path, machine path, and maintainer path
+- Continuity-aware posture aligned with accepted backup/restore semantics
+
+**Why it matters**
+
+Accepted baseline semantics are now broad enough that the highest-value next step is practical realizability. This phase anchors semantics in a concrete reference package while staying implementation-light and avoiding enterprise/orchestration drift.
+
+### Phase 7 Slice 1 scope note
+
+Phase 7 Slice 1 defines and implements a minimal single-node reference deployment package and operator bootstrap baseline, including:
+
+1. repo-native package assets under `deploy/reference-single-node/`
+2. operator bootstrap flow for one bounded self-hosted shape
+3. explicit boundary between stable `docs/` semantics and repo-native deployment assets
+4. concrete mapping for human-facing, bounded machine-facing, and maintainer/curator paths
+5. minimal continuity-aware operator posture for state preservation assumptions
+6. explicit non-goals to prevent orchestration/enterprise/productization drift
+
+Acceptance posture: **accepted/completed**.
+
+Next bounded continuation pointer: **Phase 7 Slice 2 — reference-package conformance checks and executable runtime substitution planning**.
 
 ## Phase 0: Architecture baseline
 

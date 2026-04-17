@@ -1,0 +1,26 @@
+{
+  "version": "phase7-slice1-reference",
+  "purpose": "Minimal bounded machine-facing reference surface artifact",
+  "operations": [
+    {
+      "name": "get_object_by_id",
+      "authority": "read/query only",
+      "notes": "Canonical write is out of scope; aligns with accepted agent surface contract baseline."
+    },
+    {
+      "name": "list_objects",
+      "authority": "read/query only",
+      "notes": "Bounded discovery path with workspace/scope filtering semantics."
+    },
+    {
+      "name": "submit_proposal",
+      "authority": "proposal layer only",
+      "notes": "Submit candidate changes; does not directly publish structured canonical artifacts."
+    }
+  ],
+  "non_goals": [
+    "Production auth runtime internals",
+    "Policy engine implementation details",
+    "Unbounded filesystem or canonical write access"
+  ]
+}

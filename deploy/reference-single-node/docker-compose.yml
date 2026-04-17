@@ -1,0 +1,30 @@
+services:
+  noema-human-projection:
+    image: nginx:1.27-alpine
+    container_name: noema-human-projection
+    ports:
+      - "${NOEMA_HUMAN_PORT:-8080}:80"
+    volumes:
+      - ${NOEMA_REPO_ROOT:?set in reference.env}:/usr/share/nginx/html/noema:ro
+    restart: unless-stopped
+
+  noema-agent-surface:
+    image: python:3.12-alpine
+    container_name: noema-agent-surface
+    working_dir: /surface
+    command: ["python", "-m", "http.server", "8787", "--bind", "0.0.0.0"]
+    ports:
+      - "${NOEMA_AGENT_PORT:-8787}:8787"
+    volumes:
+      - ./contracts:/surface:ro
+    restart: unless-stopped
+
+  noema-maintainer:
+    image: python:3.12-slim
+    container_name: noema-maintainer
+    working_dir: /opt/noema
+    command: ["sleep", "infinity"]
+    volumes:
+      - ${NOEMA_REPO_ROOT:?set in reference.env}:/opt/noema
+      - ${NOEMA_STATE_ROOT:?set in reference.env}:/var/lib/noema
+    restart: unless-stopped
