@@ -8,9 +8,9 @@ The accepted architecture baseline is now actively adopted for implementation wo
 
 Accepted completed slices: **Phase 0 (architecture baseline), Phase 1 (repository skeleton), and the full Phase 2 definition package (core object conventions, metadata profile, relationship/traceability conventions, and index/catalog baseline)**.
 
-Latest completed/accepted slice: **Phase 7 Slice 1 — minimal reference deployment package and operator bootstrap baseline**.
+Latest completed/accepted slice: **Phase 7 Slice 2 — reference-package conformance checks and executable runtime substitution planning**.
 
-Current execution focus: **No current under-review slice is open; Phase 7 Slice 2 remains next queued/proposed and is not yet opened**.
+Current execution focus: **No current under-review slice is open; next bounded Phase 7 continuation is queued/proposed and not yet opened**.
 
 Phase 5 queue status: **Closed (Slices 1–15 accepted/closed with explicit closure criteria satisfied)**.
 
@@ -46,7 +46,7 @@ Phase 7 Slice 1 defines and implements a minimal single-node reference deploymen
 
 Acceptance posture: **accepted/completed**.
 
-Next bounded continuation pointer: **Phase 7 Slice 2 — reference-package conformance checks and executable runtime substitution planning**.
+Next bounded continuation pointer: **Phase 7 Slice 3 — first executable runtime substitution increment (recommended: bounded machine-facing facade) with matching conformance-check expansion**.
 
 ## Phase 0: Architecture baseline
 
