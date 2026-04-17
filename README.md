@@ -58,6 +58,7 @@ See `CONTRIBUTING.md` for baseline-first contribution guidance.
 - [Self-hosted deployment and operations baseline](docs/noema-self-hosted-deployment-operations-baseline.md)
 - [Backup and restore operational guidance baseline](docs/noema-backup-restore-operational-guidance-baseline.md)
 - [Deployment hardening and profile guidance baseline](docs/noema-deployment-hardening-profile-guidance-baseline.md)
+- [Hardening conformance and validation guidance baseline](docs/noema-hardening-conformance-validation-guidance-baseline.md)
 - [Core knowledge object conventions](docs/noema-core-object-conventions.md)
 - [Baseline relationship and traceability conventions](docs/noema-relationship-traceability-conventions.md)
 - [Baseline object metadata profile (v0)](docs/noema-object-metadata-profile-v0.md)

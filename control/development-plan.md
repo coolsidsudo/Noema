@@ -8,12 +8,9 @@ The accepted architecture baseline is now actively adopted for implementation wo
 
 Accepted completed slices: **Phase 0 (architecture baseline), Phase 1 (repository skeleton), and the full Phase 2 definition package (core object conventions, metadata profile, relationship/traceability conventions, and index/catalog baseline)**.
 
-Latest completed/accepted slice: **Phase 6 Slice 3 — backup and restore operational guidance refinement baseline semantics**.
+Latest completed/accepted slice: **Phase 6 Slice 5 — implementation-constrained hardening conformance/validation guidance baseline semantics**.
 
-Current execution focus: **Phase 6 follow-on slice implementation under review — deployment hardening/profile guidance baseline semantics**.
-
-
-Next queued slice: **Phase 6 post-hardening follow-on slice: implementation-constrained hardening conformance/validation guidance (or tightly justified equivalent)**.
+Current execution focus: **Phase 6 Slice 6 scoping under review — conformance evidence interoperability refinement (to be explicitly scoped)**.
 
 Phase 5 queue status: **Closed (Slices 1–15 accepted/closed with explicit closure criteria satisfied)**.
 
@@ -154,7 +151,9 @@ Support real shared deployment with explicit policy boundaries by sequencing sem
 - Phase 6 Slice 2A authentication and identity provisioning semantics baseline (accepted prerequisite)
 - Phase 6 Slice 2B deployment/self-hosting operational baseline semantics for NAS/VPS (accepted prerequisite)
 - Backup and restore operational guidance refinement baseline semantics (defined prior slice)
-- Deployment hardening/profile guidance baseline semantics (current implementation slice)
+- Deployment hardening/profile guidance baseline semantics (accepted Slice 4 prerequisite)
+- Implementation-constrained hardening conformance/validation guidance baseline semantics (accepted Slice 5 prerequisite)
+- Conformance evidence interoperability refinement (current Slice 6 scoping slice under review)
 
 **Why it matters**
 
@@ -218,11 +217,11 @@ Phase 6 Slice 3 defines baseline backup and restore operational guidance semanti
 7. relationship to accepted Slice 2B deployment baseline
 8. explicit non-goals/deferred DR/hardening concerns
 
-Next bounded continuation pointer: **Phase 6 follow-on slice — deployment hardening/profile guidance**.
+Next bounded continuation pointer: **Phase 6 Slice 4 — deployment hardening/profile guidance baseline semantics**.
 
-### Phase 6 follow-on (post-Slice 3) scope note
+### Phase 6 Slice 4 scope note
 
-Phase 6 follow-on slice defines deployment hardening/profile guidance baseline semantics in `docs/noema-deployment-hardening-profile-guidance-baseline.md`, including:
+Phase 6 Slice 4 defines deployment hardening/profile guidance baseline semantics in `docs/noema-deployment-hardening-profile-guidance-baseline.md`, including:
 
 1. Noema-specific hardening meaning at semantics-first depth
 2. operator profile-guidance posture across exposure/hosting contexts
@@ -232,4 +231,17 @@ Phase 6 follow-on slice defines deployment hardening/profile guidance baseline s
 6. explicit baseline operator responsibility boundaries
 7. explicit non-goals/deferred implementation internals
 
-Next bounded continuation pointer: **Phase 6 post-hardening follow-on slice — implementation-constrained hardening conformance/validation guidance**.
+Next bounded continuation pointer: **Phase 6 Slice 5 — implementation-constrained hardening conformance/validation guidance baseline semantics**.
+
+### Phase 6 Slice 5 scope note
+
+Phase 6 Slice 5 defines implementation-constrained hardening conformance/validation guidance baseline semantics in `docs/noema-hardening-conformance-validation-guidance-baseline.md`, including:
+
+1. hardening conformance and validation posture meaning in Noema terms
+2. selected hardening concern categories with minimum conformance dimensions
+3. bounded cross-profile interpretation for baseline-required vs stronger safeguards
+4. minimum validation scenario/check classes without harness mandates
+5. compatibility mapping guidance for richer local implementation stacks
+6. explicit relationship boundaries with accepted Slice 1, Slice 2A, Slice 2B, Slice 3, and Slice 4 semantics
+
+Next bounded continuation pointer: **Phase 6 Slice 6 — conformance evidence interoperability refinement (current under-review scoping slice)**.

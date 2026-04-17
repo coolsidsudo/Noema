@@ -4,7 +4,7 @@
 
 This document defines the stable baseline semantics for deployment hardening and deployment-profile guidance in Noema.
 
-This stable system-definition document is produced for the **Phase 6 follow-on slice after Slice 3 (current implementation slice under review)** and extends accepted Phase 6 semantics without redefining them.
+This stable system-definition document is produced for **Phase 6 Slice 4 (accepted prior substantive slice)** and extends accepted Phase 6 semantics without redefining them.
 
 The slice is intentionally semantics-first and implementation-light. It defines what hardening means in Noema terms, which hardening concern categories are baseline-relevant in self-hosted operation, and how operator-selected deployment profiles should be interpreted.
 
@@ -20,7 +20,7 @@ Accepted Phase 6 slices already established:
 
 Slice 3 then refined backup/restore continuity guidance at baseline depth.
 
-This follow-on slice defines deployment hardening/profile guidance as a bounded semantic layer so operators can choose stronger deployment posture without collapsing established policy, identity, deployment, or continuity meanings.
+Phase 6 Slice 4 defines deployment hardening/profile guidance as a bounded semantic layer so operators can choose stronger deployment posture without collapsing established policy, identity, deployment, or continuity meanings.
 
 In baseline terms:
 
