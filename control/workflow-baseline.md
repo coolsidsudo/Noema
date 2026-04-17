@@ -55,9 +55,9 @@ Implementation should progress in development-plan order unless a documented dep
 - Completed and accepted: Phase 0 architecture baseline
 - Completed and accepted: Phase 1 repository skeleton
 - Completed and accepted: Phase 2 definition package (core object conventions, metadata profile, relationship/traceability conventions, and index/catalog baseline)
-- Latest completed/accepted slice: Phase 6 Slice 3 backup and restore operational guidance refinement baseline semantics
-- Current active slice: Phase 6 follow-on deployment hardening/profile guidance baseline semantics (under review)
-- Next queued slice: Phase 6 post-hardening follow-on slice (implementation-constrained hardening conformance/validation guidance or tightly justified equivalent)
+- Latest completed/accepted slice: Phase 6 Slice 5 implementation-constrained hardening conformance/validation guidance baseline semantics
+- Current active slice: Phase 6 Slice 6 conformance evidence interoperability refinement scoping (under review)
+- Next queued slice: Phase 6 next substantive slice after Slice 6 scoping closure (to be explicitly scoped)
 - Phase 5 queue status: closed (Slices 1–15 accepted/closed with explicit closure criteria satisfied)
 
 ### Rule 4: Make each PR traceable to baseline
@@ -70,34 +70,31 @@ Each implementation PR should include:
 
 ## Current implementation slice (immediate)
 
-The current implementation slice is **Phase 6 follow-on: deployment hardening/profile guidance baseline semantics (under review)**.
+The current implementation slice is **Phase 6 Slice 6: conformance evidence interoperability refinement scoping (under review)**.
 
 ### Slice objective
 
-Define the stable baseline semantics for deployment hardening/profile guidance so accepted Slice 1, Slice 2A, Slice 2B, and accepted Slice 3 semantics are preserved under explicit operator-selected exposure/hosting profiles in self-hosted NAS/VPS-practical environments.
+Define the bounded follow-on scope for conformance evidence interoperability refinement so accepted Slice 5 conformance/validation semantics can be adopted in implementation-facing workflows without changing accepted baseline semantics.
 
 ### Slice deliverables
 
-1. Stable system-definition document in `docs/` for deployment hardening/profile guidance baseline semantics.
-2. Explicit baseline-required hardening concern categories and semantics-first profile guidance posture.
-3. Clear baseline-required vs operator-selected stronger-profile boundary language.
-4. Explicit relationship boundaries with accepted access/authority, auth/provisioning, deployment/operations, and backup/restore semantics.
-5. Explicit operator responsibilities, deferrals/non-goals, drift-check statement, and next-slice pointer.
+1. Control-state scoping note for Slice 6 follow-on objective and boundary posture.
+2. Explicit continuity anchoring to accepted Slice 5 conformance/validation guidance semantics.
+3. Next-slice pointer coherence without prematurely claiming acceptance-close for Slice 6.
 
 ### Slice done criteria
 
 This slice is complete when:
 
-- Deployment hardening meaning is explicit in Noema terms without implementation-stack drift.
-- Baseline-required hardening expectations are explicit and separated from stronger operator-selected profiles.
-- Profile categories are explicit and architecture-consistent across self-hosted exposure contexts.
-- Deferred/non-goal boundaries remain explicit (no auth-stack internals, no detailed TLS/network/container/Kubernetes engineering, no production SRE hardening playbooks).
+- Slice 5 remains recorded as accepted and unchanged in docs semantics.
+- Slice 6 follow-on scope is explicitly marked as under-review scoping (not accepted).
+- Control-state continuity and next-pointer language remain coherent with accepted flow.
 
-### Follow-on slice review posture note
+### Slice 5 acceptance continuity posture note
 
-Phase 6 follow-on semantics are captured in `docs/noema-deployment-hardening-profile-guidance-baseline.md` and align with accepted Phase 6 Slice 1, Slice 2A, Slice 2B, and accepted Slice 3 continuity guidance without architecture drift.
+Accepted Phase 6 Slice 5 semantics are captured in `docs/noema-hardening-conformance-validation-guidance-baseline.md` and provide the direct semantic prerequisite for current Slice 6 follow-on scoping work.
 
-**Review posture:** Deployment hardening/profile guidance is the current implementation slice under review; acceptance-close state updates are deferred until explicit review closure.
+**Review posture:** Phase 6 Slice 6 follow-on scoping is the current implementation slice under review; acceptance-close state updates remain deferred until explicit review closure.
 
 
 ## Definition of done for baseline adoption
