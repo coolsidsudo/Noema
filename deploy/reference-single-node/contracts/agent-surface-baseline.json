@@ -1,24 +1,30 @@
 {
-  "version": "phase7-slice1-reference",
-  "purpose": "Minimal bounded machine-facing reference surface artifact",
+  "version": "phase7-slice3-reference",
+  "purpose": "Minimal executable bounded machine-facing facade for read/query operations",
+  "runtime": {
+    "shape": "single-node executable facade",
+    "posture": "read/query only",
+    "write_behavior": "canonical write/apply out of scope"
+  },
   "operations": [
     {
       "name": "get_object_by_id",
       "authority": "read/query only",
-      "notes": "Canonical write is out of scope; aligns with accepted agent surface contract baseline."
+      "notes": "Executable in this slice; resolves one bounded object under allowed knowledge classes."
     },
     {
       "name": "list_objects",
       "authority": "read/query only",
-      "notes": "Bounded discovery path with workspace/scope filtering semantics."
+      "notes": "Executable in this slice; bounded object discovery with class and limit controls."
     },
     {
       "name": "submit_proposal",
       "authority": "proposal layer only",
-      "notes": "Submit candidate changes; does not directly publish structured canonical artifacts."
+      "notes": "Intentionally non-executable in Phase 7 Slice 3; retained for contract continuity while canonical apply remains deferred."
     }
   ],
   "non_goals": [
+    "Canonical publish/apply execution",
     "Production auth runtime internals",
     "Policy engine implementation details",
     "Unbounded filesystem or canonical write access"

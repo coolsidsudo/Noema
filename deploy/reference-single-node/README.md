@@ -12,13 +12,15 @@ This package is a **repo-native reference deployment package**.
 
 - Stable system semantics remain authoritative in `docs/`.
 - Execution and review state remains authoritative in `control/`.
-- This `deploy/reference-single-node/` package provides concrete deployment/bootstrap assets that implement the accepted baseline posture.
+- `deploy/reference-single-node/` provides concrete deployment/bootstrap assets implementing the accepted baseline posture.
 
 ## Included assets
 
 - `docker-compose.yml` - minimal service shape for operator bootstrap
 - `config/reference.env.example` - sample environment configuration for the reference package
-- `contracts/agent-surface-baseline.json` - bounded machine-facing baseline contract artifact for operator inspection
+- `contracts/agent-surface-baseline.json` - bounded machine-facing contract artifact for operator inspection
+- `agent_surface/server.py` - minimal executable machine-facing facade (bounded read/query only)
+- `checks/check_reference_package.py` - conformance checks for executable substitution and boundedness claims
 - `operator/bootstrap.md` - step-by-step bootstrap guide
 - `state/.keep` - explicit placeholder for operator-preserved continuity state roots
 
@@ -38,15 +40,41 @@ This path is intentionally read-oriented and does not replace review/apply autho
 
 ### 3) Bounded machine-facing path
 
-`noema-agent-surface` serves the baseline contract artifact to provide a concrete machine-facing path boundary and operator-visible surface anchor.
+`noema-agent-surface` runs a minimal executable facade intentionally bounded to read/query operations.
 
-This path demonstrates bounded machine entry shape and avoids claiming full runtime auth/policy engine implementation in this slice.
+Executable operations in this slice:
+
+- `get_object_by_id`
+- `list_objects`
+
+Guardrails in this slice:
+
+- canonical write/apply remains out of scope
+- `submit_proposal` remains explicitly non-executable (deferred)
+- repository access is read-only and constrained to bounded object classes (`raw`, `structured`, `proposals`, `logs`)
+
+This keeps the machine-facing path executable without broadening into auth-stack or policy-engine implementation.
 
 ### 4) Maintainer/curator operational path
 
 `noema-maintainer` provides a containerized execution surface for deterministic maintainer rebuild/check workflows using repository-local tools.
 
 This path is operator-invoked and review-bounded; it does not introduce autonomous canonical-write behavior.
+
+## Conformance checks (expanded for Slice 3)
+
+Run from repository root:
+
+```bash
+python deploy/reference-single-node/checks/check_reference_package.py
+```
+
+This verifies:
+
+1. `noema-agent-surface` uses executable facade code (not static file serving)
+2. bounded read/query operations are present and correctly scoped
+3. canonical write/apply remains out of scope (`submit_proposal` deferred/non-executable)
+4. operator bootstrap and package mapping docs remain consistent with executable substitution
 
 ## Continuity-aware operator posture (minimal)
 
@@ -80,4 +108,4 @@ This package preserves Noema architecture invariants:
 
 ## Next-slice pointer
 
-Next bounded continuation after this slice should focus on **reference deployment conformance validation and incrementally executable runtime integration** while preserving this single-node-first package boundary.
+Next bounded continuation after this slice should focus on **proposal-submission continuity wiring and additional executable conformance depth** while preserving single-node package boundaries and proposal-only canonical-write posture.
