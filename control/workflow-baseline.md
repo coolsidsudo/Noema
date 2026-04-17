@@ -68,6 +68,15 @@ Each implementation PR should include:
 - Drift check statement (what was intentionally not changed)
 - Next-slice pointer (what follows directly next)
 
+### Rule 5: Use Linear/GitHub/Codex as the standing review workflow
+
+For repository execution workflow:
+
+- Use **Linear issues/comments** as the default execution and reporting channel for Codex issue work.
+- Treat **GitHub repository state** (branch/commit/diff/PR) as authoritative for substantive file-change review whenever available.
+- Reviewers should prefer direct repository verification in GitHub over summary text alone when GitHub state is available.
+- Manual pasteback into ChatGPT should be used only as a **fallback** when needed content is not visible in Linear or GitHub.
+
 ## Current implementation slice (immediate)
 
 There is **no currently opened under-review slice** at this moment; Phase 7 Slice 2 is accepted/completed and Phase 7 Slice 3 remains queued/proposed pending explicit open.

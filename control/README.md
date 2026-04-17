@@ -9,6 +9,8 @@ These files are **not part of the Noema system definition**. They are temporary 
 - **How Noema works** (system/product definition): `docs/`
 - **How we build Noema** (repository execution workflow): `control/`
 
+Repository execution in this control layer may use **Linear** as the issue execution/reporting channel and **GitHub** repository state as the source-of-truth verification surface for substantive file-change review.
+
 ## Stability expectations
 
 Control-layer documents may be updated, replaced, reorganized, or removed as implementation needs evolve.
