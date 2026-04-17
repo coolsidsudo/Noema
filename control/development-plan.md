@@ -8,12 +8,12 @@ The accepted architecture baseline is now actively adopted for implementation wo
 
 Accepted completed slices: **Phase 0 (architecture baseline), Phase 1 (repository skeleton), and the full Phase 2 definition package (core object conventions, metadata profile, relationship/traceability conventions, and index/catalog baseline)**.
 
-Latest completed/accepted slice: **Phase 6 Slice 2B — self-hosted deployment and operations baseline semantics**.
+Latest completed/accepted slice: **Phase 6 Slice 3 — backup and restore operational guidance refinement baseline semantics**.
 
-Current execution focus: **Phase 6 Slice 3 implementation under review — backup and restore operational guidance refinement baseline semantics**.
+Current execution focus: **Phase 6 follow-on slice implementation under review — deployment hardening/profile guidance baseline semantics**.
 
 
-Next queued slice: **Phase 6 follow-on slice after Slice 3 review: deployment hardening/profile guidance (or tightly justified equivalent)**.
+Next queued slice: **Phase 6 post-hardening follow-on slice: implementation-constrained hardening conformance/validation guidance (or tightly justified equivalent)**.
 
 Phase 5 queue status: **Closed (Slices 1–15 accepted/closed with explicit closure criteria satisfied)**.
 
@@ -153,7 +153,8 @@ Support real shared deployment with explicit policy boundaries by sequencing sem
 - Phase 6 Slice 1 access/authority baseline semantics (accepted prerequisite)
 - Phase 6 Slice 2A authentication and identity provisioning semantics baseline (accepted prerequisite)
 - Phase 6 Slice 2B deployment/self-hosting operational baseline semantics for NAS/VPS (accepted prerequisite)
-- Backup and restore operational guidance refinement baseline semantics (current implementation slice)
+- Backup and restore operational guidance refinement baseline semantics (defined prior slice)
+- Deployment hardening/profile guidance baseline semantics (current implementation slice)
 
 **Why it matters**
 
@@ -218,3 +219,17 @@ Phase 6 Slice 3 defines baseline backup and restore operational guidance semanti
 8. explicit non-goals/deferred DR/hardening concerns
 
 Next bounded continuation pointer: **Phase 6 follow-on slice — deployment hardening/profile guidance**.
+
+### Phase 6 follow-on (post-Slice 3) scope note
+
+Phase 6 follow-on slice defines deployment hardening/profile guidance baseline semantics in `docs/noema-deployment-hardening-profile-guidance-baseline.md`, including:
+
+1. Noema-specific hardening meaning at semantics-first depth
+2. operator profile-guidance posture across exposure/hosting contexts
+3. baseline-required hardening expectations vs operator-selected stronger profiles
+4. relationship boundaries with accepted Slice 1, Slice 2A, Slice 2B, and Slice 3 semantics
+5. minimum hardening concern categories (exposure, secret/config handling, administrative path protection, change/update safeguards, audit/log posture, recovery-sensitive safeguards)
+6. explicit baseline operator responsibility boundaries
+7. explicit non-goals/deferred implementation internals
+
+Next bounded continuation pointer: **Phase 6 post-hardening follow-on slice — implementation-constrained hardening conformance/validation guidance**.
