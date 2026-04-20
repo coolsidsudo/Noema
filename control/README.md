@@ -15,11 +15,12 @@ Repository execution in this control layer uses a full loop with explicit in-fli
 2. Continue follow-ups in the live in-issue Codex box in Linear.
 3. Before PR creation/merge/landed-state verification, use Codex live in-issue output as the primary in-flight review surface; GitHub may be stale in this phase.
 4. Declare any full changed-file content or special proof-artifact requirements up front in the Linear issue description and Codex execution note.
-5. End implementation review with explicit operator next-step guidance (create PR now, merge now, wait, or do not merge yet).
-6. Use GitHub repository state as authoritative again for landed-state review, merge verification, and acceptance-close verification.
-7. End acceptance-close review with explicit remaining operator step guidance, including merge/close/mark-Done actions where applicable.
-8. Allow manual human PR landing when Codex cannot push/land automatically.
-9. Mark the Linear issue **Done** only as the final move after substantive and acceptance-close merged state is reflected.
+5. When higher-level review accepts a slice, first provide paste-ready reviewer-acceptance text for the Codex live in-issue box (unless a no-Codex-acknowledgement exception is explicitly stated).
+6. After providing that acceptance text, give explicit operator next-step guidance (create PR now, merge now, or run a required acceptance-close sync first if applicable).
+7. Use GitHub repository state as authoritative again for landed-state review, merge verification, and acceptance-close verification.
+8. End acceptance-close review with explicit remaining operator step guidance, including merge/close/mark-Done actions where applicable.
+9. Allow manual human PR landing when Codex cannot push/land automatically.
+10. Mark the Linear issue **Done** only as the final move after substantive and acceptance-close merged state is reflected.
 
 Commit/PR evidence should be provided first when reporting completion so reviewers can verify repository state directly.
 

@@ -76,16 +76,18 @@ For repository execution workflow:
 2. Use the live in-issue Codex composer/comment box in Linear for follow-up instructions and iteration.
 3. Before PR creation/merge/landed-state verification, treat Codex live in-issue output as the primary higher-level in-flight review surface; GitHub may be stale during this phase and should not be overtreated as authoritative for pre-merge implementation review.
 4. If full changed-file content or other special proof artifacts are required, request that proof shape up front in the Linear issue description and Codex execution note; follow-up requests should not introduce materially new proof requirements that should have been declared earlier.
-5. At the end of implementation review, reviewer guidance must explicitly state the human operator's next step (for example: create PR now, merge now, wait, or do not merge yet).
-6. For landed-state review, merge verification, and acceptance-close verification, treat GitHub repository state (branch/commit/diff/PR) as authoritative again.
-7. After acceptance-close review, reviewer guidance must explicitly state the remaining operator step(s), including merge/close/mark-Done actions where applicable.
-8. When Codex cannot push/land automatically, a human may manually push or merge the reviewed PR while preserving issue/PR traceability.
-9. After the substantive slice and any required acceptance-close sync are merged and reflected in landed state, mark the Linear issue **Done** as the final workflow move.
+5. When a slice is accepted at higher-level review, first provide paste-ready reviewer-acceptance text for the Codex live in-issue box (unless no Codex acknowledgement is explicitly required for that slice).
+6. After that acceptance text is provided, reviewer guidance must explicitly state the human operator's immediate next step (for example: create PR now, merge now, or run a required acceptance-close sync first if applicable).
+7. For landed-state review, merge verification, and acceptance-close verification, treat GitHub repository state (branch/commit/diff/PR) as authoritative again.
+8. After acceptance-close review, reviewer guidance must explicitly state the remaining operator step(s), including merge/close/mark-Done actions where applicable.
+9. When Codex cannot push/land automatically, a human may manually push or merge the reviewed PR while preserving issue/PR traceability.
+10. After the substantive slice and any required acceptance-close sync are merged and reflected in landed state, mark the Linear issue **Done** as the final workflow move.
 
 Additional guardrails:
 
 - Use **Linear issues/comments** as the default execution and reporting channel for Codex issue work.
 - During in-flight pre-merge review, reviewers should prefer Codex live in-issue output as the primary surface and avoid over-weighting potentially stale GitHub state.
+- When accepting a slice in higher-level review, reviewers should provide paste-ready Codex live-box acceptance text before instructing PR/merge actions (unless a no-acknowledgement exception is explicitly declared).
 - For landed-state and acceptance-close verification, reviewers should prefer direct repository verification in GitHub over summary text alone when GitHub state is available.
 - Manual pasteback into ChatGPT should be used only as a fallback when needed content is not visible in Linear or GitHub.
 
