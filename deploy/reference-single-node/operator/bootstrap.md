@@ -72,14 +72,27 @@ Contract visibility check:
 
 - `http://<host>:${NOEMA_AGENT_PORT}/v1/contract`
 
-Deferred continuity check (proposal-only posture preserved):
+Proposal-submission continuity check:
 
-- `http://<host>:${NOEMA_AGENT_PORT}/v1/submit_proposal`
+- `POST /v1/submit_proposal` with JSON body:
+
+```bash
+curl -sS -X POST "http://<host>:${NOEMA_AGENT_PORT}/v1/submit_proposal" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Baseline proposal from operator bootstrap",
+    "body": "This is a bounded proposal-lane continuity proof artifact.",
+    "author": "bootstrap-operator",
+    "workspace": "sample-research-workspace",
+    "visibility": "team"
+  }'
+```
 
 Expected behavior in this slice:
 
 - `list_objects` and `get_object_by_id` are executable
-- `submit_proposal` returns deferred/non-executable status
+- `submit_proposal` is executable and returns `status=submitted`
+- submit artifacts are written under `proposals/submitted/` for operator inspection
 - canonical publish/apply remains out of scope
 
 ## 5) Validate maintainer operational path

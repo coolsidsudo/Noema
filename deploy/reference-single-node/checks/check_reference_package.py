@@ -21,6 +21,10 @@ def check_executable_surface_substitution() -> None:
     _assert("agent_surface/server.py" in compose, "noema-agent-surface is not running executable facade code")
     _assert("http.server" not in compose, "static placeholder http.server command still present")
     _assert(":/repo:ro" in compose, "bounded read-only repository mount missing for executable facade")
+    _assert(
+        "/proposals:/repo/proposals" in compose,
+        "proposal-lane writable mount missing for bounded submit_proposal continuity",
+    )
 
 
 def check_bounded_operations_contract() -> None:
@@ -33,7 +37,8 @@ def check_bounded_operations_contract() -> None:
 
     submit = operations.get("submit_proposal")
     _assert(submit is not None, "submit_proposal continuity operation missing")
-    _assert("non-executable" in submit["notes"], "submit_proposal is not explicitly deferred/non-executable")
+    _assert("Executable in this slice" in submit["notes"], "submit_proposal executable continuity note missing")
+    _assert("proposal layer only" in submit["authority"], "submit_proposal is not bounded to proposal authority")
 
 
 def check_docs_operator_mapping() -> None:
@@ -43,6 +48,7 @@ def check_docs_operator_mapping() -> None:
     _assert("minimal executable facade" in readme.lower(), "README does not describe executable machine-facing facade")
     _assert("/v1/list_objects" in bootstrap, "bootstrap guide missing executable list_objects validation")
     _assert("/v1/get_object_by_id" in bootstrap, "bootstrap guide missing executable get_object_by_id validation")
+    _assert("POST /v1/submit_proposal" in bootstrap, "bootstrap guide missing executable submit_proposal validation")
 
 
 def main() -> int:
