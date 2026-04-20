@@ -40,18 +40,20 @@ This path is intentionally read-oriented and does not replace review/apply autho
 
 ### 3) Bounded machine-facing path
 
-`noema-agent-surface` runs a minimal executable facade intentionally bounded to read/query operations.
+`noema-agent-surface` runs a minimal executable facade intentionally bounded to read/query operations plus proposal-lane submission continuity.
 
 Executable operations in this slice:
 
 - `get_object_by_id`
 - `list_objects`
+- `submit_proposal` (proposal-lane only)
 
 Guardrails in this slice:
 
 - canonical write/apply remains out of scope
-- `submit_proposal` remains explicitly non-executable (deferred)
-- repository access is read-only and constrained to bounded object classes (`raw`, `structured`, `proposals`, `logs`)
+- `submit_proposal` writes deterministic inspectable artifacts only under `proposals/submitted/`
+- repository access remains read-oriented and constrained to bounded object classes (`raw`, `structured`, `proposals`, `logs`), with a narrow writable subpath only for `proposals/submitted/`
+- no direct canonical writes are performed in `structured/`, `raw/`, or other non-proposal classes
 
 This keeps the machine-facing path executable without broadening into auth-stack or policy-engine implementation.
 
@@ -61,7 +63,7 @@ This keeps the machine-facing path executable without broadening into auth-stack
 
 This path is operator-invoked and review-bounded; it does not introduce autonomous canonical-write behavior.
 
-## Conformance checks (expanded for Slice 3)
+## Conformance checks (expanded for Slice 4)
 
 Run from repository root:
 
@@ -73,7 +75,8 @@ This verifies:
 
 1. `noema-agent-surface` uses executable facade code (not static file serving)
 2. bounded read/query operations are present and correctly scoped
-3. canonical write/apply remains out of scope (`submit_proposal` deferred/non-executable)
+3. proposal submission is executable but bounded to proposal-only artifact writes
+4. canonical write/apply remains out of scope
 4. operator bootstrap and package mapping docs remain consistent with executable substitution
 
 ## Continuity-aware operator posture (minimal)
@@ -108,4 +111,4 @@ This package preserves Noema architecture invariants:
 
 ## Next-slice pointer
 
-Next bounded continuation after this slice should focus on **proposal-submission continuity wiring and additional executable conformance depth** while preserving single-node package boundaries and proposal-only canonical-write posture.
+Next bounded continuation after this slice should focus on **proposal status/review continuity depth and additional executable conformance hardening** while preserving single-node package boundaries and proposal-only canonical-write posture.

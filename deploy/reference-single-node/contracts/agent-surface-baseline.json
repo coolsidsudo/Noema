@@ -1,10 +1,10 @@
 {
-  "version": "phase7-slice3-reference",
-  "purpose": "Minimal executable bounded machine-facing facade for read/query operations",
+  "version": "phase7-slice4-reference",
+  "purpose": "Minimal executable bounded machine-facing facade for read/query and proposal-submission continuity",
   "runtime": {
     "shape": "single-node executable facade",
-    "posture": "read/query only",
-    "write_behavior": "canonical write/apply out of scope"
+    "posture": "read/query plus proposal-lane submission continuity",
+    "write_behavior": "proposal-only write lane; canonical write/apply out of scope"
   },
   "operations": [
     {
@@ -20,7 +20,7 @@
     {
       "name": "submit_proposal",
       "authority": "proposal layer only",
-      "notes": "Intentionally non-executable in Phase 7 Slice 3; retained for contract continuity while canonical apply remains deferred."
+      "notes": "Executable in this slice via bounded POST /v1/submit_proposal and deterministic proposal artifact write under proposals/submitted; canonical apply remains deferred."
     }
   ],
   "non_goals": [

@@ -1,13 +1,16 @@
 #!/usr/bin/env python3
 """Bounded executable machine-facing facade for the reference single-node package.
 
-This service intentionally supports read/query behavior only.
+This service supports read/query behavior plus proposal-lane submission continuity.
+Canonical apply/publish remains out of scope.
 """
 
 from __future__ import annotations
 
 import json
 import os
+from datetime import UTC, datetime
+from hashlib import sha256
 from dataclasses import dataclass
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -18,6 +21,7 @@ ALLOWED_CLASSES = ("raw", "structured", "proposals", "logs")
 OBJECT_EXTENSIONS = {".md", ".json", ".yml", ".yaml", ".txt"}
 DEFAULT_LIMIT = 50
 MAX_LIMIT = 200
+PROPOSAL_SCHEMA_VERSION = "phase7-slice4-reference"
 
 
 @dataclass(frozen=True)
@@ -91,6 +95,65 @@ def get_object_by_id(repo_root: Path, object_id: str) -> dict[str, str]:
     }
 
 
+def _normalize_proposal_request(payload: dict) -> dict[str, str]:
+    title = str(payload.get("title", "")).strip()
+    body = str(payload.get("body", "")).strip()
+    author = str(payload.get("author", "agent")).strip() or "agent"
+    workspace = str(payload.get("workspace", "default")).strip() or "default"
+    visibility = str(payload.get("visibility", "team")).strip() or "team"
+
+    if not title:
+        raise ValueError("title is required")
+    if not body:
+        raise ValueError("body is required")
+    if len(title) > 200:
+        raise ValueError("title must be 200 characters or fewer")
+    if len(body) > 20000:
+        raise ValueError("body must be 20000 characters or fewer")
+
+    return {
+        "title": title,
+        "body": body,
+        "author": author,
+        "workspace": workspace,
+        "visibility": visibility,
+    }
+
+
+def submit_proposal(repo_root: Path, payload: dict) -> dict[str, str]:
+    normalized = _normalize_proposal_request(payload)
+    proposals_root = _safe_class_root(repo_root, "proposals")
+    submissions_root = proposals_root / "submitted"
+    submissions_root.mkdir(parents=True, exist_ok=True)
+
+    submitted_at = datetime.now(tz=UTC).replace(microsecond=0).isoformat()
+    identity_input = json.dumps(normalized, sort_keys=True, ensure_ascii=False).encode("utf-8")
+    digest = sha256(identity_input).hexdigest()[:12]
+    date_prefix = datetime.now(tz=UTC).strftime("%Y%m%d")
+    proposal_id = f"proposal-{date_prefix}-{digest}"
+
+    output_path = submissions_root / f"{proposal_id}.json"
+    output_record = {
+        "schema_version": PROPOSAL_SCHEMA_VERSION,
+        "proposal_id": proposal_id,
+        "submitted_at": submitted_at,
+        "status": "submitted",
+        "authority": "proposal-only",
+        "canonical_apply": "out-of-scope",
+        "request": normalized,
+    }
+    output_path.write_text(json.dumps(output_record, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+    relative_path = output_path.resolve().relative_to(repo_root.resolve())
+    return {
+        "proposal_id": proposal_id,
+        "status": "submitted",
+        "authority": "proposal-only",
+        "canonical_apply": "out-of-scope",
+        "artifact_path": str(relative_path),
+    }
+
+
 class AgentSurfaceHandler(BaseHTTPRequestHandler):
     server_version = "NoemaAgentSurface/0.1"
 
@@ -111,7 +174,7 @@ class AgentSurfaceHandler(BaseHTTPRequestHandler):
         query = parse_qs(parsed.query)
 
         if parsed.path == "/healthz":
-            self._write_json({"status": "ok", "surface": "bounded-read-query"})
+            self._write_json({"status": "ok", "surface": "bounded-read-query-plus-proposal-submit"})
             return
 
         if parsed.path == "/v1/list_objects":
@@ -146,10 +209,10 @@ class AgentSurfaceHandler(BaseHTTPRequestHandler):
             self._write_json(
                 {
                     "operation": "submit_proposal",
-                    "status": "deferred",
-                    "message": "submit_proposal remains non-executable in Phase 7 Slice 3; proposal-only posture preserved.",
+                    "status": "method-required",
+                    "message": "submit_proposal is executable in Phase 7 Slice 4 via POST with JSON body.",
                 },
-                status=HTTPStatus.NOT_IMPLEMENTED,
+                status=HTTPStatus.METHOD_NOT_ALLOWED,
             )
             return
 
@@ -163,6 +226,42 @@ class AgentSurfaceHandler(BaseHTTPRequestHandler):
             return
 
         self._write_json({"error": "route not found"}, status=HTTPStatus.NOT_FOUND)
+
+    def do_POST(self) -> None:  # noqa: N802
+        parsed = urlparse(self.path)
+        if parsed.path != "/v1/submit_proposal":
+            self._write_json({"error": "route not found"}, status=HTTPStatus.NOT_FOUND)
+            return
+
+        length_header = self.headers.get("Content-Length", "0")
+        try:
+            content_length = int(length_header)
+        except ValueError:
+            self._write_json({"error": "invalid content-length"}, status=HTTPStatus.BAD_REQUEST)
+            return
+
+        if content_length <= 0:
+            self._write_json({"error": "json body is required"}, status=HTTPStatus.BAD_REQUEST)
+            return
+
+        raw_body = self.rfile.read(content_length)
+        try:
+            payload = json.loads(raw_body.decode("utf-8"))
+        except (UnicodeDecodeError, json.JSONDecodeError):
+            self._write_json({"error": "request body must be valid utf-8 json"}, status=HTTPStatus.BAD_REQUEST)
+            return
+
+        if not isinstance(payload, dict):
+            self._write_json({"error": "request body must be a json object"}, status=HTTPStatus.BAD_REQUEST)
+            return
+
+        try:
+            result = submit_proposal(self.config.repo_root, payload)
+        except ValueError as exc:
+            self._write_json({"error": str(exc)}, status=HTTPStatus.BAD_REQUEST)
+            return
+
+        self._write_json({"operation": "submit_proposal", "result": result}, status=HTTPStatus.CREATED)
 
 
 def run_server() -> None:

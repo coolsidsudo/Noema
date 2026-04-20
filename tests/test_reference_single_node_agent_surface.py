@@ -7,7 +7,7 @@ import sys
 import threading
 from pathlib import Path
 from urllib.error import HTTPError
-from urllib.request import urlopen
+from urllib.request import Request, urlopen
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -72,9 +72,69 @@ def test_list_objects_invalid_limit_returns_bounded_client_error(tmp_path: Path)
         thread.join(timeout=2)
 
 
-def test_submit_proposal_deferred_marker_present() -> None:
-    contents = SERVER_PATH.read_text(encoding="utf-8")
-    assert "submit_proposal remains non-executable" in contents
+def test_submit_proposal_http_route_is_executable(tmp_path: Path) -> None:
+    module = _load_server_module()
+
+    server = module.ThreadingHTTPServer(("127.0.0.1", 0), module.AgentSurfaceHandler)
+    server.surface_config = module.SurfaceConfig(repo_root=tmp_path, contract_path=CONTRACT_PATH)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+
+    try:
+        base_url = f"http://127.0.0.1:{server.server_port}"
+        request = Request(
+            f"{base_url}/v1/submit_proposal",
+            method="POST",
+            headers={"Content-Type": "application/json"},
+            data=json.dumps({"title": "HTTP proposal", "body": "Via route"}).encode("utf-8"),
+        )
+        with urlopen(request) as response:
+            payload = json.loads(response.read().decode("utf-8"))
+        assert response.status == 201
+        assert payload["result"]["status"] == "submitted"
+        assert (tmp_path / payload["result"]["artifact_path"]).exists()
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join(timeout=2)
+
+
+def test_submit_proposal_writes_bounded_proposal_artifact(tmp_path: Path) -> None:
+    module = _load_server_module()
+    result = module.submit_proposal(
+        tmp_path,
+        {
+            "title": "Executable continuity proposal",
+            "body": "Bounded proposal-lane write only.",
+            "author": "pytest",
+            "workspace": "tests",
+            "visibility": "team",
+        },
+    )
+
+    proposal_path = tmp_path / result["artifact_path"]
+    assert proposal_path.exists()
+    assert result["status"] == "submitted"
+    assert result["authority"] == "proposal-only"
+    assert "proposals/submitted/" in result["artifact_path"]
+    assert not (tmp_path / "structured").exists()
+    assert not (tmp_path / "raw").exists()
+    assert not (tmp_path / "logs").exists()
+
+    created = json.loads(proposal_path.read_text(encoding="utf-8"))
+    assert created["request"]["title"] == "Executable continuity proposal"
+    assert created["canonical_apply"] == "out-of-scope"
+    proposal_path.unlink()
+
+
+def test_submit_proposal_rejects_invalid_payload(tmp_path: Path) -> None:
+    module = _load_server_module()
+    try:
+        module.submit_proposal(tmp_path, {"title": "", "body": ""})
+    except ValueError as exc:
+        assert "title is required" in str(exc)
+    else:
+        raise AssertionError("invalid payload must fail")
 
 
 def test_reference_package_conformance_script_passes() -> None:

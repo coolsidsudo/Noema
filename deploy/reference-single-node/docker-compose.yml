@@ -21,6 +21,7 @@ services:
       - "${NOEMA_AGENT_PORT:-8787}:8787"
     volumes:
       - ${NOEMA_REPO_ROOT:?set in reference.env}:/repo:ro
+      - ${NOEMA_REPO_ROOT:?set in reference.env}/proposals:/repo/proposals
       - ./agent_surface:/surface/agent_surface:ro
       - ./contracts:/surface/contracts:ro
     restart: unless-stopped
