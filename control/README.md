@@ -9,13 +9,17 @@ These files are **not part of the Noema system definition**. They are temporary 
 - **How Noema works** (system/product definition): `docs/`
 - **How we build Noema** (repository execution workflow): `control/`
 
-Repository execution in this control layer uses a full loop:
+Repository execution in this control layer uses a full loop with explicit in-flight vs landed-state review authority:
 
 1. Delegate from the Linear issue to Codex to start work.
 2. Continue follow-ups in the live in-issue Codex box in Linear.
-3. Use GitHub repository state as the authoritative review/acceptance surface.
-4. Allow manual human PR landing when Codex cannot push/land automatically.
-5. Mark the Linear issue **Done** after merge.
+3. Before PR creation/merge/landed-state verification, use Codex live in-issue output as the primary in-flight review surface; GitHub may be stale in this phase.
+4. Declare any full changed-file content or special proof-artifact requirements up front in the Linear issue description and Codex execution note.
+5. End implementation review with explicit operator next-step guidance (create PR now, merge now, wait, or do not merge yet).
+6. Use GitHub repository state as authoritative again for landed-state review, merge verification, and acceptance-close verification.
+7. End acceptance-close review with explicit remaining operator step guidance, including merge/close/mark-Done actions where applicable.
+8. Allow manual human PR landing when Codex cannot push/land automatically.
+9. Mark the Linear issue **Done** only as the final move after substantive and acceptance-close merged state is reflected.
 
 Commit/PR evidence should be provided first when reporting completion so reviewers can verify repository state directly.
 
