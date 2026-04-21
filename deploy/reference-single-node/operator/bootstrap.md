@@ -147,6 +147,23 @@ Expected bounded behavior:
 - fail-closed continuity rejections return bounded diagnostics including deterministic `error_code` and `diagnostics` payload fields (for example phase, proposal_id, event/log references when available)
 - no canonical `structured/`, `raw/`, or `logs/` write broadening is introduced
 
+Recent continuity-validation outcomes inspection check:
+
+- `GET /v1/list_recent_continuity_validation_outcomes?limit=<n>`
+
+Example:
+
+```bash
+curl -sS "http://<host>:${NOEMA_AGENT_PORT}/v1/list_recent_continuity_validation_outcomes?limit=10"
+```
+
+Expected bounded behavior:
+
+- returns a deterministic bounded recent list (1..50) without exposing unbounded log dumps
+- each item includes proposal id, proposal artifact path, outcome class (`validated` or `failed`), and compact continuity/event preview fields
+- validation outcomes are derived from existing proposal artifacts plus `logs/operations/proposal-review-events.jsonl` continuity records
+- canonical apply/publish remains out of scope and no additional write lanes are introduced
+
 ## 5) Validate maintainer operational path
 
 Run a deterministic maintainer rebuild/check flow inside the maintainer container:
@@ -215,4 +232,4 @@ This operator bootstrap preserves:
 
 ## Next-slice pointer
 
-After this diagnostics/conformance hardening baseline, next bounded work should focus on narrow operator inspection ergonomics for recent continuity-validation outcomes while preserving current boundaries.
+After this bounded operator continuity-inspection baseline, next bounded work should focus on deterministic retention/rollup posture for inspection history while preserving current boundaries.

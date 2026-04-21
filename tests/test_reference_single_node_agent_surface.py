@@ -342,6 +342,56 @@ def test_get_proposal_review_evidence_route_returns_structured_diagnostics(tmp_p
         thread.join(timeout=2)
 
 
+def test_list_recent_continuity_validation_outcomes_returns_validated_and_failed_items(tmp_path: Path) -> None:
+    module = _load_server_module()
+    valid = module.submit_proposal(tmp_path, {"title": "Valid", "body": "B", "author": "pytest"})
+    module.review_proposal_status(
+        tmp_path,
+        {"proposal_id": valid["proposal_id"], "to_state": "under_review", "actor_id": "reviewer", "actor_type": "human"},
+    )
+
+    invalid = module.submit_proposal(tmp_path, {"title": "Invalid", "body": "B", "author": "pytest"})
+    module.review_proposal_status(
+        tmp_path,
+        {"proposal_id": invalid["proposal_id"], "to_state": "under_review", "actor_id": "reviewer", "actor_type": "human"},
+    )
+    invalid_artifact = tmp_path / invalid["artifact_path"]
+    invalid_stored = json.loads(invalid_artifact.read_text(encoding="utf-8"))
+    invalid_stored["review_history"][-1]["log_link"]["log_record_id"] = "log-missing-record"
+    invalid_artifact.write_text(json.dumps(invalid_stored), encoding="utf-8")
+
+    outcomes = module.list_recent_continuity_validation_outcomes(tmp_path, limit=10)
+    assert outcomes["summary"]["total"] == 2
+    assert outcomes["summary"]["validated"] == 1
+    assert outcomes["summary"]["failed"] == 1
+    by_id = {entry["proposal_id"]: entry for entry in outcomes["items"]}
+    assert by_id[valid["proposal_id"]]["outcome_class"] == "validated"
+    assert by_id[invalid["proposal_id"]]["outcome_class"] == "failed"
+    assert by_id[invalid["proposal_id"]]["continuity"]["failure_code"] == "CONTINUITY_LOG_RECORD_MISSING"
+
+
+def test_list_recent_continuity_validation_outcomes_route_enforces_bounded_limit(tmp_path: Path) -> None:
+    module = _load_server_module()
+    server = module.ThreadingHTTPServer(("127.0.0.1", 0), module.AgentSurfaceHandler)
+    server.surface_config = module.SurfaceConfig(repo_root=tmp_path, contract_path=CONTRACT_PATH)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    try:
+        base_url = f"http://127.0.0.1:{server.server_port}"
+        try:
+            urlopen(f"{base_url}/v1/list_recent_continuity_validation_outcomes?limit=999")
+        except HTTPError as exc:
+            assert exc.code == 400
+            payload = json.loads(exc.read().decode("utf-8"))
+            assert payload["error"] == "limit must be an integer between 1 and 50"
+        else:
+            raise AssertionError("out-of-range limit must return bounded client error")
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join(timeout=2)
+
+
 def test_review_proposal_status_rejects_invalid_transition(tmp_path: Path) -> None:
     module = _load_server_module()
     submitted = module.submit_proposal(tmp_path, {"title": "T", "body": "B"})

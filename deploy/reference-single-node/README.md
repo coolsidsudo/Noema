@@ -50,6 +50,7 @@ Executable operations in this slice:
 - `get_proposal_status` (proposal-lane status visibility)
 - `review_proposal_status` (proposal-lane review continuity only)
 - `get_proposal_review_evidence` (proposal-lane review evidence and log-link continuity visibility only)
+- `list_recent_continuity_validation_outcomes` (bounded operator inspection of recent validated/failed continuity outcomes)
 
 Guardrails in this slice:
 
@@ -66,7 +67,7 @@ This keeps the machine-facing path executable without broadening into auth-stack
 
 This path is operator-invoked and review-bounded; it does not introduce autonomous canonical-write behavior.
 
-## Conformance checks (expanded for Slice 8 continuity diagnostics hardening)
+## Conformance checks (expanded for Slice 9 recent continuity-inspection ergonomics)
 
 Run from repository root:
 
@@ -80,8 +81,9 @@ This verifies:
 2. bounded read/query operations are present and correctly scoped
 3. proposal lifecycle continuity (`submit_proposal`, `get_proposal_status`, `review_proposal_status`, `get_proposal_review_evidence`) is executable but bounded to proposal artifacts plus append-only review log-link continuity records
 4. review evidence reads enforce bounded review-history shape and linked append-only log-record continuity, with bounded deterministic diagnostics on fail-closed continuity rejection
-5. canonical write/apply remains out of scope
-6. operator bootstrap and package mapping docs remain consistent with executable substitution
+5. recent continuity-validation outcomes are operator-inspectable via one bounded read-only surface with explicit limits and deterministic summaries
+6. canonical write/apply remains out of scope
+7. operator bootstrap and package mapping docs remain consistent with executable substitution
 
 ## Continuity-aware operator posture (minimal)
 
@@ -115,4 +117,4 @@ This package preserves Noema architecture invariants:
 
 ## Next-slice pointer
 
-Next bounded continuation after this slice should focus on **operator inspection ergonomics for recent continuity-validation outcomes** while preserving single-node package boundaries and proposal-only canonical-write posture.
+Next bounded continuation after this slice should focus on **deterministic retention/rollup posture for continuity-inspection history** while preserving single-node package boundaries and proposal-only canonical-write posture.
