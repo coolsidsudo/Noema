@@ -81,7 +81,9 @@ For repository execution workflow:
 7. For landed-state review, merge verification, and acceptance-close verification, treat GitHub repository state (branch/commit/diff/PR) as authoritative again.
 8. After acceptance-close review, reviewer guidance must explicitly state the remaining operator step(s), including merge/close/mark-Done actions where applicable.
 9. When Codex cannot push/land automatically, a human may manually push or merge the reviewed PR while preserving issue/PR traceability.
-10. After the substantive slice and any required acceptance-close sync are merged and reflected in landed state, mark the Linear issue **Done** as the final workflow move.
+10. For a normal issue, merge is the last implementation step; after the substantive slice and any required acceptance-close sync are merged and reflected in landed state, mark the Linear issue **Done** as the final workflow move.
+11. There is no default post-merge Codex acceptance-close patch for a normal merged issue.
+12. Any additional post-merge follow-up should occur only if a distinct new issue is intentionally opened or if an explicitly declared exception requires it.
 
 Additional guardrails:
 
