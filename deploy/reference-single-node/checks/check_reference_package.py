@@ -29,7 +29,7 @@ def check_executable_surface_substitution() -> None:
 
 def check_bounded_operations_contract() -> None:
     contract = json.loads((DEPLOY_ROOT / "contracts" / "agent-surface-baseline.json").read_text(encoding="utf-8"))
-    _assert(contract.get("version") == "phase7-slice8-reference", "contract version is not phase7-slice8-reference")
+    _assert(contract.get("version") == "phase7-slice9-reference", "contract version is not phase7-slice9-reference")
     operations = {entry["name"]: entry for entry in contract.get("operations", [])}
     _assert("get_object_by_id" in operations, "get_object_by_id missing from machine-facing contract")
     _assert("list_objects" in operations, "list_objects missing from machine-facing contract")
@@ -66,6 +66,16 @@ def check_bounded_operations_contract() -> None:
     _assert(
         "deterministic continuity diagnostics" in evidence["notes"],
         "get_proposal_review_evidence notes missing bounded diagnostics guarantee",
+    )
+    recent = operations.get("list_recent_continuity_validation_outcomes")
+    _assert(recent is not None, "list_recent_continuity_validation_outcomes operation missing")
+    _assert(
+        "recent continuity-validation outcomes" in recent["authority"],
+        "list_recent_continuity_validation_outcomes authority missing bounded recent continuity scope",
+    )
+    _assert(
+        "bounded GET /v1/list_recent_continuity_validation_outcomes" in recent["notes"],
+        "list_recent_continuity_validation_outcomes notes missing bounded route guarantee",
     )
 
 
@@ -104,6 +114,10 @@ def check_docs_operator_mapping() -> None:
     _assert(
         "GET /v1/get_proposal_review_evidence" in bootstrap,
         "bootstrap guide missing get_proposal_review_evidence validation",
+    )
+    _assert(
+        "GET /v1/list_recent_continuity_validation_outcomes" in bootstrap,
+        "bootstrap guide missing recent continuity outcomes inspection validation",
     )
 
 

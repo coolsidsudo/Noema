@@ -1,6 +1,6 @@
 {
-  "version": "phase7-slice8-reference",
-  "purpose": "Minimal executable bounded machine-facing facade for read/query, proposal submission, and proposal review evidence/log-link continuity conformance with bounded operator diagnostics",
+  "version": "phase7-slice9-reference",
+  "purpose": "Minimal executable bounded machine-facing facade for read/query, proposal submission, proposal review evidence/log-link continuity conformance, and bounded operator inspection of recent continuity-validation outcomes",
   "runtime": {
     "shape": "single-node executable facade",
     "posture": "read/query plus proposal-lane lifecycle continuity",
@@ -36,6 +36,11 @@
       "name": "get_proposal_review_evidence",
       "authority": "read/query over proposal review evidence and log-link continuity only",
       "notes": "Executable in this slice via bounded GET /v1/get_proposal_review_evidence; enforces bounded review-history shape plus append-only log-link continuity validation before returning review events/evidence, and emits bounded deterministic continuity diagnostics on fail-closed rejection."
+    },
+    {
+      "name": "list_recent_continuity_validation_outcomes",
+      "authority": "read/query over bounded recent continuity-validation outcomes only",
+      "notes": "Executable in this slice via bounded GET /v1/list_recent_continuity_validation_outcomes; derives deterministic recent validated/failed outcomes from existing proposal artifacts and proposal review continuity records with explicit small limits."
     }
   ],
   "non_goals": [

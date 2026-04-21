@@ -22,6 +22,8 @@ ALLOWED_CLASSES = ("raw", "structured", "proposals", "logs")
 OBJECT_EXTENSIONS = {".md", ".json", ".yml", ".yaml", ".txt"}
 DEFAULT_LIMIT = 50
 MAX_LIMIT = 200
+DEFAULT_RECENT_CONTINUITY_LIMIT = 10
+MAX_RECENT_CONTINUITY_LIMIT = 50
 PROPOSAL_SCHEMA_VERSION = "phase7-slice7-reference"
 PROPOSAL_REVIEW_LOG_PATH = Path("logs/operations/proposal-review-events.jsonl")
 PROPOSAL_ALLOWED_TRANSITIONS = {
@@ -85,6 +87,16 @@ def _parse_list_limit(raw_limit: str) -> int:
 
     if limit < 1 or limit > MAX_LIMIT:
         raise ValueError("limit must be an integer between 1 and 200")
+    return limit
+
+
+def _parse_recent_continuity_limit(raw_limit: str) -> int:
+    try:
+        limit = int(raw_limit)
+    except ValueError as exc:
+        raise ValueError("limit must be an integer between 1 and 50") from exc
+    if limit < 1 or limit > MAX_RECENT_CONTINUITY_LIMIT:
+        raise ValueError("limit must be an integer between 1 and 50")
     return limit
 
 
@@ -598,6 +610,91 @@ def get_proposal_review_evidence(repo_root: Path, proposal_id: str) -> dict:
     }
 
 
+def list_recent_continuity_validation_outcomes(
+    repo_root: Path, *, limit: int = DEFAULT_RECENT_CONTINUITY_LIMIT
+) -> dict[str, Any]:
+    proposals_root = _safe_class_root(repo_root, "proposals")
+    submitted_root = proposals_root / "submitted"
+    if not submitted_root.exists():
+        return {
+            "items": [],
+            "summary": {"validated": 0, "failed": 0, "total": 0},
+            "limit": limit,
+        }
+
+    bounded_limit = max(1, min(limit, MAX_RECENT_CONTINUITY_LIMIT))
+    proposal_artifacts = sorted(submitted_root.glob("*.json"), key=lambda path: path.name, reverse=True)
+    items: list[dict[str, Any]] = []
+
+    for artifact in proposal_artifacts:
+        if len(items) >= bounded_limit:
+            break
+        proposal_id = artifact.stem
+        try:
+            evidence = get_proposal_review_evidence(repo_root, proposal_id)
+            events = evidence.get("review_events", [])
+            latest_event = events[-1] if events else None
+            items.append(
+                {
+                    "proposal_id": proposal_id,
+                    "artifact_path": evidence.get("artifact_path"),
+                    "proposal_status": evidence.get("status"),
+                    "outcome_class": "validated",
+                    "continuity": {
+                        "validated_review_events": evidence.get("continuity", {}).get("validated_review_events", 0),
+                        "log_path": evidence.get("continuity", {}).get("log_path"),
+                        "diagnostics_mode": evidence.get("continuity", {}).get("diagnostics_mode"),
+                    },
+                    "latest_event": {
+                        "event_id": (latest_event or {}).get("event_id"),
+                        "timestamp": (latest_event or {}).get("timestamp"),
+                        "to_state": (latest_event or {}).get("to_state"),
+                    },
+                }
+            )
+        except ContinuityValidationError as exc:
+            items.append(
+                {
+                    "proposal_id": proposal_id,
+                    "artifact_path": str(artifact.resolve().relative_to(repo_root.resolve())),
+                    "proposal_status": None,
+                    "outcome_class": "failed",
+                    "continuity": {"failure_code": exc.code, "phase": exc.phase},
+                    "latest_event": {"event_id": exc.event_id, "timestamp": None, "to_state": None},
+                    "diagnostics": exc.as_diagnostics(proposal_id),
+                }
+            )
+        except ValueError as exc:
+            items.append(
+                {
+                    "proposal_id": proposal_id,
+                    "artifact_path": str(artifact.resolve().relative_to(repo_root.resolve())),
+                    "proposal_status": None,
+                    "outcome_class": "failed",
+                    "continuity": {
+                        "failure_code": "CONTINUITY_VALIDATION_INPUT_ERROR",
+                        "phase": "review_history_shape_validation",
+                    },
+                    "latest_event": {"event_id": None, "timestamp": None, "to_state": None},
+                    "diagnostics": {
+                        "category": "proposal_review_continuity",
+                        "proposal_id": proposal_id,
+                        "failure_code": "CONTINUITY_VALIDATION_INPUT_ERROR",
+                        "message": str(exc),
+                        "phase": "review_history_shape_validation",
+                    },
+                }
+            )
+
+    validated = sum(1 for item in items if item["outcome_class"] == "validated")
+    failed = len(items) - validated
+    return {
+        "items": items,
+        "summary": {"validated": validated, "failed": failed, "total": len(items)},
+        "limit": bounded_limit,
+    }
+
+
 class AgentSurfaceHandler(BaseHTTPRequestHandler):
     server_version = "NoemaAgentSurface/0.1"
 
@@ -708,6 +805,17 @@ class AgentSurfaceHandler(BaseHTTPRequestHandler):
                 self._write_json({"error": str(exc)}, status=HTTPStatus.BAD_REQUEST)
                 return
             self._write_json({"operation": "get_proposal_review_evidence", "result": evidence})
+            return
+
+        if parsed.path == "/v1/list_recent_continuity_validation_outcomes":
+            raw_limit = query.get("limit", [str(DEFAULT_RECENT_CONTINUITY_LIMIT)])[0]
+            try:
+                limit = _parse_recent_continuity_limit(raw_limit)
+                outcomes = list_recent_continuity_validation_outcomes(self.config.repo_root, limit=limit)
+            except ValueError as exc:
+                self._write_json({"error": str(exc)}, status=HTTPStatus.BAD_REQUEST)
+                return
+            self._write_json({"operation": "list_recent_continuity_validation_outcomes", "result": outcomes})
             return
 
         if parsed.path == "/v1/contract":
