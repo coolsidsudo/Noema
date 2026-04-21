@@ -12,6 +12,7 @@ import os
 from datetime import UTC, datetime
 from hashlib import sha256
 from dataclasses import dataclass
+from typing import Any
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -33,6 +34,35 @@ PROPOSAL_ALLOWED_TRANSITIONS = {
 PROPOSAL_LEGACY_STATUS_ALIASES = {
     "submitted": "draft",
 }
+
+
+@dataclass(frozen=True)
+class ContinuityValidationError(ValueError):
+    """Structured fail-closed error for proposal continuity validation surfaces."""
+
+    code: str
+    message: str
+    phase: str
+    event_id: str | None = None
+    log_record_id: str | None = None
+    log_path: str | None = None
+    expected_log_path: str | None = None
+
+    def __str__(self) -> str:
+        return self.message
+
+    def as_diagnostics(self, proposal_id: str) -> dict[str, Any]:
+        return {
+            "category": "proposal_review_continuity",
+            "proposal_id": proposal_id,
+            "failure_code": self.code,
+            "message": self.message,
+            "phase": self.phase,
+            "event_id": self.event_id,
+            "log_record_id": self.log_record_id,
+            "log_path": self.log_path,
+            "expected_log_path": self.expected_log_path,
+        }
 
 
 @dataclass(frozen=True)
@@ -480,20 +510,64 @@ def get_proposal_review_evidence(repo_root: Path, proposal_id: str) -> dict:
         log_link = normalized_entry.get("log_link")
         if from_state is not None:
             if not isinstance(log_link, dict):
-                raise ValueError("review continuity event missing log_link")
+                raise ContinuityValidationError(
+                    code="CONTINUITY_REVIEW_EVENT_MISSING_LOG_LINK",
+                    message="review continuity event missing log_link",
+                    phase="review_history_log_link_presence",
+                    event_id=normalized_entry["event_id"],
+                )
             log_path = str(log_link.get("log_path", "")).strip()
             record_id = str(log_link.get("log_record_id", "")).strip()
             if log_path != expected_log_path:
-                raise ValueError("review continuity event log_path is out of bounded continuity scope")
+                raise ContinuityValidationError(
+                    code="CONTINUITY_LOG_PATH_OUT_OF_SCOPE",
+                    message="review continuity event log_path is out of bounded continuity scope",
+                    phase="review_history_log_link_scope",
+                    event_id=normalized_entry["event_id"],
+                    log_record_id=record_id or None,
+                    log_path=log_path or None,
+                    expected_log_path=expected_log_path,
+                )
             if not record_id:
-                raise ValueError("review continuity event missing log_record_id")
+                raise ContinuityValidationError(
+                    code="CONTINUITY_REVIEW_EVENT_MISSING_LOG_RECORD_ID",
+                    message="review continuity event missing log_record_id",
+                    phase="review_history_log_record_id_presence",
+                    event_id=normalized_entry["event_id"],
+                    log_path=log_path,
+                    expected_log_path=expected_log_path,
+                )
             linked_record = log_records.get(record_id)
             if linked_record is None:
-                raise ValueError("review continuity event references missing append-only log record")
+                raise ContinuityValidationError(
+                    code="CONTINUITY_LOG_RECORD_MISSING",
+                    message="review continuity event references missing append-only log record",
+                    phase="append_only_log_record_lookup",
+                    event_id=normalized_entry["event_id"],
+                    log_record_id=record_id,
+                    log_path=log_path,
+                    expected_log_path=expected_log_path,
+                )
             if str(linked_record.get("proposal_id", "")) != proposal_id:
-                raise ValueError("review continuity log_link proposal_id mismatch")
+                raise ContinuityValidationError(
+                    code="CONTINUITY_LOG_RECORD_PROPOSAL_ID_MISMATCH",
+                    message="review continuity log_link proposal_id mismatch",
+                    phase="append_only_log_record_consistency",
+                    event_id=normalized_entry["event_id"],
+                    log_record_id=record_id,
+                    log_path=log_path,
+                    expected_log_path=expected_log_path,
+                )
             if str(linked_record.get("event_id", "")) != normalized_entry["event_id"]:
-                raise ValueError("review continuity log_link event_id mismatch")
+                raise ContinuityValidationError(
+                    code="CONTINUITY_LOG_RECORD_EVENT_ID_MISMATCH",
+                    message="review continuity log_link event_id mismatch",
+                    phase="append_only_log_record_consistency",
+                    event_id=normalized_entry["event_id"],
+                    log_record_id=record_id,
+                    log_path=log_path,
+                    expected_log_path=expected_log_path,
+                )
             continuity_checked_events += 1
 
         events.append(
@@ -517,6 +591,7 @@ def get_proposal_review_evidence(repo_root: Path, proposal_id: str) -> dict:
             "validated_review_events": continuity_checked_events,
             "missing_log_links": 0,
             "log_path": expected_log_path,
+            "diagnostics_mode": "bounded-fail-closed",
         },
         "authority": "proposal-review-evidence-read-only",
         "canonical_apply": "out-of-scope",
@@ -616,6 +691,16 @@ class AgentSurfaceHandler(BaseHTTPRequestHandler):
                 return
             try:
                 evidence = get_proposal_review_evidence(self.config.repo_root, proposal_id)
+            except ContinuityValidationError as exc:
+                self._write_json(
+                    {
+                        "error": exc.message,
+                        "error_code": exc.code,
+                        "diagnostics": exc.as_diagnostics(proposal_id),
+                    },
+                    status=HTTPStatus.BAD_REQUEST,
+                )
+                return
             except FileNotFoundError:
                 self._write_json({"error": "proposal not found"}, status=HTTPStatus.NOT_FOUND)
                 return

@@ -17,9 +17,9 @@ It does **not** replace architecture/system-definition authority (`docs/noema-or
 
 ## Live status
 
-- Latest completed/accepted slice: **Phase 7 Slice 7 — bounded proposal-lane inspectability and conformance hardening for evidence/log-link continuity**.
+- Latest completed/accepted slice: **Phase 7 Slice 8 — operator-facing diagnostics and observability for continuity-validation failures in the reference single-node package**.
 - Current under-review slice: **None (no currently opened under-review slice)**.
-- Next queued/proposed slice: **Phase 7 Slice 8 — operator-facing diagnostics and observability for continuity-validation failures (queued/proposed; still no canonical apply/publish expansion)**.
+- Next queued/proposed slice: **Phase 7 Slice 9 — operator inspection ergonomics for recent continuity-validation outcomes (queued/proposed; still no canonical apply/publish expansion)**.
 - Phase 5 queue status: **Closed (Slices 1–15 accepted/closed with explicit closure criteria satisfied)**.
 
 ## Continuity notes

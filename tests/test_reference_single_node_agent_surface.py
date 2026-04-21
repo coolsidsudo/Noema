@@ -207,6 +207,7 @@ def test_get_proposal_review_evidence_route_returns_review_event_links(tmp_path:
     assert evidence["review_events"][-1]["log_link"]["log_path"] == "logs/operations/proposal-review-events.jsonl"
     assert evidence["continuity"]["validated_review_events"] == 1
     assert evidence["continuity"]["log_path"] == "logs/operations/proposal-review-events.jsonl"
+    assert evidence["continuity"]["diagnostics_mode"] == "bounded-fail-closed"
 
 
 def test_get_proposal_review_evidence_rejects_malformed_review_history_entry(tmp_path: Path) -> None:
@@ -296,6 +297,49 @@ def test_get_proposal_review_evidence_rejects_out_of_scope_log_path(tmp_path: Pa
         assert "out of bounded continuity scope" in str(exc)
     else:
         raise AssertionError("out-of-scope log_link path must fail")
+
+
+def test_get_proposal_review_evidence_route_returns_structured_diagnostics(tmp_path: Path) -> None:
+    module = _load_server_module()
+    submitted = module.submit_proposal(tmp_path, {"title": "T", "body": "B", "author": "pytest"})
+    proposal_id = submitted["proposal_id"]
+    module.review_proposal_status(
+        tmp_path,
+        {
+            "proposal_id": proposal_id,
+            "to_state": "under_review",
+            "actor_id": "reviewer",
+            "actor_type": "human",
+        },
+    )
+
+    artifact = tmp_path / submitted["artifact_path"]
+    stored = json.loads(artifact.read_text(encoding="utf-8"))
+    stored["review_history"][-1]["log_link"]["log_record_id"] = "log-missing-record"
+    artifact.write_text(json.dumps(stored), encoding="utf-8")
+
+    server = module.ThreadingHTTPServer(("127.0.0.1", 0), module.AgentSurfaceHandler)
+    server.surface_config = module.SurfaceConfig(repo_root=tmp_path, contract_path=CONTRACT_PATH)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+
+    try:
+        base_url = f"http://127.0.0.1:{server.server_port}"
+        try:
+            urlopen(f"{base_url}/v1/get_proposal_review_evidence?id={proposal_id}")
+        except HTTPError as exc:
+            assert exc.code == 400
+            payload = json.loads(exc.read().decode("utf-8"))
+            assert payload["error_code"] == "CONTINUITY_LOG_RECORD_MISSING"
+            assert payload["diagnostics"]["phase"] == "append_only_log_record_lookup"
+            assert payload["diagnostics"]["proposal_id"] == proposal_id
+            assert payload["diagnostics"]["expected_log_path"] == "logs/operations/proposal-review-events.jsonl"
+        else:
+            raise AssertionError("continuity failure must return structured diagnostics")
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join(timeout=2)
 
 
 def test_review_proposal_status_rejects_invalid_transition(tmp_path: Path) -> None:
