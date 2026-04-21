@@ -4,12 +4,12 @@ This directory contains repo-native deployment assets and templates for Noema (s
 
 ## Current reference package
 
-- `reference-single-node/` - Phase 7 Slice 3 minimal operator bootstrap package for a single-node self-hosted reference environment with an executable bounded machine-facing facade.
+- `reference-single-node/` - Phase 7 baseline reference package for a single-node self-hosted reference environment with an executable bounded machine-facing facade.
 
 The package is intentionally bounded and demonstrates:
 
 - one human-facing projection path
-- one bounded machine-facing executable read/query-only path
+- one bounded machine-facing executable read/query plus proposal-lifecycle continuity path
 - one maintainer/curator operational path
 - one continuity-aware operator bootstrap posture
 

@@ -91,9 +91,41 @@ curl -sS -X POST "http://<host>:${NOEMA_AGENT_PORT}/v1/submit_proposal" \
 Expected behavior in this slice:
 
 - `list_objects` and `get_object_by_id` are executable
-- `submit_proposal` is executable and returns `status=submitted`
+- `submit_proposal` is executable and returns initial proposal `status=draft`
 - submit artifacts are written under `proposals/submitted/` for operator inspection
 - canonical publish/apply remains out of scope
+
+Proposal status continuity check:
+
+- `GET /v1/get_proposal_status?id=<proposal_id>`
+
+Example:
+
+```bash
+curl -sS "http://<host>:${NOEMA_AGENT_PORT}/v1/get_proposal_status?id=proposal-YYYYMMDD-<digest>"
+```
+
+Proposal review continuity check:
+
+- `POST /v1/review_proposal_status` with JSON body:
+
+```bash
+curl -sS -X POST "http://<host>:${NOEMA_AGENT_PORT}/v1/review_proposal_status" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "proposal_id": "proposal-YYYYMMDD-<digest>",
+    "to_state": "under_review",
+    "actor_id": "bootstrap-reviewer",
+    "actor_type": "human",
+    "notes": "bounded review continuity verification"
+  }'
+```
+
+Expected bounded behavior:
+
+- proposal status transitions are constrained to baseline lifecycle transitions
+- review continuity updates only proposal artifacts under `proposals/submitted/`
+- no canonical `structured/`, `raw/`, or `logs/` write broadening is introduced
 
 ## 5) Validate maintainer operational path
 

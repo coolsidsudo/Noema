@@ -39,6 +39,15 @@ def check_bounded_operations_contract() -> None:
     _assert(submit is not None, "submit_proposal continuity operation missing")
     _assert("Executable in this slice" in submit["notes"], "submit_proposal executable continuity note missing")
     _assert("proposal layer only" in submit["authority"], "submit_proposal is not bounded to proposal authority")
+    status = operations.get("get_proposal_status")
+    _assert(status is not None, "get_proposal_status continuity operation missing")
+    _assert("proposal layer" in status["authority"], "get_proposal_status authority is not proposal-layer bounded")
+    review = operations.get("review_proposal_status")
+    _assert(review is not None, "review_proposal_status continuity operation missing")
+    _assert(
+        "proposal review continuity" in review["authority"],
+        "review_proposal_status authority is not bounded review continuity",
+    )
 
 
 def check_docs_operator_mapping() -> None:
@@ -49,6 +58,8 @@ def check_docs_operator_mapping() -> None:
     _assert("/v1/list_objects" in bootstrap, "bootstrap guide missing executable list_objects validation")
     _assert("/v1/get_object_by_id" in bootstrap, "bootstrap guide missing executable get_object_by_id validation")
     _assert("POST /v1/submit_proposal" in bootstrap, "bootstrap guide missing executable submit_proposal validation")
+    _assert("GET /v1/get_proposal_status" in bootstrap, "bootstrap guide missing get_proposal_status validation")
+    _assert("POST /v1/review_proposal_status" in bootstrap, "bootstrap guide missing review_proposal_status validation")
 
 
 def main() -> int:

@@ -40,18 +40,20 @@ This path is intentionally read-oriented and does not replace review/apply autho
 
 ### 3) Bounded machine-facing path
 
-`noema-agent-surface` runs a minimal executable facade intentionally bounded to read/query operations plus proposal-lane submission continuity.
+`noema-agent-surface` runs a minimal executable facade intentionally bounded to read/query operations plus proposal-lane lifecycle continuity.
 
 Executable operations in this slice:
 
 - `get_object_by_id`
 - `list_objects`
 - `submit_proposal` (proposal-lane only)
+- `get_proposal_status` (proposal-lane status visibility)
+- `review_proposal_status` (proposal-lane review continuity only)
 
 Guardrails in this slice:
 
 - canonical write/apply remains out of scope
-- `submit_proposal` writes deterministic inspectable artifacts only under `proposals/submitted/`
+- proposal lifecycle writes are constrained to deterministic inspectable artifacts only under `proposals/submitted/`
 - repository access remains read-oriented and constrained to bounded object classes (`raw`, `structured`, `proposals`, `logs`), with a narrow writable subpath only for `proposals/submitted/`
 - no direct canonical writes are performed in `structured/`, `raw/`, or other non-proposal classes
 
@@ -75,9 +77,9 @@ This verifies:
 
 1. `noema-agent-surface` uses executable facade code (not static file serving)
 2. bounded read/query operations are present and correctly scoped
-3. proposal submission is executable but bounded to proposal-only artifact writes
+3. proposal lifecycle continuity (`submit_proposal`, `get_proposal_status`, `review_proposal_status`) is executable but bounded to proposal-only artifact writes
 4. canonical write/apply remains out of scope
-4. operator bootstrap and package mapping docs remain consistent with executable substitution
+5. operator bootstrap and package mapping docs remain consistent with executable substitution
 
 ## Continuity-aware operator posture (minimal)
 
