@@ -1,52 +1,20 @@
-# Noema Development Plan
+# Noema Development Plan (Long-Horizon Roadmap)
 
-This plan outlines a practical early sequence for building Noema without overcommitting to implementation details too early. The goal is to establish a coherent public baseline, then grow toward a usable self-hosted multi-human and multi-agent platform.
+This document is the **stable long-horizon roadmap** for building Noema.
 
-## Active workflow note
+It describes phase intent, rationale, and sequencing at a durable level. It does **not** act as a live execution tracker.
 
-The accepted architecture baseline is now actively adopted for implementation workflow through `control/workflow-baseline.md`.
+For live repository execution state (latest accepted slice, any current under-review slice, next queued continuation, and brief continuity notes), see `control/development-tracker.md`.
 
-Accepted completed slices: **Phase 0 (architecture baseline), Phase 1 (repository skeleton), and the full Phase 2 definition package (core object conventions, metadata profile, relationship/traceability conventions, and index/catalog baseline)**.
+## Scope and authority
 
-Latest completed/accepted slice: **Phase 7 Slice 4 — bounded executable proposal-submission continuity for the reference single-node package**.
+`control/development-plan.md` owns:
 
-Current execution focus: **No current under-review slice is open; next bounded Phase 7 continuation is queued/proposed and not yet opened**.
+- long-horizon phase structure
+- phase objectives, key outputs, and why each phase matters
+- stable sequencing rationale across the program
 
-Phase 5 queue status: **Closed (Slices 1–15 accepted/closed with explicit closure criteria satisfied)**.
-
-
-## Phase 7: Reference deployment packaging baseline
-
-**Objective**
-
-Move from accepted semantics into a bounded, concrete, single-node reference deployment package that operators can stand up and understand.
-
-**Key outputs**
-
-- Minimal repo-native reference deployment package under `deploy/`
-- Operator bootstrap guide for single-node self-hosted setup
-- Minimal configuration and layout artifacts for practical bootstrap
-- Explicit mapping across storage substrate, human path, machine path, and maintainer path
-- Continuity-aware posture aligned with accepted backup/restore semantics
-
-**Why it matters**
-
-Accepted baseline semantics are now broad enough that the highest-value next step is practical realizability. This phase anchors semantics in a concrete reference package while staying implementation-light and avoiding enterprise/orchestration drift.
-
-### Phase 7 Slice 1 scope note
-
-Phase 7 Slice 1 defines and implements a minimal single-node reference deployment package and operator bootstrap baseline, including:
-
-1. repo-native package assets under `deploy/reference-single-node/`
-2. operator bootstrap flow for one bounded self-hosted shape
-3. explicit boundary between stable `docs/` semantics and repo-native deployment assets
-4. concrete mapping for human-facing, bounded machine-facing, and maintainer/curator paths
-5. minimal continuity-aware operator posture for state preservation assumptions
-6. explicit non-goals to prevent orchestration/enterprise/productization drift
-
-Acceptance posture: **accepted/completed**.
-
-Next bounded continuation pointer: **Phase 7 Slice 5 — bounded proposal status/review continuity and matching conformance-hardening continuation (queued/proposed; not yet opened)**.
+It does **not** own per-issue or per-slice live status.
 
 ## Phase 0: Architecture baseline
 
@@ -151,28 +119,6 @@ Implement the first maintainer/compiler/curator workflows.
 
 This is the phase where Noema starts behaving like a compounding knowledge system. The maintainer workflow is what turns accumulated sources and questions into a maintained knowledge base rather than a pile of disconnected artifacts.
 
-### Phase 5 closure declaration (Slice 15)
-
-Phase 5 was defined to establish a maintainer/compiler/curator baseline across five capabilities:
-
-1. source ingest flow
-2. structured compilation and cross-linking flow
-3. proposal and review queue behavior
-4. linting/consistency-check workflow
-5. operational logging for maintainer actions
-
-Accepted Phase 5 Slices 1–14 implemented deterministic repository scan/build behavior, projection/report generation, relationship/reference checks, accepted-proposal completeness checks, apply-log coverage checks, and results_in structured-class correctness. Slice 15 confirms this accepted baseline now covers all five Phase 5 goal capabilities at a baseline level and does not require additional validator proliferation for Phase 5 closure.
-
-**Phase 5 completion criteria (explicit finish rule):**
-
-- Maintainer scan/build pipeline runs deterministically and emits reproducible projection outputs for workspace review surfaces.
-- Cross-link/reference validation covers proposal targets, accepted outcomes (`results_in`), structured support provenance (`supports`), supersession references, and log linkage references within workspace scope.
-- Proposal/review surfaces and diagnostics are present in projection outputs (`review/proposal-queue.md`, workspace build report summaries, and class browse pages).
-- Operational log traceability is enforced for terminal proposal lifecycle events and accepted proposal outcome application coverage.
-- Control documents no longer leave Phase 5 in an open-ended continuation loop and instead declare closure readiness and transition pointer.
-
-**Closure judgment:** Phase 5 is complete after Slice 15. No additional Phase 5 implementation slice is required for baseline closure.
-
 ## Phase 6: Multi-user / auth / deployment baseline
 
 **Objective**
@@ -181,115 +127,32 @@ Support real shared deployment with explicit policy boundaries by sequencing sem
 
 **Key outputs**
 
-- Phase 6 Slice 1 access/authority baseline semantics (accepted prerequisite)
-- Phase 6 Slice 2A authentication and identity provisioning semantics baseline (accepted prerequisite)
-- Phase 6 Slice 2B deployment/self-hosting operational baseline semantics for NAS/VPS (accepted prerequisite)
-- Backup and restore operational guidance refinement baseline semantics (defined prior slice)
-- Deployment hardening/profile guidance baseline semantics (accepted Slice 4 prerequisite)
-- Implementation-constrained hardening conformance/validation guidance baseline semantics (accepted Slice 5 prerequisite)
-- Conformance evidence interoperability refinement scoping (accepted Slice 6 outcome)
+- Access/authority baseline semantics
+- Authentication and identity provisioning baseline semantics
+- Deployment/self-hosting operations baseline semantics
+- Backup/restore continuity guidance baseline semantics
+- Deployment hardening/profile guidance baseline semantics
+- Hardening conformance/validation guidance baseline semantics
+- Conformance evidence interoperability refinement scope
 
 **Why it matters**
 
 Noema is meant to be reusable by others and deployable in real environments. Phase 6 makes the project truly multi-user, governable, and practical to self-host beyond a single experimental setup while preserving implementation-light, baseline-first sequencing.
 
-### Phase 6 Slice 1 scope note
+## Phase 7: Reference deployment packaging baseline
 
-Phase 6 Slice 1 defines the baseline scope for multi-user access and authority semantics in `docs/noema-access-authority-baseline.md`, including:
+**Objective**
 
-1. baseline human/agent identity categories
-2. explicit visibility semantics (`private`, `team`, `public`, `scoped-agent`)
-3. explicit authority semantics (`create`, `modify`, `review`, `approve`, `publish/apply`)
-4. explicit visibility-vs-authority separation
-5. workspace-level defaults with object-level policy refinement
-6. baseline role families (`owner`, `reviewer`, `contributor`, `reader`, bounded agent roles)
-7. machine-originated action auditability expectations
-8. non-goals/deferred Phase 6 concerns (auth internals, credential lifecycle, deployment hardening internals)
+Move from accepted semantics into a bounded, concrete, single-node reference deployment package that operators can stand up and understand.
 
+**Key outputs**
 
-### Phase 6 Slice 2A scope note
+- Minimal repo-native reference deployment package under `deploy/`
+- Operator bootstrap guidance for single-node self-hosted setup
+- Minimal configuration and layout artifacts for practical bootstrap
+- Explicit mapping across storage substrate, human path, machine path, and maintainer path
+- Continuity-aware posture aligned with accepted backup/restore semantics
 
-Phase 6 Slice 2A defines baseline authentication and identity provisioning semantics in `docs/noema-auth-identity-provisioning-baseline.md`, including:
+**Why it matters**
 
-1. baseline identity classes (`human`, `agent`, `service`)
-2. durable identity namespace posture and attribution expectations
-3. explicit authentication-vs-authorization separation
-4. provisioning semantics and baseline identity lifecycle states
-5. workspace membership and scope-attachment semantics
-6. agent credential/proxy attribution posture at baseline depth
-7. authenticated-action auditability requirements
-8. non-goals/deferred concerns for production auth-stack/deployment internals
-
-Next bounded continuation pointer: **Phase 6 Slice 2B — deployment/self-hosting operations baseline semantics**.
-
-### Phase 6 Slice 2B scope note
-
-Phase 6 Slice 2B defines baseline self-hosted deployment and operations semantics in `docs/noema-self-hosted-deployment-operations-baseline.md`, including:
-
-1. single-node-first and operator-controlled deployment posture
-2. NAS/VPS practicality expectations
-3. baseline human-facing and machine-facing access-path semantics
-4. storage/workspace portability and inspectability expectations
-5. backup/restore continuity semantics at baseline depth
-6. upgrade/change-management baseline posture
-7. operator/admin responsibility boundaries
-8. explicit non-goals and deferred hardening/deployment-engineering concerns
-
-Next bounded continuation pointer: **Phase 6 Slice 3 — backup and restore operational guidance refinement baseline semantics**.
-
-
-### Phase 6 Slice 3 scope note
-
-Phase 6 Slice 3 defines baseline backup and restore operational guidance semantics in `docs/noema-backup-restore-operational-guidance-baseline.md`, including:
-
-1. backup coverage classes for knowledge, workspace/project, policy/auth, and operational continuity state
-2. coherent restore semantics, including explicit full vs partial restore posture
-3. governance/history continuity expectations at baseline depth
-4. verification posture with inspectability and portability expectations
-5. qualitative recovery-point and recovery-time posture (non-SRE-target)
-6. explicit operator responsibilities for cadence and restore readiness
-7. relationship to accepted Slice 2B deployment baseline
-8. explicit non-goals/deferred DR/hardening concerns
-
-Next bounded continuation pointer: **Phase 6 Slice 4 — deployment hardening/profile guidance baseline semantics**.
-
-### Phase 6 Slice 4 scope note
-
-Phase 6 Slice 4 defines deployment hardening/profile guidance baseline semantics in `docs/noema-deployment-hardening-profile-guidance-baseline.md`, including:
-
-1. Noema-specific hardening meaning at semantics-first depth
-2. operator profile-guidance posture across exposure/hosting contexts
-3. baseline-required hardening expectations vs operator-selected stronger profiles
-4. relationship boundaries with accepted Slice 1, Slice 2A, Slice 2B, and Slice 3 semantics
-5. minimum hardening concern categories (exposure, secret/config handling, administrative path protection, change/update safeguards, audit/log posture, recovery-sensitive safeguards)
-6. explicit baseline operator responsibility boundaries
-7. explicit non-goals/deferred implementation internals
-
-Next bounded continuation pointer: **Phase 6 Slice 5 — implementation-constrained hardening conformance/validation guidance baseline semantics**.
-
-### Phase 6 Slice 5 scope note
-
-Phase 6 Slice 5 defines implementation-constrained hardening conformance/validation guidance baseline semantics in `docs/noema-hardening-conformance-validation-guidance-baseline.md`, including:
-
-1. hardening conformance and validation posture meaning in Noema terms
-2. selected hardening concern categories with minimum conformance dimensions
-3. bounded cross-profile interpretation for baseline-required vs stronger safeguards
-4. minimum validation scenario/check classes without harness mandates
-5. compatibility mapping guidance for richer local implementation stacks
-6. explicit relationship boundaries with accepted Slice 1, Slice 2A, Slice 2B, Slice 3, and Slice 4 semantics
-
-Next bounded continuation pointer: **Phase 6 Slice 6 — conformance evidence interoperability refinement (current under-review scoping slice)**.
-
-
-### Phase 6 Slice 6 scope note
-
-Phase 6 Slice 6 defines scoping semantics for conformance evidence interoperability refinement in `docs/noema-conformance-evidence-interoperability-refinement-scoping.md`, including:
-
-1. bounded definition of conformance evidence meaning after accepted Slice 5 semantics
-2. explicit interoperability-interpretation gap statement without reopening prior slices
-3. candidate evidence classes and evidence-shape dimensions for possible follow-on refinement
-4. minimum interpretation boundary rules without toolchain/schema/storage mandates
-5. explicit relationship boundaries with accepted Slice 4 and Slice 5 semantics
-6. explicit out-of-scope and anti-drift guardrails for harness/scanner/benchmark lock-in
-
-Next bounded continuation pointer: **Phase 6 Slice 7 remains next substantive queued/proposed follow-on (evidence interpretation profile/claim-mapping semantics), to be explicitly opened in a separate under-review slice if started**.
+Accepted baseline semantics are broad enough that practical realizability matters. This phase anchors semantics in a concrete reference package while staying implementation-light and avoiding orchestration/enterprise drift.
