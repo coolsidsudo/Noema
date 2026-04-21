@@ -91,7 +91,7 @@ def test_submit_proposal_http_route_is_executable(tmp_path: Path) -> None:
         with urlopen(request) as response:
             payload = json.loads(response.read().decode("utf-8"))
         assert response.status == 201
-        assert payload["result"]["status"] == "submitted"
+        assert payload["result"]["status"] == "draft"
         assert (tmp_path / payload["result"]["artifact_path"]).exists()
     finally:
         server.shutdown()
@@ -114,7 +114,7 @@ def test_submit_proposal_writes_bounded_proposal_artifact(tmp_path: Path) -> Non
 
     proposal_path = tmp_path / result["artifact_path"]
     assert proposal_path.exists()
-    assert result["status"] == "submitted"
+    assert result["status"] == "draft"
     assert result["authority"] == "proposal-only"
     assert "proposals/submitted/" in result["artifact_path"]
     assert not (tmp_path / "structured").exists()
@@ -124,6 +124,8 @@ def test_submit_proposal_writes_bounded_proposal_artifact(tmp_path: Path) -> Non
     created = json.loads(proposal_path.read_text(encoding="utf-8"))
     assert created["request"]["title"] == "Executable continuity proposal"
     assert created["canonical_apply"] == "out-of-scope"
+    assert created["status"] == "draft"
+    assert created["review_history"][0]["to_state"] == "draft"
     proposal_path.unlink()
 
 
@@ -135,6 +137,121 @@ def test_submit_proposal_rejects_invalid_payload(tmp_path: Path) -> None:
         assert "title is required" in str(exc)
     else:
         raise AssertionError("invalid payload must fail")
+
+
+def test_get_and_review_proposal_status_are_executable_and_bounded(tmp_path: Path) -> None:
+    module = _load_server_module()
+    submitted = module.submit_proposal(
+        tmp_path,
+        {
+            "title": "Review continuity proposal",
+            "body": "Keep status/review continuity bounded to proposal artifacts.",
+            "author": "pytest",
+            "workspace": "tests",
+        },
+    )
+    proposal_id = submitted["proposal_id"]
+
+    status_before = module.get_proposal_status(tmp_path, proposal_id)
+    assert status_before["proposal"]["status"] == "draft"
+    assert status_before["review_history"][0]["to_state"] == "draft"
+
+    reviewed = module.review_proposal_status(
+        tmp_path,
+        {
+            "proposal_id": proposal_id,
+            "to_state": "under_review",
+            "actor_id": "reviewer-1",
+            "actor_type": "human",
+        },
+    )
+    assert reviewed["status"] == "under_review"
+    assert reviewed["previous_status"] == "draft"
+    assert "proposals/submitted/" in reviewed["artifact_path"]
+
+    status_after = module.get_proposal_status(tmp_path, proposal_id, include_result_links=False)
+    assert status_after["proposal"]["status"] == "under_review"
+    assert len(status_after["review_history"]) == 2
+    assert status_after["review_history"][-1]["from_state"] == "draft"
+    assert status_after["review_history"][-1]["to_state"] == "under_review"
+    assert not (tmp_path / "structured").exists()
+    assert not (tmp_path / "raw").exists()
+    assert not (tmp_path / "logs").exists()
+
+
+def test_review_proposal_status_rejects_invalid_transition(tmp_path: Path) -> None:
+    module = _load_server_module()
+    submitted = module.submit_proposal(tmp_path, {"title": "T", "body": "B"})
+    try:
+        module.review_proposal_status(
+            tmp_path,
+            {"proposal_id": submitted["proposal_id"], "to_state": "accepted", "actor_id": "reviewer"},
+        )
+    except ValueError as exc:
+        assert "invalid transition" in str(exc)
+    else:
+        raise AssertionError("invalid transition must fail")
+
+
+def test_legacy_submitted_artifact_is_normalized_for_status_reads(tmp_path: Path) -> None:
+    module = _load_server_module()
+    artifact = tmp_path / "proposals" / "submitted" / "proposal-legacy-0001.json"
+    artifact.parent.mkdir(parents=True)
+    artifact.write_text(
+        json.dumps(
+            {
+                "schema_version": "phase7-slice4-reference",
+                "proposal_id": "proposal-legacy-0001",
+                "submitted_at": "2026-04-20T00:00:00+00:00",
+                "status": "submitted",
+                "authority": "proposal-only",
+                "canonical_apply": "out-of-scope",
+                "request": {"title": "Legacy", "author": "legacy-agent"},
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    status = module.get_proposal_status(tmp_path, "proposal-legacy-0001")
+    assert status["proposal"]["status"] == "draft"
+    assert status["proposal"]["updated_at"] == "2026-04-20T00:00:00+00:00"
+    assert status["review_history"][0]["to_state"] == "draft"
+
+
+def test_legacy_submitted_artifact_is_normalized_for_review_transitions(tmp_path: Path) -> None:
+    module = _load_server_module()
+    artifact = tmp_path / "proposals" / "submitted" / "proposal-legacy-0002.json"
+    artifact.parent.mkdir(parents=True)
+    artifact.write_text(
+        json.dumps(
+            {
+                "schema_version": "phase7-slice4-reference",
+                "proposal_id": "proposal-legacy-0002",
+                "submitted_at": "2026-04-20T00:00:00+00:00",
+                "status": "submitted",
+                "authority": "proposal-only",
+                "canonical_apply": "out-of-scope",
+                "request": {"title": "Legacy 2", "author": "legacy-agent"},
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    reviewed = module.review_proposal_status(
+        tmp_path,
+        {
+            "proposal_id": "proposal-legacy-0002",
+            "to_state": "under_review",
+            "actor_id": "reviewer",
+            "actor_type": "human",
+        },
+    )
+    assert reviewed["previous_status"] == "draft"
+    assert reviewed["status"] == "under_review"
+    updated = json.loads(artifact.read_text(encoding="utf-8"))
+    assert updated["status"] == "under_review"
+    assert isinstance(updated["review_history"], list)
+    assert len(updated["review_history"]) == 2
 
 
 def test_reference_package_conformance_script_passes() -> None:
