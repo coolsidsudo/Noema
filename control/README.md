@@ -9,6 +9,12 @@ These files are **not part of the Noema system definition**. They are temporary 
 - **How Noema works** (system/product definition): `docs/`
 - **How we build Noema** (repository execution workflow): `control/`
 
+Within `control/`, authority is intentionally separated:
+
+- `development-plan.md` = long-horizon roadmap (stable)
+- `development-tracker.md` = live execution tracker (mutable)
+- `workflow-baseline.md` = workflow rules and review/governance process
+
 Repository execution in this control layer uses a full loop with explicit in-flight vs landed-state review authority:
 
 1. Delegate from the Linear issue to Codex to start work.
@@ -24,6 +30,14 @@ Repository execution in this control layer uses a full loop with explicit in-fli
 11. Do not run a default post-merge Codex acceptance-close patch for a normal merged issue.
 12. Run post-merge follow-up only when a distinct new issue is intentionally opened or an explicitly declared exception requires it.
 
+### Pre-issue read-first requirement
+
+Before opening every new issue, higher-level review/governance must read:
+
+1. `docs/noema-original-system-design.md`
+2. `control/development-plan.md`
+3. `control/development-tracker.md`
+
 Commit/PR evidence should be provided first when reporting completion so reviewers can verify repository state directly.
 
 ## Stability expectations
@@ -35,5 +49,6 @@ Those changes do **not** change Noema's architecture or system semantics unless 
 ## Current control artifacts
 
 - `development-plan.md`
+- `development-tracker.md`
 - `workflow-baseline.md`
 - `phase-7-slice-1-reference-deployment-package.md`
