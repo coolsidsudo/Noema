@@ -21,7 +21,7 @@ ALLOWED_CLASSES = ("raw", "structured", "proposals", "logs")
 OBJECT_EXTENSIONS = {".md", ".json", ".yml", ".yaml", ".txt"}
 DEFAULT_LIMIT = 50
 MAX_LIMIT = 200
-PROPOSAL_SCHEMA_VERSION = "phase7-slice6-reference"
+PROPOSAL_SCHEMA_VERSION = "phase7-slice7-reference"
 PROPOSAL_REVIEW_LOG_PATH = Path("logs/operations/proposal-review-events.jsonl")
 PROPOSAL_ALLOWED_TRANSITIONS = {
     "draft": {"under_review", "withdrawn"},
@@ -342,6 +342,64 @@ def _append_review_log_event(repo_root: Path, payload: dict) -> dict[str, str]:
     }
 
 
+def _load_review_log_entries(repo_root: Path) -> dict[str, dict]:
+    log_path = (repo_root / PROPOSAL_REVIEW_LOG_PATH).resolve()
+    repo_root_resolved = repo_root.resolve()
+    if repo_root_resolved not in log_path.parents:
+        raise ValueError("review log path escapes repository root")
+    if not log_path.exists():
+        return {}
+
+    indexed: dict[str, dict] = {}
+    with log_path.open("r", encoding="utf-8") as handle:
+        for raw_line in handle:
+            line = raw_line.strip()
+            if not line:
+                continue
+            try:
+                record = json.loads(line)
+            except json.JSONDecodeError as exc:
+                raise ValueError("proposal review log contains malformed jsonl entry") from exc
+            if not isinstance(record, dict):
+                raise ValueError("proposal review log entry must be an object")
+            record_id = str(record.get("record_id", "")).strip()
+            if not record_id:
+                raise ValueError("proposal review log entry missing record_id")
+            indexed[record_id] = record
+    return indexed
+
+
+def _validate_review_history_entry_shape(entry: object) -> dict:
+    if not isinstance(entry, dict):
+        raise ValueError("review history entries must be objects")
+    event_id = str(entry.get("event_id", "")).strip()
+    to_state = str(entry.get("to_state", "")).strip()
+    timestamp = str(entry.get("timestamp", "")).strip()
+    actor_id = str(entry.get("actor_id", "")).strip()
+    actor_type = str(entry.get("actor_type", "")).strip()
+    if not event_id:
+        raise ValueError("review history entry missing event_id")
+    if not to_state:
+        raise ValueError("review history entry missing to_state")
+    if not timestamp:
+        raise ValueError("review history entry missing timestamp")
+    if not actor_id:
+        raise ValueError("review history entry missing actor_id")
+    if actor_type not in {"human", "agent", "service"}:
+        raise ValueError("review history entry actor_type must be one of human|agent|service")
+
+    evidence = entry.get("evidence", [])
+    normalized_evidence = _normalize_review_evidence(evidence)
+    normalized = dict(entry)
+    normalized["event_id"] = event_id
+    normalized["to_state"] = to_state
+    normalized["timestamp"] = timestamp
+    normalized["actor_id"] = actor_id
+    normalized["actor_type"] = actor_type
+    normalized["evidence"] = normalized_evidence
+    return normalized
+
+
 def review_proposal_status(repo_root: Path, payload: dict) -> dict[str, str]:
     normalized = _normalize_review_request(payload)
     proposal_path = _proposal_artifact_path(repo_root, normalized["proposal_id"])
@@ -410,18 +468,44 @@ def get_proposal_review_evidence(repo_root: Path, proposal_id: str) -> dict:
         include_result_links=False,
     )
     review_history = status.get("review_history", [])
+    if not isinstance(review_history, list):
+        raise ValueError("proposal review_history must be a list")
+    log_records = _load_review_log_entries(repo_root)
+    expected_log_path = str(PROPOSAL_REVIEW_LOG_PATH)
     events = []
+    continuity_checked_events = 0
     for entry in review_history:
+        normalized_entry = _validate_review_history_entry_shape(entry)
+        from_state = normalized_entry.get("from_state")
+        log_link = normalized_entry.get("log_link")
+        if from_state is not None:
+            if not isinstance(log_link, dict):
+                raise ValueError("review continuity event missing log_link")
+            log_path = str(log_link.get("log_path", "")).strip()
+            record_id = str(log_link.get("log_record_id", "")).strip()
+            if log_path != expected_log_path:
+                raise ValueError("review continuity event log_path is out of bounded continuity scope")
+            if not record_id:
+                raise ValueError("review continuity event missing log_record_id")
+            linked_record = log_records.get(record_id)
+            if linked_record is None:
+                raise ValueError("review continuity event references missing append-only log record")
+            if str(linked_record.get("proposal_id", "")) != proposal_id:
+                raise ValueError("review continuity log_link proposal_id mismatch")
+            if str(linked_record.get("event_id", "")) != normalized_entry["event_id"]:
+                raise ValueError("review continuity log_link event_id mismatch")
+            continuity_checked_events += 1
+
         events.append(
             {
-                "event_id": entry.get("event_id"),
-                "from_state": entry.get("from_state"),
-                "to_state": entry.get("to_state"),
-                "timestamp": entry.get("timestamp"),
-                "actor_id": entry.get("actor_id"),
-                "actor_type": entry.get("actor_type"),
-                "evidence": entry.get("evidence", []),
-                "log_link": entry.get("log_link"),
+                "event_id": normalized_entry["event_id"],
+                "from_state": from_state,
+                "to_state": normalized_entry["to_state"],
+                "timestamp": normalized_entry["timestamp"],
+                "actor_id": normalized_entry["actor_id"],
+                "actor_type": normalized_entry["actor_type"],
+                "evidence": normalized_entry["evidence"],
+                "log_link": log_link if isinstance(log_link, dict) else None,
             }
         )
     return {
@@ -429,6 +513,11 @@ def get_proposal_review_evidence(repo_root: Path, proposal_id: str) -> dict:
         "status": status["proposal"]["status"],
         "artifact_path": status["artifact_path"],
         "review_events": events,
+        "continuity": {
+            "validated_review_events": continuity_checked_events,
+            "missing_log_links": 0,
+            "log_path": expected_log_path,
+        },
         "authority": "proposal-review-evidence-read-only",
         "canonical_apply": "out-of-scope",
     }

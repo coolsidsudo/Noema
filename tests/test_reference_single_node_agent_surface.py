@@ -205,6 +205,97 @@ def test_get_proposal_review_evidence_route_returns_review_event_links(tmp_path:
     assert evidence["review_events"][-1]["to_state"] == "under_review"
     assert evidence["review_events"][-1]["evidence"][0]["kind"] == "checklist"
     assert evidence["review_events"][-1]["log_link"]["log_path"] == "logs/operations/proposal-review-events.jsonl"
+    assert evidence["continuity"]["validated_review_events"] == 1
+    assert evidence["continuity"]["log_path"] == "logs/operations/proposal-review-events.jsonl"
+
+
+def test_get_proposal_review_evidence_rejects_malformed_review_history_entry(tmp_path: Path) -> None:
+    module = _load_server_module()
+    artifact = tmp_path / "proposals" / "submitted" / "proposal-bad-shape-0001.json"
+    artifact.parent.mkdir(parents=True)
+    artifact.write_text(
+        json.dumps(
+            {
+                "schema_version": "phase7-slice7-reference",
+                "proposal_id": "proposal-bad-shape-0001",
+                "submitted_at": "2026-04-21T00:00:00+00:00",
+                "status": "draft",
+                "authority": "proposal-only",
+                "canonical_apply": "out-of-scope",
+                "request": {"title": "Malformed", "author": "legacy-agent"},
+                "review_history": [
+                    {
+                        "event_id": "evt-bad-entry",
+                        "from_state": None,
+                        "to_state": "draft",
+                        "timestamp": "2026-04-21T00:00:00+00:00",
+                        "actor_id": "legacy-agent",
+                        "actor_type": "invalid-actor",
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    try:
+        module.get_proposal_review_evidence(tmp_path, "proposal-bad-shape-0001")
+    except ValueError as exc:
+        assert "actor_type must be one of human|agent|service" in str(exc)
+    else:
+        raise AssertionError("malformed review_history entry must fail")
+
+
+def test_get_proposal_review_evidence_rejects_missing_log_link_record(tmp_path: Path) -> None:
+    module = _load_server_module()
+    submitted = module.submit_proposal(tmp_path, {"title": "T", "body": "B", "author": "pytest"})
+    proposal_id = submitted["proposal_id"]
+    module.review_proposal_status(
+        tmp_path,
+        {
+            "proposal_id": proposal_id,
+            "to_state": "under_review",
+            "actor_id": "reviewer",
+            "actor_type": "human",
+        },
+    )
+    artifact = tmp_path / submitted["artifact_path"]
+    stored = json.loads(artifact.read_text(encoding="utf-8"))
+    stored["review_history"][-1]["log_link"]["log_record_id"] = "log-missing-record"
+    artifact.write_text(json.dumps(stored), encoding="utf-8")
+
+    try:
+        module.get_proposal_review_evidence(tmp_path, proposal_id)
+    except ValueError as exc:
+        assert "missing append-only log record" in str(exc)
+    else:
+        raise AssertionError("missing linked log record must fail")
+
+
+def test_get_proposal_review_evidence_rejects_out_of_scope_log_path(tmp_path: Path) -> None:
+    module = _load_server_module()
+    submitted = module.submit_proposal(tmp_path, {"title": "T", "body": "B", "author": "pytest"})
+    proposal_id = submitted["proposal_id"]
+    module.review_proposal_status(
+        tmp_path,
+        {
+            "proposal_id": proposal_id,
+            "to_state": "under_review",
+            "actor_id": "reviewer",
+            "actor_type": "human",
+        },
+    )
+    artifact = tmp_path / submitted["artifact_path"]
+    stored = json.loads(artifact.read_text(encoding="utf-8"))
+    stored["review_history"][-1]["log_link"]["log_path"] = "logs/other-scope/events.jsonl"
+    artifact.write_text(json.dumps(stored), encoding="utf-8")
+
+    try:
+        module.get_proposal_review_evidence(tmp_path, proposal_id)
+    except ValueError as exc:
+        assert "out of bounded continuity scope" in str(exc)
+    else:
+        raise AssertionError("out-of-scope log_link path must fail")
 
 
 def test_review_proposal_status_rejects_invalid_transition(tmp_path: Path) -> None:

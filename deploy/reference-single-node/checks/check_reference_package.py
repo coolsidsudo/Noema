@@ -29,6 +29,7 @@ def check_executable_surface_substitution() -> None:
 
 def check_bounded_operations_contract() -> None:
     contract = json.loads((DEPLOY_ROOT / "contracts" / "agent-surface-baseline.json").read_text(encoding="utf-8"))
+    _assert(contract.get("version") == "phase7-slice7-reference", "contract version is not phase7-slice7-reference")
     operations = {entry["name"]: entry for entry in contract.get("operations", [])}
     _assert("get_object_by_id" in operations, "get_object_by_id missing from machine-facing contract")
     _assert("list_objects" in operations, "list_objects missing from machine-facing contract")
@@ -58,6 +59,27 @@ def check_bounded_operations_contract() -> None:
         "log-link continuity" in evidence["authority"],
         "get_proposal_review_evidence authority is not bounded to evidence/log-link continuity",
     )
+    _assert(
+        "log-link continuity validation" in evidence["notes"],
+        "get_proposal_review_evidence notes missing explicit continuity validation guarantee",
+    )
+
+
+def check_review_evidence_continuity_invariants() -> None:
+    server_source = (DEPLOY_ROOT / "agent_surface" / "server.py").read_text(encoding="utf-8")
+    _assert("_load_review_log_entries" in server_source, "review evidence log index loader invariant missing")
+    _assert(
+        "_validate_review_history_entry_shape" in server_source,
+        "review history shape validation invariant missing",
+    )
+    _assert(
+        "review continuity event references missing append-only log record" in server_source,
+        "missing continuity failure invariant for absent linked log records",
+    )
+    _assert(
+        "review continuity event log_path is out of bounded continuity scope" in server_source,
+        "missing bounded continuity scope invariant for log-link path",
+    )
 
 
 def check_docs_operator_mapping() -> None:
@@ -80,6 +102,7 @@ def main() -> int:
     checks = [
         check_executable_surface_substitution,
         check_bounded_operations_contract,
+        check_review_evidence_continuity_invariants,
         check_docs_operator_mapping,
     ]
 

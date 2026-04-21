@@ -66,7 +66,7 @@ This keeps the machine-facing path executable without broadening into auth-stack
 
 This path is operator-invoked and review-bounded; it does not introduce autonomous canonical-write behavior.
 
-## Conformance checks (expanded for Slice 4)
+## Conformance checks (expanded for Slice 7 continuity hardening)
 
 Run from repository root:
 
@@ -79,8 +79,9 @@ This verifies:
 1. `noema-agent-surface` uses executable facade code (not static file serving)
 2. bounded read/query operations are present and correctly scoped
 3. proposal lifecycle continuity (`submit_proposal`, `get_proposal_status`, `review_proposal_status`, `get_proposal_review_evidence`) is executable but bounded to proposal artifacts plus append-only review log-link continuity records
-4. canonical write/apply remains out of scope
-5. operator bootstrap and package mapping docs remain consistent with executable substitution
+4. review evidence reads enforce bounded review-history shape and linked append-only log-record continuity
+5. canonical write/apply remains out of scope
+6. operator bootstrap and package mapping docs remain consistent with executable substitution
 
 ## Continuity-aware operator posture (minimal)
 
@@ -114,4 +115,4 @@ This package preserves Noema architecture invariants:
 
 ## Next-slice pointer
 
-Next bounded continuation after this slice should focus on **proposal-lane inspectability depth and additional conformance hardening around bounded evidence/log-link semantics** while preserving single-node package boundaries and proposal-only canonical-write posture.
+Next bounded continuation after this slice should focus on **proposal-lane continuity ergonomics and operator-facing diagnostics** while preserving single-node package boundaries and proposal-only canonical-write posture.
