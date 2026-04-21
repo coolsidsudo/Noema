@@ -1,6 +1,6 @@
 {
-  "version": "phase7-slice5-reference",
-  "purpose": "Minimal executable bounded machine-facing facade for read/query, proposal submission, and proposal status/review continuity",
+  "version": "phase7-slice6-reference",
+  "purpose": "Minimal executable bounded machine-facing facade for read/query, proposal submission, and proposal status/review evidence continuity",
   "runtime": {
     "shape": "single-node executable facade",
     "posture": "read/query plus proposal-lane lifecycle continuity",
@@ -30,7 +30,12 @@
     {
       "name": "review_proposal_status",
       "authority": "proposal review continuity only",
-      "notes": "Executable in this slice via bounded POST /v1/review_proposal_status; only status transitions inside proposal artifacts are allowed."
+      "notes": "Executable in this slice via bounded POST /v1/review_proposal_status; only status transitions inside proposal artifacts plus append-only continuity log-link records are allowed."
+    },
+    {
+      "name": "get_proposal_review_evidence",
+      "authority": "read/query over proposal review evidence and log-link continuity only",
+      "notes": "Executable in this slice via bounded GET /v1/get_proposal_review_evidence; returns review events, attached evidence entries, and linked operational log record identifiers."
     }
   ],
   "non_goals": [

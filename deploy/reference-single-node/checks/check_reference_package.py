@@ -48,6 +48,16 @@ def check_bounded_operations_contract() -> None:
         "proposal review continuity" in review["authority"],
         "review_proposal_status authority is not bounded review continuity",
     )
+    _assert(
+        "append-only continuity log-link records" in review["notes"],
+        "review_proposal_status notes missing bounded append-only log-link continuity statement",
+    )
+    evidence = operations.get("get_proposal_review_evidence")
+    _assert(evidence is not None, "get_proposal_review_evidence continuity operation missing")
+    _assert(
+        "log-link continuity" in evidence["authority"],
+        "get_proposal_review_evidence authority is not bounded to evidence/log-link continuity",
+    )
 
 
 def check_docs_operator_mapping() -> None:
@@ -60,6 +70,10 @@ def check_docs_operator_mapping() -> None:
     _assert("POST /v1/submit_proposal" in bootstrap, "bootstrap guide missing executable submit_proposal validation")
     _assert("GET /v1/get_proposal_status" in bootstrap, "bootstrap guide missing get_proposal_status validation")
     _assert("POST /v1/review_proposal_status" in bootstrap, "bootstrap guide missing review_proposal_status validation")
+    _assert(
+        "GET /v1/get_proposal_review_evidence" in bootstrap,
+        "bootstrap guide missing get_proposal_review_evidence validation",
+    )
 
 
 def main() -> int:

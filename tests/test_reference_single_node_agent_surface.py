@@ -163,6 +163,7 @@ def test_get_and_review_proposal_status_are_executable_and_bounded(tmp_path: Pat
             "to_state": "under_review",
             "actor_id": "reviewer-1",
             "actor_type": "human",
+            "evidence": [{"kind": "test", "ref": "pytest://review/1", "note": "bounded evidence"}],
         },
     )
     assert reviewed["status"] == "under_review"
@@ -174,9 +175,36 @@ def test_get_and_review_proposal_status_are_executable_and_bounded(tmp_path: Pat
     assert len(status_after["review_history"]) == 2
     assert status_after["review_history"][-1]["from_state"] == "draft"
     assert status_after["review_history"][-1]["to_state"] == "under_review"
+    assert status_after["review_history"][-1]["evidence"][0]["kind"] == "test"
+    assert status_after["log_links"][-1]["log_path"] == "logs/operations/proposal-review-events.jsonl"
+    review_log = tmp_path / "logs" / "operations" / "proposal-review-events.jsonl"
+    assert review_log.exists()
+    assert len(review_log.read_text(encoding="utf-8").strip().splitlines()) == 1
     assert not (tmp_path / "structured").exists()
     assert not (tmp_path / "raw").exists()
-    assert not (tmp_path / "logs").exists()
+    assert (tmp_path / "logs").exists()
+
+
+def test_get_proposal_review_evidence_route_returns_review_event_links(tmp_path: Path) -> None:
+    module = _load_server_module()
+    submitted = module.submit_proposal(tmp_path, {"title": "T", "body": "B", "author": "pytest"})
+    proposal_id = submitted["proposal_id"]
+    module.review_proposal_status(
+        tmp_path,
+        {
+            "proposal_id": proposal_id,
+            "to_state": "under_review",
+            "actor_id": "reviewer",
+            "actor_type": "human",
+            "evidence": [{"kind": "checklist", "ref": "pytest://review/checklist"}],
+        },
+    )
+
+    evidence = module.get_proposal_review_evidence(tmp_path, proposal_id)
+    assert evidence["proposal_id"] == proposal_id
+    assert evidence["review_events"][-1]["to_state"] == "under_review"
+    assert evidence["review_events"][-1]["evidence"][0]["kind"] == "checklist"
+    assert evidence["review_events"][-1]["log_link"]["log_path"] == "logs/operations/proposal-review-events.jsonl"
 
 
 def test_review_proposal_status_rejects_invalid_transition(tmp_path: Path) -> None:
@@ -191,6 +219,20 @@ def test_review_proposal_status_rejects_invalid_transition(tmp_path: Path) -> No
         assert "invalid transition" in str(exc)
     else:
         raise AssertionError("invalid transition must fail")
+
+
+def test_review_proposal_status_rejects_invalid_evidence_payload(tmp_path: Path) -> None:
+    module = _load_server_module()
+    submitted = module.submit_proposal(tmp_path, {"title": "T", "body": "B"})
+    try:
+        module.review_proposal_status(
+            tmp_path,
+            {"proposal_id": submitted["proposal_id"], "to_state": "under_review", "evidence": "not-a-list"},
+        )
+    except ValueError as exc:
+        assert "evidence must be a list of objects" in str(exc)
+    else:
+        raise AssertionError("invalid evidence payload must fail")
 
 
 def test_legacy_submitted_artifact_is_normalized_for_status_reads(tmp_path: Path) -> None:

@@ -40,7 +40,7 @@ This path is intentionally read-oriented and does not replace review/apply autho
 
 ### 3) Bounded machine-facing path
 
-`noema-agent-surface` runs a minimal executable facade intentionally bounded to read/query operations plus proposal-lane lifecycle continuity.
+`noema-agent-surface` runs a minimal executable facade intentionally bounded to read/query operations plus proposal-lane lifecycle and review-evidence continuity.
 
 Executable operations in this slice:
 
@@ -49,11 +49,12 @@ Executable operations in this slice:
 - `submit_proposal` (proposal-lane only)
 - `get_proposal_status` (proposal-lane status visibility)
 - `review_proposal_status` (proposal-lane review continuity only)
+- `get_proposal_review_evidence` (proposal-lane review evidence and log-link continuity visibility only)
 
 Guardrails in this slice:
 
 - canonical write/apply remains out of scope
-- proposal lifecycle writes are constrained to deterministic inspectable artifacts only under `proposals/submitted/`
+- proposal lifecycle writes are constrained to deterministic inspectable artifacts under `proposals/submitted/` plus append-only review continuity log-link records at `logs/operations/proposal-review-events.jsonl`
 - repository access remains read-oriented and constrained to bounded object classes (`raw`, `structured`, `proposals`, `logs`), with a narrow writable subpath only for `proposals/submitted/`
 - no direct canonical writes are performed in `structured/`, `raw/`, or other non-proposal classes
 
@@ -77,7 +78,7 @@ This verifies:
 
 1. `noema-agent-surface` uses executable facade code (not static file serving)
 2. bounded read/query operations are present and correctly scoped
-3. proposal lifecycle continuity (`submit_proposal`, `get_proposal_status`, `review_proposal_status`) is executable but bounded to proposal-only artifact writes
+3. proposal lifecycle continuity (`submit_proposal`, `get_proposal_status`, `review_proposal_status`, `get_proposal_review_evidence`) is executable but bounded to proposal artifacts plus append-only review log-link continuity records
 4. canonical write/apply remains out of scope
 5. operator bootstrap and package mapping docs remain consistent with executable substitution
 
@@ -113,4 +114,4 @@ This package preserves Noema architecture invariants:
 
 ## Next-slice pointer
 
-Next bounded continuation after this slice should focus on **proposal status/review continuity depth and additional executable conformance hardening** while preserving single-node package boundaries and proposal-only canonical-write posture.
+Next bounded continuation after this slice should focus on **proposal-lane inspectability depth and additional conformance hardening around bounded evidence/log-link semantics** while preserving single-node package boundaries and proposal-only canonical-write posture.
