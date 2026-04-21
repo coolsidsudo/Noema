@@ -22,13 +22,14 @@ Repository execution in this control layer uses a full loop with explicit in-fli
 3. Before PR creation/merge/landed-state verification, use Codex live in-issue output as the primary in-flight review surface; GitHub may be stale in this phase.
 4. Declare any full changed-file content or special proof-artifact requirements up front in the Linear issue description and Codex execution note.
 5. When higher-level review accepts a slice, first provide paste-ready reviewer-acceptance text for the Codex live in-issue box (unless a no-Codex-acknowledgement exception is explicitly stated).
-6. After providing that acceptance text, give explicit operator next-step guidance (create PR now, merge now, or run a required acceptance-close sync first if applicable).
-7. Use GitHub repository state as authoritative again for landed-state review, merge verification, and acceptance-close verification.
-8. End acceptance-close review with explicit remaining operator step guidance, including merge/close/mark-Done actions where applicable.
-9. Allow manual human PR landing when Codex cannot push/land automatically.
-10. For a normal issue, merge is the last implementation step; mark the Linear issue **Done** only as the final move after substantive and acceptance-close merged state is reflected.
-11. Do not run a default post-merge Codex acceptance-close patch for a normal merged issue.
-12. Run post-merge follow-up only when a distinct new issue is intentionally opened or an explicitly declared exception requires it.
+6. For a substantive slice, include any bounded tracker/control-state landing updates needed for coherent merged state in that acceptance instruction before any PR/merge guidance.
+7. After providing acceptance text, give explicit operator next-step guidance (create PR now, merge now, or run a required acceptance-close sync first if applicable), framing PR creation/merge as operator completion actions after acceptance.
+8. Use GitHub repository state as authoritative again for landed-state review, merge verification, and acceptance-close verification.
+9. End acceptance-close review with explicit remaining operator step guidance, including merge/close/mark-Done actions where applicable.
+10. Allow manual human PR landing when Codex cannot push/land automatically.
+11. For a normal issue, merge is the last implementation step; mark the Linear issue **Done** only as the final move after substantive and acceptance-close merged state is reflected.
+12. Do not run a default post-merge Codex acceptance-close patch for a normal merged issue.
+13. Run post-merge follow-up only when a distinct new issue is intentionally opened or an explicitly declared exception requires it.
 
 ### Pre-issue read-first requirement
 

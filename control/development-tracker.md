@@ -17,9 +17,9 @@ It does **not** replace architecture/system-definition authority (`docs/noema-or
 
 ## Live status
 
-- Latest completed/accepted slice: **Phase 7 Slice 4 — bounded executable proposal-submission continuity for the reference single-node package**.
+- Latest completed/accepted slice: **Phase 7 Slice 6 — bounded proposal review evidence and log-link continuity hardening for the reference single-node package**.
 - Current under-review slice: **None (no currently opened under-review slice)**.
-- Next queued/proposed slice: **Phase 7 Slice 5 — bounded proposal status/review continuity and matching conformance-hardening continuation (queued/proposed; not yet opened)**.
+- Next queued/proposed slice: **Phase 7 Slice 7 — bounded proposal-lane inspectability/conformance continuation around evidence/log-link semantics with stricter audit/read invariants and continuity checks (queued/proposed; not yet opened; still no canonical apply/publish expansion)**.
 - Phase 5 queue status: **Closed (Slices 1–15 accepted/closed with explicit closure criteria satisfied)**.
 
 ## Continuity notes
