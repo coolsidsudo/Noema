@@ -21,7 +21,8 @@ ALLOWED_CLASSES = ("raw", "structured", "proposals", "logs")
 OBJECT_EXTENSIONS = {".md", ".json", ".yml", ".yaml", ".txt"}
 DEFAULT_LIMIT = 50
 MAX_LIMIT = 200
-PROPOSAL_SCHEMA_VERSION = "phase7-slice5-reference"
+PROPOSAL_SCHEMA_VERSION = "phase7-slice6-reference"
+PROPOSAL_REVIEW_LOG_PATH = Path("logs/operations/proposal-review-events.jsonl")
 PROPOSAL_ALLOWED_TRANSITIONS = {
     "draft": {"under_review", "withdrawn"},
     "under_review": {"accepted", "rejected", "withdrawn"},
@@ -255,6 +256,7 @@ def get_proposal_status(
 
     if include_review_history:
         result["review_history"] = stored.get("review_history", [])
+        result["log_links"] = [entry["log_link"] for entry in result["review_history"] if "log_link" in entry]
     if include_result_links:
         result["result_links"] = stored.get("results_in", [])
     return result
@@ -266,6 +268,7 @@ def _normalize_review_request(payload: dict) -> dict[str, str]:
     actor_id = str(payload.get("actor_id", "reviewer")).strip() or "reviewer"
     actor_type = str(payload.get("actor_type", "human")).strip() or "human"
     notes = str(payload.get("notes", "")).strip()
+    evidence = payload.get("evidence", [])
 
     if not proposal_id:
         raise ValueError("proposal_id is required")
@@ -276,12 +279,66 @@ def _normalize_review_request(payload: dict) -> dict[str, str]:
     if actor_type not in {"human", "agent", "service"}:
         raise ValueError("actor_type must be one of human|agent|service")
 
+    normalized_evidence = _normalize_review_evidence(evidence)
+
     return {
         "proposal_id": proposal_id,
         "to_state": to_state,
         "actor_id": actor_id,
         "actor_type": actor_type,
         "notes": notes,
+        "evidence": normalized_evidence,
+    }
+
+
+def _normalize_review_evidence(raw_evidence: object) -> list[dict[str, str]]:
+    if raw_evidence in (None, ""):
+        return []
+    if not isinstance(raw_evidence, list):
+        raise ValueError("evidence must be a list of objects")
+    if len(raw_evidence) > 10:
+        raise ValueError("evidence must contain at most 10 entries")
+
+    normalized: list[dict[str, str]] = []
+    for item in raw_evidence:
+        if not isinstance(item, dict):
+            raise ValueError("evidence entries must be objects")
+        kind = str(item.get("kind", "")).strip()
+        ref = str(item.get("ref", "")).strip()
+        digest = str(item.get("sha256", "")).strip()
+        note = str(item.get("note", "")).strip()
+        if not kind:
+            raise ValueError("evidence.kind is required")
+        if not ref:
+            raise ValueError("evidence.ref is required")
+        if len(kind) > 60:
+            raise ValueError("evidence.kind must be 60 characters or fewer")
+        if len(ref) > 500:
+            raise ValueError("evidence.ref must be 500 characters or fewer")
+        if digest and len(digest) != 64:
+            raise ValueError("evidence.sha256 must be 64 characters when provided")
+        if note and len(note) > 500:
+            raise ValueError("evidence.note must be 500 characters or fewer")
+        normalized.append({"kind": kind, "ref": ref, "sha256": digest, "note": note})
+    return normalized
+
+
+def _append_review_log_event(repo_root: Path, payload: dict) -> dict[str, str]:
+    log_path = (repo_root / PROPOSAL_REVIEW_LOG_PATH).resolve()
+    repo_root_resolved = repo_root.resolve()
+    if repo_root_resolved not in log_path.parents:
+        raise ValueError("review log path escapes repository root")
+
+    log_path.parent.mkdir(parents=True, exist_ok=True)
+    record_id = f"log-{sha256(json.dumps(payload, sort_keys=True).encode('utf-8')).hexdigest()[:12]}"
+    record = dict(payload)
+    record["record_id"] = record_id
+    with log_path.open("a", encoding="utf-8") as handle:
+        handle.write(json.dumps(record, sort_keys=True) + "\n")
+
+    return {
+        "log_path": str(log_path.relative_to(repo_root_resolved)),
+        "log_record_id": record_id,
     }
 
 
@@ -310,8 +367,24 @@ def review_proposal_status(repo_root: Path, payload: dict) -> dict[str, str]:
         "timestamp": changed_at,
         "notes": normalized["notes"],
     }
+    if normalized["evidence"]:
+        history_entry["evidence"] = normalized["evidence"]
     if to_state in {"accepted", "rejected"}:
         history_entry["decision"] = to_state
+    history_entry["log_link"] = _append_review_log_event(
+        repo_root,
+        {
+            "proposal_id": stored["proposal_id"],
+            "event_id": event_id,
+            "from_state": current_state,
+            "to_state": to_state,
+            "actor_id": normalized["actor_id"],
+            "actor_type": normalized["actor_type"],
+            "timestamp": changed_at,
+            "notes": normalized["notes"],
+            "evidence_count": len(normalized["evidence"]),
+        },
+    )
 
     review_history = stored.setdefault("review_history", [])
     review_history.append(history_entry)
@@ -326,6 +399,38 @@ def review_proposal_status(repo_root: Path, payload: dict) -> dict[str, str]:
         "authority": "proposal-only",
         "canonical_apply": "out-of-scope",
         "artifact_path": str(proposal_path.resolve().relative_to(repo_root.resolve())),
+    }
+
+
+def get_proposal_review_evidence(repo_root: Path, proposal_id: str) -> dict:
+    status = get_proposal_status(
+        repo_root,
+        proposal_id,
+        include_review_history=True,
+        include_result_links=False,
+    )
+    review_history = status.get("review_history", [])
+    events = []
+    for entry in review_history:
+        events.append(
+            {
+                "event_id": entry.get("event_id"),
+                "from_state": entry.get("from_state"),
+                "to_state": entry.get("to_state"),
+                "timestamp": entry.get("timestamp"),
+                "actor_id": entry.get("actor_id"),
+                "actor_type": entry.get("actor_type"),
+                "evidence": entry.get("evidence", []),
+                "log_link": entry.get("log_link"),
+            }
+        )
+    return {
+        "proposal_id": status["proposal"]["id"],
+        "status": status["proposal"]["status"],
+        "artifact_path": status["artifact_path"],
+        "review_events": events,
+        "authority": "proposal-review-evidence-read-only",
+        "canonical_apply": "out-of-scope",
     }
 
 
@@ -385,7 +490,7 @@ class AgentSurfaceHandler(BaseHTTPRequestHandler):
                 {
                     "operation": "submit_proposal",
                     "status": "method-required",
-                    "message": "submit_proposal is executable in Phase 7 Slice 4 via POST with JSON body.",
+                    "message": "submit_proposal is executable in Phase 7 Slice 6 via POST with JSON body.",
                 },
                 status=HTTPStatus.METHOD_NOT_ALLOWED,
             )
@@ -413,6 +518,22 @@ class AgentSurfaceHandler(BaseHTTPRequestHandler):
                 return
 
             self._write_json({"operation": "get_proposal_status", "result": proposal})
+            return
+
+        if parsed.path == "/v1/get_proposal_review_evidence":
+            proposal_id = query.get("id", [""])[0]
+            if not proposal_id:
+                self._write_json({"error": "id query parameter is required"}, status=HTTPStatus.BAD_REQUEST)
+                return
+            try:
+                evidence = get_proposal_review_evidence(self.config.repo_root, proposal_id)
+            except FileNotFoundError:
+                self._write_json({"error": "proposal not found"}, status=HTTPStatus.NOT_FOUND)
+                return
+            except ValueError as exc:
+                self._write_json({"error": str(exc)}, status=HTTPStatus.BAD_REQUEST)
+                return
+            self._write_json({"operation": "get_proposal_review_evidence", "result": evidence})
             return
 
         if parsed.path == "/v1/contract":

@@ -117,14 +117,32 @@ curl -sS -X POST "http://<host>:${NOEMA_AGENT_PORT}/v1/review_proposal_status" \
     "to_state": "under_review",
     "actor_id": "bootstrap-reviewer",
     "actor_type": "human",
-    "notes": "bounded review continuity verification"
+    "notes": "bounded review continuity verification",
+    "evidence": [
+      {
+        "kind": "operator-check",
+        "ref": "bootstrap-runbook-step-4",
+        "note": "validated before advancing state"
+      }
+    ]
   }'
+```
+
+Proposal review evidence/log-link continuity check:
+
+- `GET /v1/get_proposal_review_evidence?id=<proposal_id>`
+
+Example:
+
+```bash
+curl -sS "http://<host>:${NOEMA_AGENT_PORT}/v1/get_proposal_review_evidence?id=proposal-YYYYMMDD-<digest>"
 ```
 
 Expected bounded behavior:
 
 - proposal status transitions are constrained to baseline lifecycle transitions
-- review continuity updates only proposal artifacts under `proposals/submitted/`
+- review continuity updates proposal artifacts under `proposals/submitted/` and appends bounded continuity records at `logs/operations/proposal-review-events.jsonl`
+- evidence and log-link continuity read surface is available via `get_proposal_review_evidence`
 - no canonical `structured/`, `raw/`, or `logs/` write broadening is introduced
 
 ## 5) Validate maintainer operational path
