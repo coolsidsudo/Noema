@@ -143,6 +143,7 @@ Expected bounded behavior:
 - proposal status transitions are constrained to baseline lifecycle transitions
 - review continuity updates proposal artifacts under `proposals/submitted/` and appends bounded continuity records at `logs/operations/proposal-review-events.jsonl`
 - evidence and log-link continuity read surface is available via `get_proposal_review_evidence`
+- review-evidence reads fail closed when review-history shape or linked continuity records are malformed/missing
 - no canonical `structured/`, `raw/`, or `logs/` write broadening is introduced
 
 ## 5) Validate maintainer operational path
@@ -213,4 +214,4 @@ This operator bootstrap preserves:
 
 ## Next-slice pointer
 
-After this executable-substitution baseline, next bounded work should focus on proposal-submission continuity wiring and deeper runtime-level conformance checks while preserving current boundaries.
+After this inspectability/conformance hardening baseline, next bounded work should focus on operator-facing diagnostics for proposal-lane continuity failures while preserving current boundaries.
