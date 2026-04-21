@@ -29,7 +29,7 @@ def check_executable_surface_substitution() -> None:
 
 def check_bounded_operations_contract() -> None:
     contract = json.loads((DEPLOY_ROOT / "contracts" / "agent-surface-baseline.json").read_text(encoding="utf-8"))
-    _assert(contract.get("version") == "phase7-slice7-reference", "contract version is not phase7-slice7-reference")
+    _assert(contract.get("version") == "phase7-slice8-reference", "contract version is not phase7-slice8-reference")
     operations = {entry["name"]: entry for entry in contract.get("operations", [])}
     _assert("get_object_by_id" in operations, "get_object_by_id missing from machine-facing contract")
     _assert("list_objects" in operations, "list_objects missing from machine-facing contract")
@@ -63,6 +63,10 @@ def check_bounded_operations_contract() -> None:
         "log-link continuity validation" in evidence["notes"],
         "get_proposal_review_evidence notes missing explicit continuity validation guarantee",
     )
+    _assert(
+        "deterministic continuity diagnostics" in evidence["notes"],
+        "get_proposal_review_evidence notes missing bounded diagnostics guarantee",
+    )
 
 
 def check_review_evidence_continuity_invariants() -> None:
@@ -79,6 +83,11 @@ def check_review_evidence_continuity_invariants() -> None:
     _assert(
         "review continuity event log_path is out of bounded continuity scope" in server_source,
         "missing bounded continuity scope invariant for log-link path",
+    )
+    _assert("ContinuityValidationError" in server_source, "structured continuity diagnostics error type invariant missing")
+    _assert(
+        "CONTINUITY_LOG_RECORD_MISSING" in server_source,
+        "structured continuity diagnostics code invariant missing",
     )
 
 

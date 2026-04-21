@@ -144,6 +144,7 @@ Expected bounded behavior:
 - review continuity updates proposal artifacts under `proposals/submitted/` and appends bounded continuity records at `logs/operations/proposal-review-events.jsonl`
 - evidence and log-link continuity read surface is available via `get_proposal_review_evidence`
 - review-evidence reads fail closed when review-history shape or linked continuity records are malformed/missing
+- fail-closed continuity rejections return bounded diagnostics including deterministic `error_code` and `diagnostics` payload fields (for example phase, proposal_id, event/log references when available)
 - no canonical `structured/`, `raw/`, or `logs/` write broadening is introduced
 
 ## 5) Validate maintainer operational path
@@ -214,4 +215,4 @@ This operator bootstrap preserves:
 
 ## Next-slice pointer
 
-After this inspectability/conformance hardening baseline, next bounded work should focus on operator-facing diagnostics for proposal-lane continuity failures while preserving current boundaries.
+After this diagnostics/conformance hardening baseline, next bounded work should focus on narrow operator inspection ergonomics for recent continuity-validation outcomes while preserving current boundaries.
