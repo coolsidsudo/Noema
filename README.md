@@ -53,6 +53,7 @@ See `CONTRIBUTING.md` for baseline-first contribution guidance.
 ## Documents
 
 - [Original system design](docs/noema-original-system-design.md)
+- [Maintainer agent skill / management schema v0](docs/noema-maintainer-agent-skill-management-schema-v0.md)
 - [Access and authority baseline](docs/noema-access-authority-baseline.md)
 - [Authentication and identity provisioning baseline](docs/noema-auth-identity-provisioning-baseline.md)
 - [Self-hosted deployment and operations baseline](docs/noema-self-hosted-deployment-operations-baseline.md)
