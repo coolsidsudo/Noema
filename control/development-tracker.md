@@ -17,9 +17,9 @@ It does **not** replace architecture/system-definition authority (`docs/noema-or
 
 ## Live status
 
-- Latest completed/accepted slice: **Phase 7 Slice 9 — operator inspection ergonomics for recent continuity-validation outcomes in the reference single-node package**.
+- Latest completed/accepted slice: **Phase 7 Slice 10 — deterministic retention/rollup posture for bounded continuity-inspection history in the reference single-node package**.
 - Current under-review slice: **None (no currently opened under-review slice)**.
-- Next queued/proposed slice: **Phase 7 Slice 10 — deterministic retention/rollup posture for bounded continuity-inspection history (queued/proposed; still no canonical apply/publish expansion)**.
+- Next queued/proposed slice: **Phase 7 checkpoint — big-picture re-evaluation of whether another bounded reference-package slice is justified or whether Phase 7 should stop here before moving on (still no canonical apply/publish expansion)**.
 - Phase 5 queue status: **Closed (Slices 1–15 accepted/closed with explicit closure criteria satisfied)**.
 
 ## Continuity notes

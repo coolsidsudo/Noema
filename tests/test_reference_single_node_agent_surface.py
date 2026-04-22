@@ -364,10 +364,52 @@ def test_list_recent_continuity_validation_outcomes_returns_validated_and_failed
     assert outcomes["summary"]["total"] == 2
     assert outcomes["summary"]["validated"] == 1
     assert outcomes["summary"]["failed"] == 1
+    assert outcomes["rollup"]["total"] == 2
+    assert outcomes["rollup"]["validated"] == 1
+    assert outcomes["rollup"]["failed"] == 1
+    assert outcomes["retention"]["total_artifacts"] == 2
+    assert outcomes["retention"]["inspected_artifacts"] == 2
+    assert outcomes["retention"]["older_artifacts_rolled_up"] == 0
+    assert outcomes["retention"]["truncated"] is False
     by_id = {entry["proposal_id"]: entry for entry in outcomes["items"]}
     assert by_id[valid["proposal_id"]]["outcome_class"] == "validated"
     assert by_id[invalid["proposal_id"]]["outcome_class"] == "failed"
     assert by_id[invalid["proposal_id"]]["continuity"]["failure_code"] == "CONTINUITY_LOG_RECORD_MISSING"
+
+
+def test_list_recent_continuity_validation_outcomes_has_deterministic_retention_rollup(tmp_path: Path) -> None:
+    module = _load_server_module()
+    original_window = module.CONTINUITY_INSPECTION_RETENTION_WINDOW
+    module.CONTINUITY_INSPECTION_RETENTION_WINDOW = 3
+    try:
+        for i in range(5):
+            submitted = module.submit_proposal(
+                tmp_path,
+                {"title": f"Proposal {i}", "body": "B", "author": "pytest", "workspace": "tests"},
+            )
+            module.review_proposal_status(
+                tmp_path,
+                {
+                    "proposal_id": submitted["proposal_id"],
+                    "to_state": "under_review",
+                    "actor_id": "reviewer",
+                    "actor_type": "human",
+                },
+            )
+
+        outcomes = module.list_recent_continuity_validation_outcomes(tmp_path, limit=2)
+    finally:
+        module.CONTINUITY_INSPECTION_RETENTION_WINDOW = original_window
+
+    assert len(outcomes["items"]) == 2
+    assert outcomes["summary"]["total"] == 2
+    assert outcomes["rollup"]["total"] == 3
+    assert outcomes["retention"]["inspection_window_size"] == 3
+    assert outcomes["retention"]["total_artifacts"] == 5
+    assert outcomes["retention"]["inspected_artifacts"] == 3
+    assert outcomes["retention"]["older_artifacts_rolled_up"] == 2
+    assert outcomes["retention"]["returned_recent_items"] == 2
+    assert outcomes["retention"]["truncated"] is True
 
 
 def test_list_recent_continuity_validation_outcomes_route_enforces_bounded_limit(tmp_path: Path) -> None:
