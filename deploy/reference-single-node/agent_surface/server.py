@@ -24,6 +24,7 @@ DEFAULT_LIMIT = 50
 MAX_LIMIT = 200
 DEFAULT_RECENT_CONTINUITY_LIMIT = 10
 MAX_RECENT_CONTINUITY_LIMIT = 50
+CONTINUITY_INSPECTION_RETENTION_WINDOW = 200
 PROPOSAL_SCHEMA_VERSION = "phase7-slice7-reference"
 PROPOSAL_REVIEW_LOG_PATH = Path("logs/operations/proposal-review-events.jsonl")
 PROPOSAL_ALLOWED_TRANSITIONS = {
@@ -620,78 +621,98 @@ def list_recent_continuity_validation_outcomes(
             "items": [],
             "summary": {"validated": 0, "failed": 0, "total": 0},
             "limit": limit,
+            "rollup": {"validated": 0, "failed": 0, "total": 0},
+            "retention": {
+                "inspection_window_size": CONTINUITY_INSPECTION_RETENTION_WINDOW,
+                "inspected_artifacts": 0,
+                "total_artifacts": 0,
+                "older_artifacts_rolled_up": 0,
+                "returned_recent_items": 0,
+                "truncated": False,
+            },
         }
 
     bounded_limit = max(1, min(limit, MAX_RECENT_CONTINUITY_LIMIT))
     proposal_artifacts = sorted(submitted_root.glob("*.json"), key=lambda path: path.name, reverse=True)
+    inspected_artifacts = proposal_artifacts[:CONTINUITY_INSPECTION_RETENTION_WINDOW]
     items: list[dict[str, Any]] = []
+    inspected_validated = 0
+    inspected_failed = 0
 
-    for artifact in proposal_artifacts:
-        if len(items) >= bounded_limit:
-            break
+    for artifact in inspected_artifacts:
         proposal_id = artifact.stem
         try:
             evidence = get_proposal_review_evidence(repo_root, proposal_id)
             events = evidence.get("review_events", [])
             latest_event = events[-1] if events else None
-            items.append(
-                {
-                    "proposal_id": proposal_id,
-                    "artifact_path": evidence.get("artifact_path"),
-                    "proposal_status": evidence.get("status"),
-                    "outcome_class": "validated",
-                    "continuity": {
-                        "validated_review_events": evidence.get("continuity", {}).get("validated_review_events", 0),
-                        "log_path": evidence.get("continuity", {}).get("log_path"),
-                        "diagnostics_mode": evidence.get("continuity", {}).get("diagnostics_mode"),
-                    },
-                    "latest_event": {
-                        "event_id": (latest_event or {}).get("event_id"),
-                        "timestamp": (latest_event or {}).get("timestamp"),
-                        "to_state": (latest_event or {}).get("to_state"),
-                    },
-                }
-            )
+            inspected_validated += 1
+            outcome = {
+                "proposal_id": proposal_id,
+                "artifact_path": evidence.get("artifact_path"),
+                "proposal_status": evidence.get("status"),
+                "outcome_class": "validated",
+                "continuity": {
+                    "validated_review_events": evidence.get("continuity", {}).get("validated_review_events", 0),
+                    "log_path": evidence.get("continuity", {}).get("log_path"),
+                    "diagnostics_mode": evidence.get("continuity", {}).get("diagnostics_mode"),
+                },
+                "latest_event": {
+                    "event_id": (latest_event or {}).get("event_id"),
+                    "timestamp": (latest_event or {}).get("timestamp"),
+                    "to_state": (latest_event or {}).get("to_state"),
+                },
+            }
         except ContinuityValidationError as exc:
-            items.append(
-                {
-                    "proposal_id": proposal_id,
-                    "artifact_path": str(artifact.resolve().relative_to(repo_root.resolve())),
-                    "proposal_status": None,
-                    "outcome_class": "failed",
-                    "continuity": {"failure_code": exc.code, "phase": exc.phase},
-                    "latest_event": {"event_id": exc.event_id, "timestamp": None, "to_state": None},
-                    "diagnostics": exc.as_diagnostics(proposal_id),
-                }
-            )
+            inspected_failed += 1
+            outcome = {
+                "proposal_id": proposal_id,
+                "artifact_path": str(artifact.resolve().relative_to(repo_root.resolve())),
+                "proposal_status": None,
+                "outcome_class": "failed",
+                "continuity": {"failure_code": exc.code, "phase": exc.phase},
+                "latest_event": {"event_id": exc.event_id, "timestamp": None, "to_state": None},
+                "diagnostics": exc.as_diagnostics(proposal_id),
+            }
         except ValueError as exc:
-            items.append(
-                {
+            inspected_failed += 1
+            outcome = {
+                "proposal_id": proposal_id,
+                "artifact_path": str(artifact.resolve().relative_to(repo_root.resolve())),
+                "proposal_status": None,
+                "outcome_class": "failed",
+                "continuity": {
+                    "failure_code": "CONTINUITY_VALIDATION_INPUT_ERROR",
+                    "phase": "review_history_shape_validation",
+                },
+                "latest_event": {"event_id": None, "timestamp": None, "to_state": None},
+                "diagnostics": {
+                    "category": "proposal_review_continuity",
                     "proposal_id": proposal_id,
-                    "artifact_path": str(artifact.resolve().relative_to(repo_root.resolve())),
-                    "proposal_status": None,
-                    "outcome_class": "failed",
-                    "continuity": {
-                        "failure_code": "CONTINUITY_VALIDATION_INPUT_ERROR",
-                        "phase": "review_history_shape_validation",
-                    },
-                    "latest_event": {"event_id": None, "timestamp": None, "to_state": None},
-                    "diagnostics": {
-                        "category": "proposal_review_continuity",
-                        "proposal_id": proposal_id,
-                        "failure_code": "CONTINUITY_VALIDATION_INPUT_ERROR",
-                        "message": str(exc),
-                        "phase": "review_history_shape_validation",
-                    },
-                }
-            )
+                    "failure_code": "CONTINUITY_VALIDATION_INPUT_ERROR",
+                    "message": str(exc),
+                    "phase": "review_history_shape_validation",
+                },
+            }
+        if len(items) < bounded_limit:
+            items.append(outcome)
 
-    validated = sum(1 for item in items if item["outcome_class"] == "validated")
-    failed = len(items) - validated
+    returned_validated = sum(1 for item in items if item["outcome_class"] == "validated")
+    returned_failed = len(items) - returned_validated
+    total_artifacts = len(proposal_artifacts)
+    inspected_total = len(inspected_artifacts)
     return {
         "items": items,
-        "summary": {"validated": validated, "failed": failed, "total": len(items)},
+        "summary": {"validated": returned_validated, "failed": returned_failed, "total": len(items)},
+        "rollup": {"validated": inspected_validated, "failed": inspected_failed, "total": inspected_total},
         "limit": bounded_limit,
+        "retention": {
+            "inspection_window_size": CONTINUITY_INSPECTION_RETENTION_WINDOW,
+            "inspected_artifacts": inspected_total,
+            "total_artifacts": total_artifacts,
+            "older_artifacts_rolled_up": max(0, total_artifacts - inspected_total),
+            "returned_recent_items": len(items),
+            "truncated": total_artifacts > inspected_total,
+        },
     }
 
 

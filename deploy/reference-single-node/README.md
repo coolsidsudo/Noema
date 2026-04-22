@@ -81,7 +81,7 @@ This verifies:
 2. bounded read/query operations are present and correctly scoped
 3. proposal lifecycle continuity (`submit_proposal`, `get_proposal_status`, `review_proposal_status`, `get_proposal_review_evidence`) is executable but bounded to proposal artifacts plus append-only review log-link continuity records
 4. review evidence reads enforce bounded review-history shape and linked append-only log-record continuity, with bounded deterministic diagnostics on fail-closed continuity rejection
-5. recent continuity-validation outcomes are operator-inspectable via one bounded read-only surface with explicit limits and deterministic summaries
+5. recent continuity-validation outcomes are operator-inspectable via one bounded read-only surface with explicit limits, deterministic retention-window rollup, and explicit truncation metadata
 6. canonical write/apply remains out of scope
 7. operator bootstrap and package mapping docs remain consistent with executable substitution
 
@@ -117,4 +117,4 @@ This package preserves Noema architecture invariants:
 
 ## Next-slice pointer
 
-Next bounded continuation after this slice should focus on **deterministic retention/rollup posture for continuity-inspection history** while preserving single-node package boundaries and proposal-only canonical-write posture.
+Next bounded continuation after this slice should focus on **Phase 7 continuity-inspection operator ergonomics beyond retention/rollup (for example compact filtering/export cues)** while preserving single-node package boundaries and proposal-only canonical-write posture.

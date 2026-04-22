@@ -162,6 +162,7 @@ Expected bounded behavior:
 - returns a deterministic bounded recent list (1..50) without exposing unbounded log dumps
 - each item includes proposal id, proposal artifact path, outcome class (`validated` or `failed`), and compact continuity/event preview fields
 - validation outcomes are derived from existing proposal artifacts plus `logs/operations/proposal-review-events.jsonl` continuity records
+- response includes deterministic retention/rollup metadata (`retention` + `rollup`) so operators can see compact totals and whether older artifacts were rolled up outside the fixed inspection window
 - canonical apply/publish remains out of scope and no additional write lanes are introduced
 
 ## 5) Validate maintainer operational path
@@ -232,4 +233,4 @@ This operator bootstrap preserves:
 
 ## Next-slice pointer
 
-After this bounded operator continuity-inspection baseline, next bounded work should focus on deterministic retention/rollup posture for inspection history while preserving current boundaries.
+After this bounded deterministic retention/rollup increment, next bounded work should evaluate whether Phase 7 should continue with additional continuity-inspection operator ergonomics while preserving current proposal-lane and single-node boundaries.

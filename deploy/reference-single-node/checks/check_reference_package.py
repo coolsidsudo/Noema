@@ -29,7 +29,7 @@ def check_executable_surface_substitution() -> None:
 
 def check_bounded_operations_contract() -> None:
     contract = json.loads((DEPLOY_ROOT / "contracts" / "agent-surface-baseline.json").read_text(encoding="utf-8"))
-    _assert(contract.get("version") == "phase7-slice9-reference", "contract version is not phase7-slice9-reference")
+    _assert(contract.get("version") == "phase7-slice10-reference", "contract version is not phase7-slice10-reference")
     operations = {entry["name"]: entry for entry in contract.get("operations", [])}
     _assert("get_object_by_id" in operations, "get_object_by_id missing from machine-facing contract")
     _assert("list_objects" in operations, "list_objects missing from machine-facing contract")
@@ -77,6 +77,10 @@ def check_bounded_operations_contract() -> None:
         "bounded GET /v1/list_recent_continuity_validation_outcomes" in recent["notes"],
         "list_recent_continuity_validation_outcomes notes missing bounded route guarantee",
     )
+    _assert(
+        "retention window" in recent["notes"],
+        "list_recent_continuity_validation_outcomes notes missing deterministic retention/rollup guarantee",
+    )
 
 
 def check_review_evidence_continuity_invariants() -> None:
@@ -98,6 +102,14 @@ def check_review_evidence_continuity_invariants() -> None:
     _assert(
         "CONTINUITY_LOG_RECORD_MISSING" in server_source,
         "structured continuity diagnostics code invariant missing",
+    )
+    _assert(
+        "CONTINUITY_INSPECTION_RETENTION_WINDOW" in server_source,
+        "deterministic continuity inspection retention window invariant missing",
+    )
+    _assert(
+        '"older_artifacts_rolled_up"' in server_source,
+        "continuity inspection rollup metadata invariant missing",
     )
 
 
