@@ -17,9 +17,9 @@ It does **not** replace architecture/system-definition authority (`docs/noema-or
 
 ## Live status
 
-- Latest completed/accepted slice: **NOE-70 — Phase 8 Slice 1: maintainer loop contract baseline**.
+- Latest completed/accepted slice: **NOE-71 — Phase 8 Slice 2: proposal payload, evidence, and provenance contract**.
 - Current under-review slice: **None**.
-- Next queued/proposed slice: **Phase 8 Slice 2 — proposal payload, evidence, and provenance contract**.
+- Next queued/proposed slice: **Phase 8 Slice 3 — maintainer log/event schema and operational trace contract**.
 - Phase 5 queue status: **Closed (Slices 1–15 accepted/closed with explicit closure criteria satisfied)**.
 
 ## Continuity notes
