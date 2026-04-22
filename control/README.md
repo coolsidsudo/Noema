@@ -17,19 +17,31 @@ Within `control/`, authority is intentionally separated:
 
 Repository execution in this control layer uses a full loop with explicit in-flight vs landed-state review authority:
 
-1. Delegate from the Linear issue to Codex to start work.
-2. Continue follow-ups in the live in-issue Codex box in Linear.
-3. Before PR creation/merge/landed-state verification, use Codex live in-issue output as the primary in-flight review surface; GitHub may be stale in this phase.
-4. Declare any full changed-file content or special proof-artifact requirements up front in the Linear issue description and Codex execution note.
-5. When higher-level review accepts a slice, first provide paste-ready reviewer-acceptance text for the Codex live in-issue box (unless a no-Codex-acknowledgement exception is explicitly stated).
-6. For a substantive slice, include any bounded tracker/control-state landing updates needed for coherent merged state in that acceptance instruction before any PR/merge guidance.
-7. After providing acceptance text, give explicit operator next-step guidance (create PR now, merge now, or run a required acceptance-close sync first if applicable), framing PR creation/merge as operator completion actions after acceptance.
-8. Use GitHub repository state as authoritative again for landed-state review, merge verification, and acceptance-close verification.
-9. End acceptance-close review with explicit remaining operator step guidance, including merge/close/mark-Done actions where applicable.
-10. Allow manual human PR landing when Codex cannot push/land automatically.
-11. For a normal issue, merge is the last implementation step; mark the Linear issue **Done** only as the final move after substantive and acceptance-close merged state is reflected.
-12. Do not run a default post-merge Codex acceptance-close patch for a normal merged issue.
-13. Run post-merge follow-up only when a distinct new issue is intentionally opened or an explicitly declared exception requires it.
+1. Higher-level review/governance initiates the next Linear issue and writes the initial issue description plus initial Codex execution note.
+2. Delegate from that Linear issue to Codex to start work.
+3. Continue follow-ups in the live in-issue Codex box in Linear.
+4. Before PR creation/merge/landed-state verification, use Codex live in-issue output as the primary in-flight review surface; GitHub may be stale in this phase.
+5. Declare any full changed-file content or special proof-artifact requirements up front in the Linear issue description and Codex execution note.
+6. When higher-level review accepts a slice, first provide a fully formed paste-ready reviewer-acceptance message for the Codex live in-issue box (unless a no-Codex-acknowledgement exception is explicitly stated).
+7. For a substantive slice, include any bounded tracker/control-state landing updates needed for coherent merged state in that acceptance instruction before any PR/merge guidance.
+8. After providing acceptance text, give explicit operator next-step guidance (create PR now, merge now, or run a required acceptance-close sync first if applicable), framing PR creation/merge as operator completion actions after acceptance.
+9. Use GitHub repository state as authoritative again for landed-state review, merge verification, and acceptance-close verification.
+10. End acceptance-close review with explicit remaining operator step guidance, including merge/close/mark-Done actions where applicable.
+11. Allow manual human PR landing when Codex cannot push/land automatically.
+12. For a normal issue, merge is the last implementation step; mark the Linear issue **Done** only as the final move after substantive and acceptance-close merged state is reflected.
+13. Do not run a default post-merge Codex acceptance-close patch for a normal merged issue.
+14. Run post-merge follow-up only when a distinct new issue is intentionally opened or an explicitly declared exception requires it.
+
+Operator-default drafting/paste boundary:
+
+- The operator is not by default asked to initiate the issue or author/paste the initial issue package.
+- The default paste-ready artifact surfaced to the operator is live-issue follow-up instruction text for the current Linear/Codex issue box.
+- This clarification does not change the in-flight-vs-landed-state review authority split described above.
+
+Acceptance-message expectation (short form):
+
+- Reviewer acceptance text in the live issue/Codex box should normally be fully formed and explicit: acceptance state, acceptance judgment, drift-check acceptance, and Codex acknowledgement shape.
+- Include bounded same-issue tracker/control-state alignment in that acceptance message before PR/merge guidance when such alignment is required for coherent landed state.
 
 ### Pre-issue read-first requirement
 
