@@ -17,9 +17,9 @@ It does **not** replace architecture/system-definition authority (`docs/noema-or
 
 ## Live status
 
-- Latest completed/accepted slice: **NOE-67 — post-Phase 7 direction reset accepted: Maintainer Agent Skill / Management Schema V0 (Karpathy-first maintainer/compiler architecture definition)**.
+- Latest completed/accepted slice: **NOE-68 — control/docs follow-up accepted: development plan expanded with detailed post–Phase 7 maintainer-agent execution direction and Phase 8 roadmap**.
 - Current under-review slice: **None (no currently opened under-review slice)**.
-- Next queued/proposed slice: **Phase 8 Slice 1 — maintainer loop contract baseline (ingest/compile/lint/propose seam contract, class-lane read/write boundaries, proposal-emission contract, and maintainer log/event schema baseline without canonical apply expansion)**.
+- Next queued/proposed slice: **Phase 8 Slice 1 — maintainer loop contract baseline (seam contract + class-lane read/write boundaries + proposal-emission contract + maintainer log/event baseline without canonical apply expansion)**.
 - Phase 5 queue status: **Closed (Slices 1–15 accepted/closed with explicit closure criteria satisfied)**.
 
 ## Continuity notes

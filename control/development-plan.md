@@ -156,3 +156,100 @@ Move from accepted semantics into a bounded, concrete, single-node reference dep
 **Why it matters**
 
 Accepted baseline semantics are broad enough that practical realizability matters. This phase anchors semantics in a concrete reference package while staying implementation-light and avoiding orchestration/enterprise drift.
+
+**Phase boundary note (why Phase 7 stops here)**
+
+Phase 7 is intentionally complete once Noema has a coherent, practical, bounded reference package that proves deployability and path separation on single-node self-hosted infrastructure. Additional package micro-polish after this point has diminishing strategic value relative to the next major differentiator.
+
+Once the baseline package is understandable and bootstrappable, the highest-leverage continuation is not broader packaging complexity, but making the maintainer/compiler direction contractually concrete. That shift preserves the original Noema framing as an AI-maintained knowledge system rather than a generic deployment template.
+
+## Phase 8: Maintainer-agent execution contract and bounded realization
+
+**Objective**
+
+Realize the post-Phase 7 maintainer-agent direction by translating the accepted maintainer schema into executable, testable, governance-preserving contracts and an initial bounded runtime loop.
+
+**Why this is the next major direction**
+
+The original system design establishes the maintainer/compiler/curator role as central to Noema's compounding-knowledge behavior. The accepted maintainer-agent schema (`docs/noema-maintainer-agent-skill-management-schema-v0.md`) then defines seam-level behavior, class-lane write posture, proposal/review boundaries, and logging requirements in Karpathy-first terms.
+
+Phase 8 is therefore the bridge from accepted architecture/control semantics to concrete maintainer execution behavior. This is the key differentiator work: proving that Noema can operate as a governed AI-maintained knowledge system, not merely as file conventions, chat retrieval, or packaging scaffolding.
+
+**What Phase 8 is for**
+
+Phase 8 is a contract-realization phase for maintainer execution. It should:
+
+- make ingest/compile/lint/propose/query-support seams concrete,
+- make maintainer-emitted proposal and log artifacts structurally consistent,
+- preserve explicit proposal/review/apply boundaries,
+- keep direct canonical apply tightly bounded and policy-gated,
+- stay implementation-light enough to avoid premature runtime sprawl.
+
+It should **not** be treated as a mandate for broad autonomy or platform-wide orchestration.
+
+### Phase 8 staged roadmap (initial bounded slices)
+
+#### Phase 8 Slice 1 — Maintainer loop contract baseline
+
+Define and validate the minimum end-to-end maintainer loop contract:
+
+- seam-level operation contract for ingest/compile/lint/propose/query-support,
+- class-lane read/write boundary contract across `raw/`, `structured/`, `proposals/`, and `logs/`,
+- explicit default posture: canonical-impacting structured changes emit proposals,
+- explicit exception posture: direct canonical apply remains auditable and policy-gated.
+
+Primary output type: stable contract/spec guidance with conformance checks for boundary violations.
+
+#### Phase 8 Slice 2 — Proposal payload, evidence, and provenance contract
+
+Define the required maintainer-emitted proposal shape for canonical-impacting edits:
+
+- minimum proposal payload fields for rationale, affected objects, and intended outcomes,
+- evidence/provenance linkage requirements back to source/compiled context,
+- contradiction and uncertainty signaling requirements,
+- acceptance-readiness criteria that keep review decisions well-scoped.
+
+Primary output type: proposal schema/profile baseline plus validation guidance.
+
+#### Phase 8 Slice 3 — Maintainer log/event schema and operational trace contract
+
+Define append-log contracts for maintainer operations so execution can be reconstructed and audited:
+
+- event classes for ingest, compile, lint/coherence, proposal emission, and query-discovered maintenance,
+- required event identity, actor, timing, and affected-object trace fields,
+- event/proposal/structured linkage rules,
+- guardrails separating operational logs from canonical structured knowledge.
+
+Primary output type: log/event schema baseline and traceability interpretation guidance.
+
+#### Phase 8 Slice 4 — Initial executable maintainer loop realization (bounded substitution path)
+
+Implement or substitute a first bounded executable maintainer loop that conforms to Slices 1–3 contracts:
+
+- deterministic loop execution over approved seams,
+- proposal-first canonical-impact behavior by default,
+- contract validation hooks for proposals and events,
+- bounded runtime profile that avoids broad agent-platform expansion.
+
+Primary output type: minimal executable reference behavior proving contract realism without authority broadening.
+
+**Early Phase 8 anti-drift boundaries (explicit out-of-scope)**
+
+During Slices 1–4, the roadmap excludes:
+
+- uncontrolled expansion of canonical direct-write authority,
+- recentering Noema as generic chat/RAG over files,
+- broad multi-agent swarm architecture/programming,
+- enterprise/platform sprawl (orchestration stacks, IAM suites, distributed control planes),
+- schema rewrites that invalidate accepted Phase 5/6/7 and NOE-67 continuity.
+
+**How Phase 8 connects to later major work**
+
+Once maintainer loop contracts are concrete and a bounded executable realization exists, likely follow-on directions include:
+
+1. stronger policy-governed apply pathways and reconciliation ergonomics for accepted maintainer output,
+2. deeper operator observability and recovery tooling built on stable maintainer event/proposal traces,
+3. selective multi-maintainer and/or multi-agent coordination patterns that preserve bounded authority semantics,
+4. broader deployment profiles only after maintainer execution semantics remain stable across environments.
+
+These continuations should remain downstream of the Phase 8 contract baseline, not substitutes for it.
