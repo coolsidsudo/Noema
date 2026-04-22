@@ -17,13 +17,14 @@ It does **not** replace architecture/system-definition authority (`docs/noema-or
 
 ## Live status
 
-- Latest completed/accepted slice: **Phase 7 Slice 10 — deterministic retention/rollup posture for bounded continuity-inspection history in the reference single-node package**.
+- Latest completed/accepted slice: **NOE-67 — post-Phase 7 direction reset accepted: Maintainer Agent Skill / Management Schema V0 (Karpathy-first maintainer/compiler architecture definition)**.
 - Current under-review slice: **None (no currently opened under-review slice)**.
-- Next queued/proposed slice: **Phase 7 checkpoint — big-picture re-evaluation of whether another bounded reference-package slice is justified or whether Phase 7 should stop here before moving on (still no canonical apply/publish expansion)**.
+- Next queued/proposed slice: **Phase 8 Slice 1 — maintainer loop contract baseline (ingest/compile/lint/propose seam contract, class-lane read/write boundaries, proposal-emission contract, and maintainer log/event schema baseline without canonical apply expansion)**.
 - Phase 5 queue status: **Closed (Slices 1–15 accepted/closed with explicit closure criteria satisfied)**.
 
 ## Continuity notes
 
+- Karpathy-first maintainer/compiler schema baseline remains authoritative in `docs/noema-maintainer-agent-skill-management-schema-v0.md`.
 - Accepted architecture/system-definition baseline remains in `docs/noema-original-system-design.md`.
 - Accepted long-horizon roadmap remains in `control/development-plan.md`.
 - Accepted Phase 6 deployment and backup/restore semantics remain authoritative in:
