@@ -1487,3 +1487,99 @@ def test_execute_bounded_loop_emits_deterministic_bundle(tmp_path: Path) -> None
     assert report["supporting_raw_ids"] == ["raw-1"]
     assert report["guards"]["proposal_first_canonical_posture"] is True
     assert report["guards"]["direct_canonical_structured_apply_performed"] is False
+
+
+def test_execute_governed_apply_reconciles_accepted_proposal(tmp_path: Path) -> None:
+    repo = tmp_path
+
+    _write_object(
+        repo / "raw" / "sources" / "raw-a.md",
+        "\n".join(
+            [
+                "id: raw-a",
+                "class: raw",
+                "created_at: 2026-04-01T00:00:00Z",
+                "created_by: tester",
+                "workspace: ws-alpha",
+                "status: ingested",
+            ]
+        ),
+    )
+    _write_object(
+        repo / "structured" / "pages" / "struct-a.md",
+        "\n".join(
+            [
+                "id: struct-a",
+                "class: structured",
+                "created_at: 2026-04-02T00:00:00Z",
+                "created_by: tester",
+                "workspace: ws-alpha",
+                "status: active",
+                "supports:",
+                "  - raw-a",
+            ]
+        ),
+    )
+    _write_object(
+        repo / "proposals" / "queue" / "proposal-accepted.md",
+        "\n".join(
+            [
+                "id: proposal-accepted",
+                "class: proposals",
+                "created_at: 2026-04-03T00:00:00Z",
+                "created_by: tester",
+                "workspace: ws-alpha",
+                "status: accepted",
+                "approved_policy_gate_ticket: gate-001",
+                "allow_direct_canonical_apply: true",
+                "target_ids:",
+                "  - struct-a",
+                "results_in:",
+                "  - struct-a",
+            ]
+        ),
+    )
+
+    ws_root = repo / "workspace-root"
+    (ws_root / "ws-alpha").mkdir(parents=True)
+
+    result = run(
+        [
+            "--repo-root",
+            str(repo),
+            "--workspaces-root",
+            "workspace-root",
+            "--workspace",
+            "ws-alpha",
+            "--execute-governed-apply",
+            "--proposal-id",
+            "proposal-accepted",
+            "--policy-gate-ticket",
+            "gate-001",
+        ]
+    )
+    assert result == 0
+
+    structured_text = (repo / "structured" / "pages" / "struct-a.md").read_text(encoding="utf-8")
+    assert "## Reconciliation Note" in structured_text
+    assert "Source accepted proposal: `proposal-accepted`" in structured_text
+    assert "Policy gate ticket: `gate-001`" in structured_text
+
+    apply_report_path = ws_root / "ws-alpha" / "projection" / "maintainer-apply-run" / "apply-report.json"
+    apply_report = json.loads(apply_report_path.read_text(encoding="utf-8"))
+    assert apply_report["slice"] == "phase-8-slice-5"
+    assert apply_report["guards"]["policy_gate_precondition_verified"] is True
+    assert apply_report["guards"]["compensation_posture_emitted"] is True
+
+    apply_log_path = ws_root / "ws-alpha" / "projection" / "maintainer-apply-run" / "logs" / apply_report["apply_id"]
+    assert Path(str(apply_log_path) + ".md").exists()
+
+    compensation_path = (
+        ws_root
+        / "ws-alpha"
+        / "projection"
+        / "maintainer-apply-run"
+        / "compensations"
+        / f"{apply_report['apply_id']}-compensation.md"
+    )
+    assert compensation_path.exists()
