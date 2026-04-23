@@ -66,6 +66,7 @@ See `CONTRIBUTING.md` for baseline-first contribution guidance.
 - [Baseline object metadata profile (v0)](docs/noema-object-metadata-profile-v0.md)
 - [Baseline index/catalog approach](docs/noema-index-catalog-baseline.md)
 - [Human client baseline](docs/noema-human-client-baseline.md)
+- [Phase 9 architecture decision: Obsidian client and service surface](docs/noema-phase-9-architecture-decision-obsidian-client-and-service-surface.md)
 - [Agent interface baseline](docs/noema-agent-interface-baseline.md)
 - [Agent surface contract](docs/noema-agent-surface-contract.md)
 - [Agent operation-state semantics](docs/noema-agent-operation-state-semantics.md)

@@ -253,3 +253,79 @@ Once maintainer loop contracts are concrete and a bounded executable realization
 4. broader deployment profiles only after maintainer execution semantics remain stable across environments.
 
 These continuations should remain downstream of the Phase 8 contract baseline, not substitutes for it.
+
+## Phase 9: Bounded service surface and operator workflow integration
+
+**Objective**
+
+Turn the accepted maintainer-governance execution core into a usable bounded system surface for human operators and external agents, while preserving Noema’s editor-agnostic identity and Obsidian-compatible human path.
+
+**Why this is the next major direction**
+
+The original system design requires Noema to expose both human-facing clients and bounded machine interfaces, while remaining Obsidian-compatible without making Obsidian the authority layer. Earlier phases established the human-client baseline, agent-interface baseline, maintainer workflow baseline, and bounded maintainer execution core. The next highest-leverage step is therefore not more Phase 8 semantics, but integrating those accepted capabilities into a real bounded service surface.
+
+Phase 9 should interpret this as:
+- Noema as the governed system/service layer,
+- Obsidian as a strong first-class human client,
+- optional native operator UI only where bounded workflows are awkward or unsafe in Obsidian alone.
+
+**What Phase 9 is for**
+
+Phase 9 is an implementation-first integration phase. It should:
+
+- expose a bounded service/core surface over Noema objects, proposals, traces, and apply/recovery state,
+- reuse accepted Phase 8 runtime pieces rather than redefining them,
+- strengthen operator workflow integration for browse/review/apply/observability use,
+- support Obsidian through generated/projection-based human-facing views,
+- preserve editor-agnostic identity and avoid client-local authority drift.
+
+It should **not** be treated as a mandate to build a broad standalone web application before the bounded system surface exists.
+
+### Phase 9 staged roadmap (initial bounded slices)
+
+#### Phase 9 Slice 1 — Service core and bounded machine surface
+
+Implement a transport-neutral service/core layer and first bounded machine-facing surface for:
+- object retrieval/listing,
+- traceability retrieval,
+- proposal submission,
+- proposal status retrieval.
+
+Primary output type: executable service behavior with bounded interfaces and tests.
+
+#### Phase 9 Slice 2 — Operator workflow integration and Obsidian-facing projections
+
+Integrate accepted review/apply/observability behavior into operator-usable workflows and Markdown-native projections such as:
+- workspace home,
+- browse/index surfaces,
+- proposal/review queues,
+- recent changes / operational status views.
+
+Primary output type: executable operator-facing integration over accepted runtime behavior.
+
+#### Phase 9 Slice 3 — Thin external adapter surface
+
+Expose the accepted bounded operation layer through additional adapters such as MCP and/or equivalent thin integration surfaces without redefining Noema semantics.
+
+Primary output type: adapter-level interoperability over the same bounded core.
+
+**Early Phase 9 anti-drift boundaries (explicit out-of-scope)**
+
+During initial Phase 9 work, the roadmap excludes:
+
+- treating Obsidian as the authority layer,
+- reducing Noema to an Obsidian-only product,
+- broad standalone UI/platform expansion before service-core value is proven,
+- uncontrolled direct canonical-write authority,
+- recentering Noema as generic chat/RAG over files,
+- enterprise/orchestration sprawl.
+
+**How Phase 9 connects to later major work**
+
+Once the bounded system surface is usable for both human operators and external agents, likely follow-on directions include:
+
+1. stronger multi-user/operator ergonomics,
+2. selective native operator UI for bounded high-friction workflows,
+3. broader deployment profiles after the bounded surface remains stable,
+4. richer extension/integration packs built on the same governed system core.
+

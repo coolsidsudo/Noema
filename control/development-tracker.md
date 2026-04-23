@@ -17,16 +17,17 @@ It does **not** replace architecture/system-definition authority (`docs/noema-or
 
 ## Live status
 
-- Latest completed/accepted slice: **NOE-76 — Phase 8 Slice 7: bounded multi-maintainer coordination**.
+- Latest completed/accepted slice: **NOE-77 — Pre-Phase 9 Slice: codify Obsidian-client/service-surface architecture decision and Phase 9 roadmap anchor**.
 - Current under-review slice: **None**.
-- Next queued/proposed slice: **None (Phase 8 bounded continuation currently complete; await explicit next direction selection)**.
+- Next queued/proposed slice: **Phase 9 Slice 1 — Service core and bounded machine surface**.
 - Phase 5 queue status: **Closed (Slices 1–15 accepted/closed with explicit closure criteria satisfied)**.
 
 ## Continuity notes
 
 - Karpathy-first maintainer/compiler schema baseline remains authoritative in `docs/noema-maintainer-agent-skill-management-schema-v0.md`.
 - Accepted architecture/system-definition baseline remains in `docs/noema-original-system-design.md`.
-- Accepted long-horizon roadmap remains in `control/development-plan.md`.
+- Accepted long-horizon roadmap now includes Phase 9 in `control/development-plan.md`.
+- Accepted Phase 9 architecture decision note now lives at `docs/noema-phase-9-architecture-decision-obsidian-client-and-service-surface.md`.
 - Accepted Phase 6 deployment and backup/restore semantics remain authoritative in:
   - `docs/noema-self-hosted-deployment-operations-baseline.md`
   - `docs/noema-backup-restore-operational-guidance-baseline.md`
