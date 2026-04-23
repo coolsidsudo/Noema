@@ -1409,3 +1409,81 @@ def test_terminal_proposal_log_completeness_validation_and_reporting(tmp_path: P
     ] == ["proposal-terminal-missing-log"]
     assert "terminal_proposal_missing_log_traceability" in by_class_proposals
     assert "proposal-terminal-missing-log" in by_class_proposals
+
+
+def test_execute_bounded_loop_emits_deterministic_bundle(tmp_path: Path) -> None:
+    repo = tmp_path
+    _write_object(
+        repo / "raw" / "sources" / "raw-1.md",
+        "\n".join(
+            [
+                "id: raw-1",
+                "class: raw",
+                "created_at: 2026-04-01T00:00:00Z",
+                "created_by: tester",
+                "workspace: ws-loop",
+                "status: ingested",
+                "title: Raw loop source",
+            ]
+        ),
+    )
+    _write_object(
+        repo / "structured" / "pages" / "struct-1.md",
+        "\n".join(
+            [
+                "id: struct-1",
+                "class: structured",
+                "created_at: 2026-04-02T00:00:00Z",
+                "created_by: tester",
+                "workspace: ws-loop",
+                "status: active",
+                "title: Structured loop target",
+                "supports:",
+                "  - raw-1",
+            ]
+        ),
+    )
+
+    ws_root = repo / "workspace-root"
+    (ws_root / "ws-loop").mkdir(parents=True)
+
+    exit_code = run(
+        [
+            "--repo-root",
+            str(repo),
+            "--workspaces-root",
+            "workspace-root",
+            "--workspace",
+            "ws-loop",
+            "--execute-bounded-loop",
+        ]
+    )
+
+    assert exit_code == 0
+
+    output_root = ws_root / "ws-loop" / "projection" / "maintainer-loop-run"
+    proposal_path = output_root / "proposals" / "proposal-ws-loop-phase8-slice4-v1.md"
+    log_path = output_root / "logs" / "log-ws-loop-phase8-slice4-v1.md"
+    report_path = output_root / "run-report.json"
+
+    proposal_text = proposal_path.read_text(encoding="utf-8")
+    log_text = log_path.read_text(encoding="utf-8")
+    report = json.loads(report_path.read_text(encoding="utf-8"))
+
+    assert "apply_mode: proposal-only" in proposal_text
+    assert "target_ids:" in proposal_text
+    assert "  - struct-1" in proposal_text
+    assert "supporting_raw_ids:" in proposal_text
+    assert "  - raw-1" in proposal_text
+
+    assert "event_class: proposal_lifecycle" in log_text
+    assert "canonical_change_mode: proposal-emitted" in log_text
+    assert "records_event_for:" in log_text
+    assert "  - proposal-ws-loop-phase8-slice4-v1" in log_text
+    assert "  - struct-1" in log_text
+
+    assert report["slice"] == "phase-8-slice-4"
+    assert report["target_structured_id"] == "struct-1"
+    assert report["supporting_raw_ids"] == ["raw-1"]
+    assert report["guards"]["proposal_first_canonical_posture"] is True
+    assert report["guards"]["direct_canonical_structured_apply_performed"] is False
