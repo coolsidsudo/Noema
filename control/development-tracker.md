@@ -17,9 +17,9 @@ It does **not** replace architecture/system-definition authority (`docs/noema-or
 
 ## Live status
 
-- Latest completed/accepted slice: **NOE-75 — Phase 8 Slice 6: operator observability and recovery over maintainer/apply traces**.
+- Latest completed/accepted slice: **NOE-76 — Phase 8 Slice 7: bounded multi-maintainer coordination**.
 - Current under-review slice: **None**.
-- Next queued/proposed slice: **Phase 8 Slice 7 — bounded multi-maintainer coordination (only if still justified after Slice 6)**.
+- Next queued/proposed slice: **None (Phase 8 bounded continuation currently complete; await explicit next direction selection)**.
 - Phase 5 queue status: **Closed (Slices 1–15 accepted/closed with explicit closure criteria satisfied)**.
 
 ## Continuity notes
