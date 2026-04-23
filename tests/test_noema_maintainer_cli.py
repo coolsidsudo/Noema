@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import json
+
+import pytest
 from pathlib import Path
 
 from packages.noema_maintainer.build_projection import (
@@ -1583,3 +1585,145 @@ def test_execute_governed_apply_reconciles_accepted_proposal(tmp_path: Path) -> 
         / f"{apply_report['apply_id']}-compensation.md"
     )
     assert compensation_path.exists()
+
+
+
+def test_emit_operator_observability_report_reconstructs_lineage(tmp_path: Path) -> None:
+    repo = tmp_path
+
+    _write_object(
+        repo / "raw" / "sources" / "raw-a.md",
+        "\n".join(
+            [
+                "id: raw-a",
+                "class: raw",
+                "created_at: 2026-04-01T00:00:00Z",
+                "created_by: tester",
+                "workspace: ws-alpha",
+                "status: ingested",
+            ]
+        ),
+    )
+    _write_object(
+        repo / "structured" / "pages" / "struct-a.md",
+        "\n".join(
+            [
+                "id: struct-a",
+                "class: structured",
+                "created_at: 2026-04-02T00:00:00Z",
+                "created_by: tester",
+                "workspace: ws-alpha",
+                "status: active",
+                "supports:",
+                "  - raw-a",
+            ]
+        ),
+    )
+    _write_object(
+        repo / "proposals" / "queue" / "proposal-accepted.md",
+        "\n".join(
+            [
+                "id: proposal-accepted",
+                "class: proposals",
+                "created_at: 2026-04-03T00:00:00Z",
+                "created_by: tester",
+                "workspace: ws-alpha",
+                "status: accepted",
+                "approved_policy_gate_ticket: gate-001",
+                "allow_direct_canonical_apply: true",
+                "target_ids:",
+                "  - struct-a",
+                "results_in:",
+                "  - struct-a",
+                "supporting_raw_ids:",
+                "  - raw-a",
+            ]
+        ),
+    )
+
+    ws_root = repo / "workspace-root"
+    (ws_root / "ws-alpha").mkdir(parents=True)
+
+    run(
+        [
+            "--repo-root",
+            str(repo),
+            "--workspaces-root",
+            "workspace-root",
+            "--workspace",
+            "ws-alpha",
+            "--execute-governed-apply",
+            "--proposal-id",
+            "proposal-accepted",
+            "--policy-gate-ticket",
+            "gate-001",
+        ]
+    )
+
+    result = run(
+        [
+            "--repo-root",
+            str(repo),
+            "--workspaces-root",
+            "workspace-root",
+            "--workspace",
+            "ws-alpha",
+            "--proposal-id",
+            "proposal-accepted",
+            "--emit-operator-observability-report",
+        ]
+    )
+    assert result == 0
+
+    report_path = (
+        ws_root
+        / "ws-alpha"
+        / "projection"
+        / "maintainer-observability-run"
+        / "proposal-accepted-observability-report.json"
+    )
+    report = json.loads(report_path.read_text(encoding="utf-8"))
+
+    assert report["slice"] == "phase-8-slice-6"
+    assert report["proposal_id"] == "proposal-accepted"
+    assert report["lineage"]["source_context"]["resolved_raw_sources"][0]["id"] == "raw-a"
+    assert report["lineage"]["apply_reconciliation"]["apply_log_event_type"] == "apply_reconciliation"
+    assert report["lineage"]["apply_reconciliation"]["structured_lineage"][0]["reconciliation_note_present"] is True
+    assert report["lineage"]["compensation_recovery"]["proposal_state"] == "compensation-ready"
+    assert report["guards"]["hidden_canonical_mutation_enabled"] is False
+
+
+def test_emit_operator_observability_report_requires_governed_apply_trace(tmp_path: Path) -> None:
+    repo = tmp_path
+
+    _write_object(
+        repo / "proposals" / "queue" / "proposal-accepted.md",
+        "\n".join(
+            [
+                "id: proposal-accepted",
+                "class: proposals",
+                "created_at: 2026-04-03T00:00:00Z",
+                "created_by: tester",
+                "workspace: ws-alpha",
+                "status: accepted",
+            ]
+        ),
+    )
+
+    ws_root = repo / "workspace-root"
+    (ws_root / "ws-alpha").mkdir(parents=True)
+
+    with pytest.raises(ValueError, match="No governed apply report was found"):
+        run(
+            [
+                "--repo-root",
+                str(repo),
+                "--workspaces-root",
+                "workspace-root",
+                "--workspace",
+                "ws-alpha",
+                "--proposal-id",
+                "proposal-accepted",
+                "--emit-operator-observability-report",
+            ]
+        )
