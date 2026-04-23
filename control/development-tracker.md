@@ -17,9 +17,9 @@ It does **not** replace architecture/system-definition authority (`docs/noema-or
 
 ## Live status
 
-- Latest completed/accepted slice: **NOE-74 — Phase 8 Slice 5: policy-governed apply and reconciliation path baseline**.
+- Latest completed/accepted slice: **NOE-75 — Phase 8 Slice 6: operator observability and recovery over maintainer/apply traces**.
 - Current under-review slice: **None**.
-- Next queued/proposed slice: **Phase 8 Slice 6 — operator observability and recovery over maintainer/apply traces (expected direct continuation after Slice 5)**.
+- Next queued/proposed slice: **Phase 8 Slice 7 — bounded multi-maintainer coordination (only if still justified after Slice 6)**.
 - Phase 5 queue status: **Closed (Slices 1–15 accepted/closed with explicit closure criteria satisfied)**.
 
 ## Continuity notes

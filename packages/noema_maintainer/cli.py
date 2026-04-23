@@ -6,6 +6,7 @@ from pathlib import Path
 from .apply_reconcile import execute_policy_governed_apply
 from .bounded_loop import execute_bounded_substitution_loop
 from .build_projection import build_workspace_projection
+from .observe_recover import execute_operator_observability_snapshot
 from .checks import validate_records
 from .scan import scan_repository
 
@@ -31,6 +32,11 @@ def run(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--proposal-id", help="Accepted proposal id for --execute-governed-apply.")
     parser.add_argument("--policy-gate-ticket", help="Policy gate ticket required by accepted proposal metadata.")
+    parser.add_argument(
+        "--emit-operator-observability-report",
+        action="store_true",
+        help="Emit the Phase 8 Slice 6 operator observability/recovery report for --workspace and --proposal-id.",
+    )
     args = parser.parse_args(argv)
 
     repo_root = Path(args.repo_root).resolve()
@@ -75,6 +81,26 @@ def run(argv: list[str] | None = None) -> int:
             "[noema-maintainer] governed apply run "
             f"'{result.apply_id}' reconciled {len(result.reconciled_structured_paths)} structured object(s) "
             f"for proposal '{result.proposal_id}'"
+        )
+
+
+    if args.emit_operator_observability_report:
+        if not args.workspace:
+            parser.error("--emit-operator-observability-report requires --workspace")
+        if not args.proposal_id:
+            parser.error("--emit-operator-observability-report requires --proposal-id")
+        output_root = workspaces_root / args.workspace / "projection" / "maintainer-observability-run"
+        result = execute_operator_observability_snapshot(
+            repo_root=repo_root,
+            workspaces_root=workspaces_root,
+            workspace=args.workspace,
+            proposal_id=args.proposal_id,
+            output_root=output_root,
+        )
+        print(
+            "[noema-maintainer] operator observability snapshot "
+            f"for proposal '{result.proposal_id}' emitted at "
+            f"'{result.report_path.relative_to(repo_root)}'"
         )
 
     if args.workspace:
