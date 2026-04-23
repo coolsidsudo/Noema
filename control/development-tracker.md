@@ -17,9 +17,9 @@ It does **not** replace architecture/system-definition authority (`docs/noema-or
 
 ## Live status
 
-- Latest completed/accepted slice: **NOE-77 — Pre-Phase 9 Slice: codify Obsidian-client/service-surface architecture decision and Phase 9 roadmap anchor**.
+- Latest completed/accepted slice: **NOE-80 — Phase 9 Slice 1A: repo-backed read service core baseline for bounded object retrieval and listing**.
 - Current under-review slice: **None**.
-- Next queued/proposed slice: **Phase 9 Slice 1 — Service core and bounded machine surface**.
+- Next queued/proposed slice: **Phase 9 Slice 1B — bounded traceability and proposal/status service operations**.
 - Phase 5 queue status: **Closed (Slices 1–15 accepted/closed with explicit closure criteria satisfied)**.
 
 ## Continuity notes
@@ -28,6 +28,9 @@ It does **not** replace architecture/system-definition authority (`docs/noema-or
 - Accepted architecture/system-definition baseline remains in `docs/noema-original-system-design.md`.
 - Accepted long-horizon roadmap now includes Phase 9 in `control/development-plan.md`.
 - Accepted Phase 9 architecture decision note now lives at `docs/noema-phase-9-architecture-decision-obsidian-client-and-service-surface.md`.
+- Accepted Phase 9 Slice 1A reference doc now lives at `docs/noema-phase-9-slice-1a-repo-backed-read-service-core-baseline.md`.
+- Accepted Phase 9 Slice 1A control summary now lives at `control/phase-9-slice-1a-repo-backed-read-service-core-baseline.md`.
+- Next intended order remains: bounded service operations first, then a minimal HTTP adapter after the expanded service core is stable.
 - Accepted Phase 6 deployment and backup/restore semantics remain authoritative in:
   - `docs/noema-self-hosted-deployment-operations-baseline.md`
   - `docs/noema-backup-restore-operational-guidance-baseline.md`
