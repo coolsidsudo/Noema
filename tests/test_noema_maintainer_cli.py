@@ -1727,3 +1727,143 @@ def test_emit_operator_observability_report_requires_governed_apply_trace(tmp_pa
                 "--emit-operator-observability-report",
             ]
         )
+
+
+def test_execute_coordination_claim_non_overlapping_scopes_are_active(tmp_path: Path) -> None:
+    repo = tmp_path
+    ws_root = repo / "workspace-root"
+    (ws_root / "ws-coord").mkdir(parents=True)
+
+    _write_object(
+        repo / "structured" / "pages" / "structured-a.md",
+        "\n".join(
+            [
+                "id: structured-a",
+                "class: structured",
+                "created_at: 2026-04-01T00:00:00Z",
+                "created_by: tester",
+                "workspace: ws-coord",
+                "status: active",
+            ]
+        ),
+    )
+    _write_object(
+        repo / "structured" / "pages" / "structured-b.md",
+        "\n".join(
+            [
+                "id: structured-b",
+                "class: structured",
+                "created_at: 2026-04-02T00:00:00Z",
+                "created_by: tester",
+                "workspace: ws-coord",
+                "status: active",
+            ]
+        ),
+    )
+
+    run(
+        [
+            "--repo-root",
+            str(repo),
+            "--workspaces-root",
+            "workspace-root",
+            "--workspace",
+            "ws-coord",
+            "--execute-coordination-claim",
+            "--coordination-maintainer-id",
+            "maintainer-alpha",
+            "--coordination-scope",
+            "structured-a",
+        ]
+    )
+    run(
+        [
+            "--repo-root",
+            str(repo),
+            "--workspaces-root",
+            "workspace-root",
+            "--workspace",
+            "ws-coord",
+            "--execute-coordination-claim",
+            "--coordination-maintainer-id",
+            "maintainer-beta",
+            "--coordination-scope",
+            "structured-b",
+            "--emit-coordination-report",
+        ]
+    )
+
+    report_path = ws_root / "ws-coord" / "projection" / "maintainer-coordination-run" / "coordination-report.json"
+    report = json.loads(report_path.read_text(encoding="utf-8"))
+    assert report["claims_total"] == 2
+    assert len(report["active_claims"]) == 2
+    assert report["blocked_claims"] == []
+    assert report["guards"]["policy_gated_apply_posture_preserved"] is True
+
+
+def test_execute_coordination_claim_blocks_overlapping_scope_and_surfaces_conflict(tmp_path: Path) -> None:
+    repo = tmp_path
+    ws_root = repo / "workspace-root"
+    (ws_root / "ws-conflict").mkdir(parents=True)
+
+    _write_object(
+        repo / "structured" / "pages" / "structured-shared.md",
+        "\n".join(
+            [
+                "id: structured-shared",
+                "class: structured",
+                "created_at: 2026-04-01T00:00:00Z",
+                "created_by: tester",
+                "workspace: ws-conflict",
+                "status: active",
+            ]
+        ),
+    )
+
+    run(
+        [
+            "--repo-root",
+            str(repo),
+            "--workspaces-root",
+            "workspace-root",
+            "--workspace",
+            "ws-conflict",
+            "--execute-coordination-claim",
+            "--coordination-maintainer-id",
+            "maintainer-alpha",
+            "--coordination-scope",
+            "structured-shared",
+        ]
+    )
+    run(
+        [
+            "--repo-root",
+            str(repo),
+            "--workspaces-root",
+            "workspace-root",
+            "--workspace",
+            "ws-conflict",
+            "--execute-coordination-claim",
+            "--coordination-maintainer-id",
+            "maintainer-beta",
+            "--coordination-scope",
+            "structured-shared",
+            "--execute-coordination-conflict-check",
+            "--emit-coordination-report",
+        ]
+    )
+
+    run_root = ws_root / "ws-conflict" / "projection" / "maintainer-coordination-run"
+    report = json.loads((run_root / "coordination-report.json").read_text(encoding="utf-8"))
+    assert report["claims_total"] == 2
+    assert len(report["active_claims"]) == 1
+    assert len(report["blocked_claims"]) == 1
+    blocked = report["blocked_claims"][0]
+    assert blocked["maintainer_id"] == "maintainer-beta"
+    assert blocked["status"] == "blocked_conflict"
+    assert blocked["conflicts_with"][0]["maintainer_id"] == "maintainer-alpha"
+    assert blocked["conflicts_with"][0]["overlap_scope"] == ["structured-shared"]
+
+    conflict_check = json.loads((run_root / "conflict-check.json").read_text(encoding="utf-8"))
+    assert conflict_check["has_conflict"] is True
+    assert conflict_check["conflicts"][0]["overlap_scope"] == ["structured-shared"]

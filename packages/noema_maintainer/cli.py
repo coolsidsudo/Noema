@@ -6,6 +6,11 @@ from pathlib import Path
 from .apply_reconcile import execute_policy_governed_apply
 from .bounded_loop import execute_bounded_substitution_loop
 from .build_projection import build_workspace_projection
+from .coordination import (
+    emit_coordination_report,
+    execute_coordination_claim,
+    execute_coordination_conflict_check,
+)
 from .observe_recover import execute_operator_observability_snapshot
 from .checks import validate_records
 from .scan import scan_repository
@@ -36,6 +41,31 @@ def run(argv: list[str] | None = None) -> int:
         "--emit-operator-observability-report",
         action="store_true",
         help="Emit the Phase 8 Slice 6 operator observability/recovery report for --workspace and --proposal-id.",
+    )
+    parser.add_argument(
+        "--execute-coordination-claim",
+        action="store_true",
+        help="Execute the Phase 8 Slice 7 bounded maintainer coordination claim path for --workspace.",
+    )
+    parser.add_argument(
+        "--execute-coordination-conflict-check",
+        action="store_true",
+        help="Evaluate whether --coordination-scope would conflict with currently active coordination claims.",
+    )
+    parser.add_argument(
+        "--emit-coordination-report",
+        action="store_true",
+        help="Emit a deterministic coordination report over current claim state for --workspace.",
+    )
+    parser.add_argument(
+        "--coordination-maintainer-id",
+        help="Maintainer identity for coordination claim/conflict-check paths.",
+    )
+    parser.add_argument(
+        "--coordination-scope",
+        action="append",
+        default=[],
+        help="Scope target id to claim/check. Repeat this flag to pass multiple targets.",
     )
     args = parser.parse_args(argv)
 
@@ -101,6 +131,59 @@ def run(argv: list[str] | None = None) -> int:
             "[noema-maintainer] operator observability snapshot "
             f"for proposal '{result.proposal_id}' emitted at "
             f"'{result.report_path.relative_to(repo_root)}'"
+        )
+
+    if args.execute_coordination_claim:
+        if not args.workspace:
+            parser.error("--execute-coordination-claim requires --workspace")
+        if not args.coordination_maintainer_id:
+            parser.error("--execute-coordination-claim requires --coordination-maintainer-id")
+        if not args.coordination_scope:
+            parser.error("--execute-coordination-claim requires --coordination-scope")
+        output_root = workspaces_root / args.workspace / "projection" / "maintainer-coordination-run"
+        result = execute_coordination_claim(
+            repo_root=repo_root,
+            workspace=args.workspace,
+            maintainer_id=args.coordination_maintainer_id,
+            scope=args.coordination_scope,
+            output_root=output_root,
+        )
+        print(
+            "[noema-maintainer] coordination claim "
+            f"'{result.claim_id}' is '{result.claim_status}' with {len(result.conflict_ids)} conflict(s)"
+        )
+
+    if args.execute_coordination_conflict_check:
+        if not args.workspace:
+            parser.error("--execute-coordination-conflict-check requires --workspace")
+        if not args.coordination_maintainer_id:
+            parser.error("--execute-coordination-conflict-check requires --coordination-maintainer-id")
+        if not args.coordination_scope:
+            parser.error("--execute-coordination-conflict-check requires --coordination-scope")
+        output_root = workspaces_root / args.workspace / "projection" / "maintainer-coordination-run"
+        result = execute_coordination_conflict_check(
+            workspace=args.workspace,
+            maintainer_id=args.coordination_maintainer_id,
+            scope=args.coordination_scope,
+            output_root=output_root,
+        )
+        print(
+            "[noema-maintainer] coordination conflict check "
+            f"has_conflict={result['report']['has_conflict']} emitted at "
+            f"'{result['report_path'].relative_to(repo_root)}'"
+        )
+
+    if args.emit_coordination_report:
+        if not args.workspace:
+            parser.error("--emit-coordination-report requires --workspace")
+        output_root = workspaces_root / args.workspace / "projection" / "maintainer-coordination-run"
+        report_path = emit_coordination_report(
+            workspace=args.workspace,
+            output_root=output_root,
+        )
+        print(
+            "[noema-maintainer] coordination report emitted at "
+            f"'{report_path.relative_to(repo_root)}'"
         )
 
     if args.workspace:
