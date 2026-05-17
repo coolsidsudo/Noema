@@ -144,6 +144,23 @@ class RunningServer:
         finally:
             connection.close()
 
+    def request_raw(
+        self,
+        method: str,
+        path: str,
+        *,
+        body: str | None = None,
+        headers: dict[str, str] | None = None,
+    ) -> tuple[int, dict[str, str], str]:
+        connection = http.client.HTTPConnection(self.host, self.port, timeout=5)
+        try:
+            connection.request(method, path, body=body, headers=headers or {})
+            response = connection.getresponse()
+            response_body = response.read().decode("utf-8")
+            return response.status, {name.lower(): value for name, value in response.getheaders()}, response_body
+        finally:
+            connection.close()
+
     def close(self) -> None:
         self.server.shutdown()
         self.server.server_close()
@@ -449,6 +466,32 @@ def test_http_rejects_unknown_json_body_field(tmp_path: Path) -> None:
 
     assert status == 400
     assert body["error"]["code"] == "UNKNOWN_BODY_FIELD"
+
+
+def test_http_unexpected_core_exception_returns_json_internal_error(
+    tmp_path: Path,
+    monkeypatch: Any,
+) -> None:
+    _seed_repo(tmp_path)
+
+    def raise_unexpected_error(**_: Any) -> dict[str, Any]:
+        raise RuntimeError("raw exception details must stay private")
+
+    monkeypatch.setattr("packages.noema_service.http_api.get_object_by_id", raise_unexpected_error)
+    server = RunningServer(tmp_path)
+    try:
+        status, headers, raw_body = server.request_raw("GET", "/v1/workspaces/ws-a/objects/structured-1")
+    finally:
+        server.close()
+
+    body = json.loads(raw_body)
+    assert status == 500
+    assert headers["content-type"].startswith("application/json")
+    assert body["ok"] is False
+    assert body["operation"] in {"get_object_by_id", "http_request"}
+    assert body["error"]["category"] == "internal_error"
+    assert body["error"]["code"] == "INTERNAL_ERROR"
+    assert "raw exception details must stay private" not in raw_body
 
 
 def test_cli_prints_startup_line_and_handles_keyboard_interrupt(

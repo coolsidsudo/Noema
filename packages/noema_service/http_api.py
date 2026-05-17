@@ -336,8 +336,11 @@ class NoemaHTTPRequestHandler(BaseHTTPRequestHandler):
         parsed = urlsplit(self.path)
         raw_path = parsed.path
         segments = raw_path.split("/")
+        internal_error_operation = "http_request"
         try:
             route_name = self._recognized_route_name(segments)
+            if route_name is not None:
+                internal_error_operation = route_name
             if route_name is not None:
                 allowed = self._allowed_methods_for_route(route_name)
                 if method not in allowed:
@@ -370,6 +373,8 @@ class NoemaHTTPRequestHandler(BaseHTTPRequestHandler):
                 details=exc.details,
             )
             self._send_json(_http_status_for_adapter_error(envelope), envelope)
+        except Exception:
+            self._send_internal_error(operation=internal_error_operation)
 
     def _handle_get(self, segments: list[str], raw_query: str, raw_path: str) -> tuple[dict[str, Any], int]:
         if self._is_get_object_route(segments):
@@ -603,6 +608,16 @@ class NoemaHTTPRequestHandler(BaseHTTPRequestHandler):
             self.send_header(name, value)
         self.end_headers()
         self.wfile.write(body)
+
+    def _send_internal_error(self, *, operation: str) -> None:
+        envelope = _adapter_error(
+            operation=operation,
+            category="internal_error",
+            code="INTERNAL_ERROR",
+            message="Internal server error.",
+            retryable=False,
+        )
+        self._send_json(500, envelope)
 
     def _route_not_found(self, raw_path: str) -> tuple[dict[str, Any], int]:
         envelope = _adapter_error(
