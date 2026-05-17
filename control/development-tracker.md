@@ -17,9 +17,9 @@ It does **not** replace architecture/system-definition authority (`docs/noema-or
 
 ## Live status
 
-- Latest completed/accepted slice: **NOE-81 — Phase 9 Slice 1B: bounded traceability and proposal/status service operations**.
+- Latest completed/accepted slice: **Phase 9 Slice 1C — minimal HTTP adapter over the accepted service core**.
 - Current under-review slice: **None**.
-- Next queued/proposed slice: **Phase 9 Slice 1C — minimal HTTP adapter over the accepted service core**.
+- Next queued/proposed slice: **Phase 9 Slice 2 — operator workflow integration and Obsidian-facing projections over the accepted service/HTTP surface**.
 - Phase 5 queue status: **Closed (Slices 1–15 accepted/closed with explicit closure criteria satisfied)**.
 
 ## Continuity notes
@@ -32,7 +32,10 @@ It does **not** replace architecture/system-definition authority (`docs/noema-or
 - Accepted Phase 9 Slice 1A control summary now lives at `control/phase-9-slice-1a-repo-backed-read-service-core-baseline.md`.
 - Accepted Phase 9 Slice 1B reference doc now lives at `docs/noema-phase-9-slice-1b-bounded-traceability-and-proposal-status-service-operations.md`.
 - Accepted Phase 9 Slice 1B control summary now lives at `control/phase-9-slice-1b-bounded-traceability-and-proposal-status-service-operations.md`.
-- Next intended order remains: minimal HTTP adapter next, after accepted Slice 1A + Slice 1B service-core stability.
+- Accepted Phase 9 Slice 1C added the local stdlib HTTP adapter over the five accepted service-core operations.
+- Accepted Phase 9 Slice 1C reference doc now lives at `docs/noema-phase-9-slice-1c-minimal-http-adapter-over-service-core.md`.
+- Accepted Phase 9 Slice 1C control summary now lives at `control/phase-9-slice-1c-minimal-http-adapter-over-service-core.md`.
+- Next work should move to operator workflow integration and Obsidian-facing projections over the accepted service/HTTP surface, without turning Obsidian into the authority layer.
 - Accepted Phase 6 deployment and backup/restore semantics remain authoritative in:
   - `docs/noema-self-hosted-deployment-operations-baseline.md`
   - `docs/noema-backup-restore-operational-guidance-baseline.md`

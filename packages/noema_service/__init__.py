@@ -5,6 +5,7 @@ from .core import (
     list_objects,
     submit_proposal,
 )
+from .http_api import create_http_server, run_http_server
 
 __all__ = [
     "get_object_by_id",
@@ -12,4 +13,6 @@ __all__ = [
     "get_traceability_links",
     "submit_proposal",
     "get_proposal_status",
+    "create_http_server",
+    "run_http_server",
 ]
