@@ -215,6 +215,7 @@ def _render_index(
         "- [Proposals](./proposals.md)",
         "- [Recent Activity](./recent.md)",
         "- [Review Cockpit](./review/index.md)",
+        "- [Navigation Workbench](./navigation/index.md)",
     ])
     _write_markdown(path, lines)
 
@@ -384,11 +385,18 @@ def build_operator_projections(*, repo_root: Path, workspace: str) -> OperatorPr
         operator_projection_root=projection_root,
         packets=review_packets,
     )
+    from .navigation_projection import render_navigation_workbench
+
+    navigation_paths = render_navigation_workbench(
+        repo_root=resolved_repo_root,
+        workspace=str(resolved_workspace.workspace_root),
+        operator_projection_root=projection_root,
+    )
 
     return OperatorProjectionResult(
         workspace_id=resolved_workspace.workspace_id,
         workspace_root=resolved_workspace.workspace_root,
         projection_root=projection_root,
-        output_paths=(index_path, objects_path, proposals_path, recent_path, *review_paths),
+        output_paths=(index_path, objects_path, proposals_path, recent_path, *review_paths, *navigation_paths),
         record_count=len(records),
     )
