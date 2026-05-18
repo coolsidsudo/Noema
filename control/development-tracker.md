@@ -17,9 +17,9 @@ It does **not** replace architecture/system-definition authority (`docs/noema-or
 
 ## Live status
 
-- Latest completed/accepted tranche: **Phase 9 Tranche 2B — operator review packet model and Markdown review cockpit over proposals, evidence, logs, and readiness**.
+- Latest completed/accepted tranche: **Phase 9 Tranche 2C — operator navigation and handoff workbench over projections and review packets**.
 - Current under-review slice/tranche: **None**.
-- Next queued/proposed tranche: **Phase 9 Tranche 2C — local open/navigation helpers over operator projections**.
+- Next queued/proposed tranche: **Phase 9 Tranche 3A — thin external adapter surface over the accepted bounded service/operator surfaces**.
 - Phase 5 queue status: **Closed (Slices 1–15 accepted/closed with explicit closure criteria satisfied)**.
 
 ## Continuity notes
@@ -41,7 +41,12 @@ It does **not** replace architecture/system-definition authority (`docs/noema-or
 - Accepted Phase 9 Tranche 2B verification reported:
   - `pytest -q tests/test_noema_service.py tests/test_noema_service_http.py` — 41 passed.
   - `pytest -q tests/test_noema_operator_projections.py tests/test_noema_operator_review_packets.py tests/test_noema_operator_review_projection.py` — 8 passed.
-- Next work should move to local open/navigation helpers over operator projections, without turning Obsidian into the authority layer.
+- Accepted Phase 9 Tranche 2C added a derived read-only operator navigation and handoff workbench over projections and review packets, including deterministic targets, routes, handoffs, Markdown workbench pages, manifest output, and CLI resolve/open helpers.
+- Accepted Phase 9 Tranche 2C implementation commit before tracker sync: `b0559193e3f673ebceb92634837370106aadffe7`.
+- Accepted Phase 9 Tranche 2C verification reported:
+  - `pytest -q tests/test_noema_service.py tests/test_noema_service_http.py` — 41 passed.
+  - `pytest -q tests/test_noema_operator_projections.py tests/test_noema_operator_review_packets.py tests/test_noema_operator_review_projection.py tests/test_noema_operator_navigation.py tests/test_noema_operator_handoffs.py tests/test_noema_operator_open_helpers.py` — 17 passed.
+- Next work should move to Phase 9 Tranche 3A thin external adapter surface over the accepted bounded service/operator surfaces, without redefining Noema authority semantics or treating any client adapter as the authority layer.
 - Accepted Phase 6 deployment and backup/restore semantics remain authoritative in:
   - `docs/noema-self-hosted-deployment-operations-baseline.md`
   - `docs/noema-backup-restore-operational-guidance-baseline.md`
