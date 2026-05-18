@@ -17,9 +17,9 @@ It does **not** replace architecture/system-definition authority (`docs/noema-or
 
 ## Live status
 
-- Latest completed/accepted tranche: **Phase 9 Tranche 2A — Markdown-native operator projections over accepted repo/service surface**.
+- Latest completed/accepted tranche: **Phase 9 Tranche 2B — operator review packet model and Markdown review cockpit over proposals, evidence, logs, and readiness**.
 - Current under-review slice/tranche: **None**.
-- Next queued/proposed tranche: **Phase 9 Tranche 2B — operator review/apply workflow surfaces over proposals/logs**.
+- Next queued/proposed tranche: **Phase 9 Tranche 2C — local open/navigation helpers over operator projections**.
 - Phase 5 queue status: **Closed (Slices 1–15 accepted/closed with explicit closure criteria satisfied)**.
 
 ## Continuity notes
@@ -36,11 +36,12 @@ It does **not** replace architecture/system-definition authority (`docs/noema-or
 - Accepted Phase 9 Slice 1C reference doc now lives at `docs/noema-phase-9-slice-1c-minimal-http-adapter-over-service-core.md`.
 - Accepted Phase 9 Slice 1C control summary now lives at `control/phase-9-slice-1c-minimal-http-adapter-over-service-core.md`.
 - Accepted Phase 9 Tranche 2A added deterministic Markdown-native operator projections under `packages/noema_operator/`.
-- Accepted Phase 9 Tranche 2A implementation commit before tracker sync: `28ea64cfe113a3b3e138ec221bc9d24ebc7acbef`.
-- Accepted Phase 9 Tranche 2A verification reported:
+- Accepted Phase 9 Tranche 2B added a derived read-only operator review packet model and Markdown review cockpit over proposals, evidence, logs, apply/recovery visibility, readiness classifications, attention flags, and packet-specific next steps.
+- Accepted Phase 9 Tranche 2B implementation commit before tracker sync: `780c5df4b9c80886d410145841cdb3148db489b5`.
+- Accepted Phase 9 Tranche 2B verification reported:
   - `pytest -q tests/test_noema_service.py tests/test_noema_service_http.py` — 41 passed.
-  - `pytest -q tests/test_noema_operator_projections.py` — 4 passed.
-- Next work should move to operator review/apply workflow surfaces over proposals/logs, without turning Obsidian into the authority layer.
+  - `pytest -q tests/test_noema_operator_projections.py tests/test_noema_operator_review_packets.py tests/test_noema_operator_review_projection.py` — 8 passed.
+- Next work should move to local open/navigation helpers over operator projections, without turning Obsidian into the authority layer.
 - Accepted Phase 6 deployment and backup/restore semantics remain authoritative in:
   - `docs/noema-self-hosted-deployment-operations-baseline.md`
   - `docs/noema-backup-restore-operational-guidance-baseline.md`

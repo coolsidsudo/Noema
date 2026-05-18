@@ -156,9 +156,9 @@ def test_build_operator_projections_writes_deterministic_markdown(tmp_path: Path
     workspace_root = _seed_operator_repo(repo)
 
     result = build_operator_projections(repo_root=repo, workspace=str(workspace_root.relative_to(repo)))
-    first_contents = {path.name: path.read_text(encoding="utf-8") for path in result.output_paths}
+    first_contents = {path.relative_to(workspace_root).as_posix(): path.read_text(encoding="utf-8") for path in result.output_paths}
     second = build_operator_projections(repo_root=repo, workspace="ws-alpha")
-    second_contents = {path.name: path.read_text(encoding="utf-8") for path in second.output_paths}
+    second_contents = {path.relative_to(workspace_root).as_posix(): path.read_text(encoding="utf-8") for path in second.output_paths}
 
     assert result.workspace_id == "ws-alpha"
     assert result.record_count == 7
@@ -168,9 +168,16 @@ def test_build_operator_projections_writes_deterministic_markdown(tmp_path: Path
         "projection/operator/objects.md",
         "projection/operator/proposals.md",
         "projection/operator/recent.md",
+        "projection/operator/review/index.md",
+        "projection/operator/review/queue.md",
+        "projection/operator/review/attention.md",
+        "projection/operator/review/readiness.md",
+        "projection/operator/review/recovery.md",
+        "projection/operator/review/packets/proposal-display.md",
+        "projection/operator/review/packets/proposal-empty.md",
     }
 
-    index = first_contents["index.md"]
+    index = first_contents["projection/operator/index.md"]
     assert "# Operator Workspace" in index
     assert "## Workspace" in index
     assert "## Object Counts by Class" in index
@@ -183,8 +190,9 @@ def test_build_operator_projections_writes_deterministic_markdown(tmp_path: Path
     assert "- [Objects](./objects.md)" in index
     assert "- [Proposals](./proposals.md)" in index
     assert "- [Recent Activity](./recent.md)" in index
+    assert "- [Review Cockpit](./review/index.md)" in index
 
-    objects = first_contents["objects.md"]
+    objects = first_contents["projection/operator/objects.md"]
     assert "| id | class | status | title | updated_at | path |" in objects
     assert "Raw \\| Source" in objects
     assert "[raw/sources/raw-a.md](" in objects
@@ -193,13 +201,13 @@ def test_build_operator_projections_writes_deterministic_markdown(tmp_path: Path
     assert objects.index("| raw-a | raw |") < objects.index("| struct-missing-date | structured |")
     assert objects.index("| struct-new | structured |") < objects.index("| proposal-empty | proposals |")
 
-    proposals = first_contents["proposals.md"]
+    proposals = first_contents["projection/operator/proposals.md"]
     assert "| proposal_id | status | title | target_ids | created_by | created_at | path |" in proposals
     assert "| proposal-display | under_review | Proposal Display | raw-a, struct-new | agent:operator-test | 2026-04-04T00:00:00Z |" in proposals
     assert "| proposal-empty | draft | — | — | — | 2026-04-03T00:00:00Z |" in proposals
     assert proposals.index("proposal-display") < proposals.index("proposal-empty")
 
-    recent = first_contents["recent.md"]
+    recent = first_contents["projection/operator/recent.md"]
     assert "# Recent Activity" in recent
     assert "## Recent Logs" in recent
     assert "## Recent Proposals" in recent
@@ -256,3 +264,4 @@ def test_operator_cli_build_projections(tmp_path: Path, capsys) -> None:
     assert (workspace_root / "projection" / "operator" / "objects.md").exists()
     assert (workspace_root / "projection" / "operator" / "proposals.md").exists()
     assert (workspace_root / "projection" / "operator" / "recent.md").exists()
+    assert (workspace_root / "projection" / "operator" / "review" / "index.md").exists()
