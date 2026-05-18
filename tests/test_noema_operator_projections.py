@@ -175,6 +175,12 @@ def test_build_operator_projections_writes_deterministic_markdown(tmp_path: Path
         "projection/operator/review/recovery.md",
         "projection/operator/review/packets/proposal-display.md",
         "projection/operator/review/packets/proposal-empty.md",
+        "projection/operator/navigation/index.md",
+        "projection/operator/navigation/targets.md",
+        "projection/operator/navigation/routes.md",
+        "projection/operator/navigation/handoffs.md",
+        "projection/operator/navigation/open-commands.md",
+        "projection/operator/navigation/manifest.json",
     }
 
     index = first_contents["projection/operator/index.md"]
@@ -191,6 +197,7 @@ def test_build_operator_projections_writes_deterministic_markdown(tmp_path: Path
     assert "- [Proposals](./proposals.md)" in index
     assert "- [Recent Activity](./recent.md)" in index
     assert "- [Review Cockpit](./review/index.md)" in index
+    assert "- [Navigation Workbench](./navigation/index.md)" in index
 
     objects = first_contents["projection/operator/objects.md"]
     assert "| id | class | status | title | updated_at | path |" in objects
@@ -265,3 +272,5 @@ def test_operator_cli_build_projections(tmp_path: Path, capsys) -> None:
     assert (workspace_root / "projection" / "operator" / "proposals.md").exists()
     assert (workspace_root / "projection" / "operator" / "recent.md").exists()
     assert (workspace_root / "projection" / "operator" / "review" / "index.md").exists()
+    assert (workspace_root / "projection" / "operator" / "navigation" / "index.md").exists()
+    assert (workspace_root / "projection" / "operator" / "navigation" / "manifest.json").exists()
