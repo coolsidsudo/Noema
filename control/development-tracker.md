@@ -17,9 +17,9 @@ It does **not** replace architecture/system-definition authority (`docs/noema-or
 
 ## Live status
 
-- Latest completed/accepted tranche: **Phase 9 Tranche 2C — operator navigation and handoff workbench over projections and review packets**.
+- Latest completed/accepted tranche: **Phase 9 Tranche 3A — external agent tool contract and local adapter harness over accepted service/operator surfaces**.
 - Current under-review slice/tranche: **None**.
-- Next queued/proposed tranche: **Phase 9 Tranche 3A — thin external adapter surface over the accepted bounded service/operator surfaces**.
+- Next queued/proposed tranche: **Phase 9 Tranche 3B — thin MCP adapter binding over the accepted external tool contract, without semantic expansion**.
 - Phase 5 queue status: **Closed (Slices 1–15 accepted/closed with explicit closure criteria satisfied)**.
 
 ## Continuity notes
@@ -46,7 +46,13 @@ It does **not** replace architecture/system-definition authority (`docs/noema-or
 - Accepted Phase 9 Tranche 2C verification reported:
   - `pytest -q tests/test_noema_service.py tests/test_noema_service_http.py` — 41 passed.
   - `pytest -q tests/test_noema_operator_projections.py tests/test_noema_operator_review_packets.py tests/test_noema_operator_review_projection.py tests/test_noema_operator_navigation.py tests/test_noema_operator_handoffs.py tests/test_noema_operator_open_helpers.py` — 17 passed.
-- Next work should move to Phase 9 Tranche 3A thin external adapter surface over the accepted bounded service/operator surfaces, without redefining Noema authority semantics or treating any client adapter as the authority layer.
+- Accepted Phase 9 Tranche 3A added a substantive external-agent tool contract and deterministic local adapter harness over accepted service-core and operator surfaces, including fixed tool specs/schemas, local dispatcher, manifest output, CLI list/describe/invoke harness, strict validation, normalized envelopes, and side-effect classification.
+- Accepted Phase 9 Tranche 3A implementation commit before tracker sync: `7840e86450066de4cab3640a036d70b207dc7758`.
+- Accepted Phase 9 Tranche 3A verification reported:
+  - `pytest -q tests/test_noema_service.py tests/test_noema_service_http.py` — 41 passed.
+  - `pytest -q tests/test_noema_operator_projections.py tests/test_noema_operator_review_packets.py tests/test_noema_operator_review_projection.py tests/test_noema_operator_navigation.py tests/test_noema_operator_handoffs.py tests/test_noema_operator_open_helpers.py` — 17 passed.
+  - `pytest -q tests/test_noema_external_adapter_contract.py tests/test_noema_external_adapter_invocation.py tests/test_noema_external_adapter_cli.py` — 16 passed.
+- Next work should move to Phase 9 Tranche 3B thin MCP adapter binding over the accepted external tool contract, without semantic expansion, authority expansion, or redefining Noema service/operator semantics.
 - Accepted Phase 6 deployment and backup/restore semantics remain authoritative in:
   - `docs/noema-self-hosted-deployment-operations-baseline.md`
   - `docs/noema-backup-restore-operational-guidance-baseline.md`
