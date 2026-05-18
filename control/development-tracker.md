@@ -17,9 +17,9 @@ It does **not** replace architecture/system-definition authority (`docs/noema-or
 
 ## Live status
 
-- Latest completed/accepted slice: **Phase 9 Slice 1C — minimal HTTP adapter over the accepted service core**.
-- Current under-review slice: **None**.
-- Next queued/proposed slice: **Phase 9 Slice 2 — operator workflow integration and Obsidian-facing projections over the accepted service/HTTP surface**.
+- Latest completed/accepted tranche: **Phase 9 Tranche 2A — Markdown-native operator projections over accepted repo/service surface**.
+- Current under-review slice/tranche: **None**.
+- Next queued/proposed tranche: **Phase 9 Tranche 2B — operator review/apply workflow surfaces over proposals/logs**.
 - Phase 5 queue status: **Closed (Slices 1–15 accepted/closed with explicit closure criteria satisfied)**.
 
 ## Continuity notes
@@ -35,7 +35,12 @@ It does **not** replace architecture/system-definition authority (`docs/noema-or
 - Accepted Phase 9 Slice 1C added the local stdlib HTTP adapter over the five accepted service-core operations.
 - Accepted Phase 9 Slice 1C reference doc now lives at `docs/noema-phase-9-slice-1c-minimal-http-adapter-over-service-core.md`.
 - Accepted Phase 9 Slice 1C control summary now lives at `control/phase-9-slice-1c-minimal-http-adapter-over-service-core.md`.
-- Next work should move to operator workflow integration and Obsidian-facing projections over the accepted service/HTTP surface, without turning Obsidian into the authority layer.
+- Accepted Phase 9 Tranche 2A added deterministic Markdown-native operator projections under `packages/noema_operator/`.
+- Accepted Phase 9 Tranche 2A implementation commit before tracker sync: `28ea64cfe113a3b3e138ec221bc9d24ebc7acbef`.
+- Accepted Phase 9 Tranche 2A verification reported:
+  - `pytest -q tests/test_noema_service.py tests/test_noema_service_http.py` — 41 passed.
+  - `pytest -q tests/test_noema_operator_projections.py` — 4 passed.
+- Next work should move to operator review/apply workflow surfaces over proposals/logs, without turning Obsidian into the authority layer.
 - Accepted Phase 6 deployment and backup/restore semantics remain authoritative in:
   - `docs/noema-self-hosted-deployment-operations-baseline.md`
   - `docs/noema-backup-restore-operational-guidance-baseline.md`
