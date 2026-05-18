@@ -9,6 +9,9 @@ from typing import Iterable
 from packages.noema_maintainer.scan import OBJECT_CLASSES, ObjectRecord
 from packages.noema_service.repository import filter_records, load_records
 
+from .review_packets import build_review_packets
+from .review_projection import render_review_cockpit
+
 MISSING_VALUE = "—"
 PROPOSAL_STATUS_PRIORITY = {
     "under_review": 0,
@@ -211,6 +214,7 @@ def _render_index(
         "- [Objects](./objects.md)",
         "- [Proposals](./proposals.md)",
         "- [Recent Activity](./recent.md)",
+        "- [Review Cockpit](./review/index.md)",
     ])
     _write_markdown(path, lines)
 
@@ -370,11 +374,21 @@ def build_operator_projections(*, repo_root: Path, workspace: str) -> OperatorPr
     _render_objects(path=objects_path, repo_root=resolved_repo_root, records=records)
     _render_proposals(path=proposals_path, repo_root=resolved_repo_root, records=records)
     _render_recent(path=recent_path, repo_root=resolved_repo_root, records=records)
+    review_packets = build_review_packets(
+        repo_root=resolved_repo_root,
+        workspace=resolved_workspace.workspace_id,
+        records=records,
+    )
+    review_paths = render_review_cockpit(
+        repo_root=resolved_repo_root,
+        operator_projection_root=projection_root,
+        packets=review_packets,
+    )
 
     return OperatorProjectionResult(
         workspace_id=resolved_workspace.workspace_id,
         workspace_root=resolved_workspace.workspace_root,
         projection_root=projection_root,
-        output_paths=(index_path, objects_path, proposals_path, recent_path),
+        output_paths=(index_path, objects_path, proposals_path, recent_path, *review_paths),
         record_count=len(records),
     )
